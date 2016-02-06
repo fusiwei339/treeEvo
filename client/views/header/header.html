@@ -1,0 +1,28 @@
+<template name="header">
+    <nav class="navbar navbar-fixed-top">
+        <div class="container-fluid" style="background:#fff; margin-top:5px;border-bottom: 1px solid #ccc;">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">LineageVis</a>
+            </div>
+            <div class="navbar-left col-md-10">
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <form class="navbar-form navbar-right" style="margin-top:10px">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Choose Dataset...
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="right:auto">
+                        <li id="nch"><a href="#">LN</a></li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </nav>
+</template>

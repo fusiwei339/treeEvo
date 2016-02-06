@@ -1,0 +1,48 @@
+<head>
+    <title>LineageVis</title>
+    <link rel="icon" sizes="16x16" href="/favicon.ico">
+</head>
+
+
+<template name="layout">
+        {{>header}}
+
+    <div class="container" style="overflow-x: hidden; width:100%">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-md-12">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="row">
+            {{>lineage}}
+            {{>tooltip}}
+            <!-- {{>test}} -->
+          </div>
+
+          <!-- <div class="row" style="margin-top:5px; margin-right:50px ;margin-left:50px; border-bottom: 2px solid #CCC">
+            {{>timeVariant}}
+          </div>
+          
+          <div class="row" style="margin-right:50px ;margin-left:50px;">
+            {{>pattern}}
+          </div> -->
+
+        </div><!--/.col-xs-12.col-sm-9-->
+      </div><!--/row-->
+
+      <footer>
+        <p>&copy; ***** VIS group</p>
+      </footer>
+
+    </div>
+</template>
+
+
+<template name="loading">
+    <center>
+      <h1>Data is loading...</h1>
+    </center>
+</template>
+

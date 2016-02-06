@@ -1,0 +1,48 @@
+#testView {
+    border: 1px solid black;
+}
+
+#testContainer {
+    height: 850px;
+}
+
+.path {
+    fill: none;
+    stroke-width: 1.5px;
+}
+
+.fullheight {
+    height: 100%;
+}
+
+.halfheight {
+    height: 50%;
+}
+
+.legendText{
+    font-size: 10px
+}
+
+#flowPanel {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    float: right;
+    position: relative;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+#mainPanel {
+    height: 100%;
+}
+
+.overlay {
+    fill: #fff;
+}
