@@ -12,14 +12,17 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 client = MongoClient('localhost', 3001)
 db = client.meteor
 
-nPeople=db.malePeople.find({"nSon":{"$gt":0}}).count();
+# query={"nSon":{"$gt":0};
+query = {}
+nPeople=db.malePeople.find(query).count();
 
-documents = np.zeros(shape=(nPeople,3));
+documents = np.zeros(shape=(nPeople,4));
 
-for idx, doc in enumerate(db.malePeople.find({"nSon":{"$gt":0}})):
+for idx, doc in enumerate(db.malePeople.find(query)):
  	documents[idx][0]=doc[u'age']; 
- 	documents[idx][1]=doc[u'nSon']; 
- 	documents[idx][2]=doc[u'first_birth']; 
+ 	documents[idx][1]=doc[u'hasSon']; 
+ 	documents[idx][2]=doc[u'hasMarriaged']; 
+ 	documents[idx][3]=doc[u'first_birth']; 
 print documents
 
 documents_scaled = preprocessing.normalize(documents, axis=0);
@@ -28,19 +31,23 @@ print documents_scaled
 
 
 # ##############################################################################
-nCluster=8;
+nCluster=4;
+print "start to cluster"
 # for i in [3, 4, 5, 6, 7, 8, 9, 10]:
 labels= KMeans(n_clusters=nCluster, random_state=10).fit_predict(documents_scaled)
-silhouette_avg = silhouette_score(documents_scaled, labels)
+# print "start to evaluate"
+
+# silhouette_avg = silhouette_score(documents_scaled, labels)
 
 print nCluster
-print silhouette_avg
+# print silhouette_avg
 
 
 # # Number of clusters in labels, ignoring noise if present.
 
 count=0
-for doc in db.malePeople.find({"nSon":{"$gt":0}}):
-    doc[u"cluster"]=labels[count].astype('int32');
+for doc in db.malePeople.find(query):
+    # doc[u"cluster"]=0;
+    doc[u"cluster"]=labels[count].astype('str');
     db.malePeople.save(doc)
     count+=1
