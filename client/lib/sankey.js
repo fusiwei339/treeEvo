@@ -115,7 +115,8 @@ d3.sankey = function() {
     // Compute the value (size) of each node by summing the associated links.
     function computeNodeValues() {
         nodes.forEach(function(node) {
-            node.value = node.man.length;
+            // node.value = node.man.length;
+            node.value = 1;
         });
     }
 
@@ -152,20 +153,21 @@ d3.sankey = function() {
             });
 
         initializeNodeDepth();
-        function sortVerti(a, b){
-            return a.man.length-b.man.length;
+
+        function sortVerti(a, b) {
+            // return a.man.length - b.man.length;
+            return a.cluster - b.cluster;
         }
 
         _.each(nodesByBreadth, function(nodes, breadth) {
-                nodes.sort(sortVerti)
-                _.each(nodes, function(node, i) {
-                    if (i == 0)
-                        node.y = 0;
-                    else
-                        node.y = nodes[i - 1].y + nodes[i - 1].dy + nodePadding;
-                })
+            nodes.sort(sortVerti)
+            _.each(nodes, function(node, i) {
+                if (i == 0)
+                    node.y = 0;
+                else
+                    node.y = nodes[i - 1].y + nodes[i - 1].dy + nodePadding;
             })
-            //
+        })
 
         function initializeNodeDepth() {
             var nPeople = 0,
@@ -186,14 +188,17 @@ d3.sankey = function() {
             nodesByBreadth.forEach(function(nodes) {
                 nodes.forEach(function(node, i) {
                     node.y = i;
-                    node.dy = ky(node.value);
+                    // node.dy = ky(node.value);
+                    node.dy = 100;
                 });
             });
 
             links.forEach(function(link) {
-                link.dy = ky(link.value);
-                link.sourcedy = ky(link.sourceVal.length)
-                link.targetdy = ky(link.targetVal.length)
+                // link.dy = ky(link.value);
+                // link.sourcedy = ky(link.sourceVal.length)
+                // link.targetdy = ky(link.targetVal.length)
+                link.sourcedy = link.sourcePart * link.source.dy;
+                link.targetdy = link.targetPart * link.target.dy;
             });
         }
 

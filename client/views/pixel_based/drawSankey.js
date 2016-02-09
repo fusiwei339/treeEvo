@@ -47,7 +47,9 @@ d3.drawSankey=class {
 
         // console.log(this.graph.links)
         var link = this.svg.append("g").selectAll(".link")
-            .data(this.graph.links)
+            .data(_.filter(this.graph.links, function(link){
+                return link.sourcePart>0;
+            }))
             .enter().append("path")
             .attr("class", "link")
             .attr("d", path)
