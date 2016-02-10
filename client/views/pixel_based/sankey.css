@@ -1,5 +1,4 @@
 .node rect {
-  cursor: move;
   fill-opacity: .9;
   shape-rendering: crispEdges;
 }
@@ -20,3 +19,8 @@
   opacity: .5;
 }
 
+.featureRect{
+  fill:none;
+  stroke:#ccc;
+  stroke-width:1px;
+}

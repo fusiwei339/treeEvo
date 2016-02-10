@@ -1,4 +1,4 @@
-d3.drawSankey=class {
+d3.drawSankey = class {
 
     constructor(svg, graph, sankey) {
         this.svg = svg;
@@ -6,34 +6,57 @@ d3.drawSankey=class {
         this.sankey = sankey;
     }
 
-    draw () {
+    draw() {
+            console.log('start to draw')
         // add in the nodes
+        var conf = Template.lineage.configure;
+        var animationDur=conf.animationDur;
         var path = this.sankey.link();
-        var colorDomain=_.uniq(_.map(this.graph.nodes, function(node){
+        var colorDomain = _.uniq(_.map(this.graph.nodes, function(node) {
             return node.cluster;
         }))
-        var color = d3.scale.category20()
+        var color = d3.scale.ordinal()
             .domain(colorDomain)
+            .range(['#fbb4ae','#b3cde3','#ccebc5','#decbe4','#fed9a6','#ffffcc','#e5d8bd','#fddaec','#f2f2f2'])
 
-        var node = this.svg.append("g").selectAll(".node")
+        var nodeSelection = this.svg.selectAll(".node")
             .data(this.graph.nodes)
-            .enter().append("g")
+
+        nodeSelection.transition()
+            .duration(animationDur)
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            })
+            .select('rect')
+            .attr("height", function(d) {
+                return d.dy;
+            })
+
+        nodeSelection.exit()
+            .transition()
+            .duration(animationDur)
+            .remove()
+        nodeSelection.enter().append("g")
             .attr("class", "node")
             .attr("transform", function(d) {
                 return "translate(" + d.x + "," + d.y + ")";
             })
-            .call(d3.behavior.drag()
-                .origin(function(d) {
-                    return d;
-                })
-                .on("dragstart", function() {
-                    this.parentNode.appendChild(this);
-                })
-                .on("drag", dragmove)
-            );
-
-        // add the rectangles for the nodes
-        node.append("rect")
+            .on('click', function(d){
+                Session.set('nodeSelected', {
+                    generation:d.generation,
+                    cluster:d.cluster,
+                    man:d.man,
+                });
+            })
+            .on('mouseover', function(d){
+                Session.set('nodeHovered', {
+                    generation:d.generation,
+                    cluster:d.cluster,
+                    man:d.man,
+                });
+            })
+            .append("rect")
+            .attr('class', 'flowBar')
             .attr("height", function(d) {
                 return d.dy;
             })
@@ -45,29 +68,24 @@ d3.drawSankey=class {
                 return d3.rgb(d.color).darker(2);
             })
 
-        // console.log(this.graph.links)
-        var link = this.svg.append("g").selectAll(".link")
-            .data(_.filter(this.graph.links, function(link){
-                return link.sourcePart>0;
+        var linkSelection = this.svg.selectAll(".link")
+            .data(_.filter(this.graph.links, function(link) {
+                return link.sourcePart > 0;
             }))
-            .enter().append("path")
+
+        linkSelection.enter().append("path")
             .attr("class", "link")
             .attr("d", path)
-            .attr('title', function(d){
-                return d.source.name+'--'+d.target.name+'--'+d.value;
+            .attr('title', function(d) {
+                return d.source.name + '--' + d.target.name + '--' + d.value;
             })
-
-
-        function dragmove(d) {
-            d3.select(this).attr("transform",
-                "translate(" + d.x + "," + (
-                    d.y = Math.max(0, Math.min(this.sankey.height() - d.dy, d3.event.y))
-                ) + ")");
-            this.sankey.relayout();
-            link.attr("d", path);
-        }
+        linkSelection.exit()
+            .transition()
+            .duration(animationDur)
+            .remove()
+        linkSelection.transition()
+            .duration(animationDur)
+            .attr("d", path)
 
     }
 }
-
-//现在我在大陆，想把文件分享给同学，试了金山快盘，发现它现在不支持文件外链，用了微云和QQ中转站，发现微云速度更快！

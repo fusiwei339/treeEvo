@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+ 
+svg {
+  font: 10px sans-serif;
+}
+ 
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+path {
+  stroke-width: 1.5px;
+  stroke: darkgrey;
+  stroke-dasharray:"3, 3";
+}
+
+.legend{
+  stroke: "grey";
+}
+  
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="errorbar.js"></script>
+
+<div id="option">
+        <input name="updateButton" type="button" value="X-axis: Temp"/>
+</div>
+
+<script>
+ 
+var margin = {top: 10, right: 10, bottom: 100, left: 40},
+    size = 5,
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom,
+    x = d3.scale.linear().range([0, width]),
+    y = d3.scale.linear().range([height, 0]),
+    xAxis = d3.svg.axis().scale(x).orient("bottom"),
+    yAxis = d3.svg.axis().scale(y).orient("left");
+
+var eb = errorBar()
+          .oldXScale(x)
+          .xScale(x)
+          .oldYScale(y)
+          .yScale(y)
+          .yValue(function(d){return d.y})
+          .xValue(function(d){return d.pH})
+          .xError(function(d){return null})
+          .yError(function(d){return d.s});
+
+
+var color = d3.scale.category10();
+ 
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+
+var plot = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+ 
+d3.json("data.json", function(error,data) {
+  
+  color.domain(d3.keys(data[0]).filter(function(key) { return key == "name"; }));
+ 
+  x.domain([d3.min(data.map(function(d) {return d.pH}))-0.2,d3.max(data.map(function(d) { return d.pH; }))+0.2]);
+  y.domain([d3.min(data.map(function(d) {return (d.y - d.s)})),d3.max(data.map(function(d) { return (d.y + d.s); }))]);
+
+                
+//Initial Plot
+
+
+var circles = plot.selectAll("g")
+        .data(data)
+      .enter().append("g"); 
+      
+var plotErrorbar = circles.append("g")
+      .attr("transform", function(d) {return "translate("+ x(d.pH) +","+ y(d.y) +")"})
+      .style("stroke-dasharray", ("3, 3"))
+      .call(eb);
+
+var plotCircles = circles.append("circle")
+      .attr("class","circle")
+      .attr("cx", function(d) {return x(d.pH);})
+      .attr("cy", function(d){return y(d.y);})
+      .attr("r",8)
+      .attr("fill",function(d) {return color(d.name);})
+      .style("stroke", "darkgrey");       
+
+var plotText = circles.append("text")
+      .attr("class","legend")
+      .attr('x', width-40)
+      .attr('y', function(d,i) {return i*21;})
+      .text(function(d) { return d.name; });
+      
+var plotRect = circles.append("rect")
+      .attr('x', width-50)
+      .attr('y', function(d,i) {return i*20;})
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('fill', function(d) {return color(d.name);});
+
+svg.append("g")
+      .attr("class","x axis")
+      .attr("transform", "translate("+ margin.left +"," + (height + margin.top) + ")")
+      .call(xAxis);
+      
+svg.append("g")
+      .attr("class","y axis")
+      .attr("transform","translate("+ margin.left +","+ margin.top +" )")
+      .call(yAxis);
+      
+//Add the transition
+
+d3.select("div")
+      .on("click", function() {
+
+x.domain([d3.min(data.map(function(d) {return d.temp}))-1,d3.max(data.map(function(d) { return d.temp; }))+1]);
+y.domain([d3.min(data.map(function(d) {return (d.y - d.s)})),d3.max(data.map(function(d) { return (d.y + d.s); }))]);
+
+
+
+//Select and update the circles
+
+    plotCircles.selectAll("circle")
+      .data(data)
+      .enter().append("circle")
+      .attr("class","circle")
+      .attr("cx", function(d) {return x(d.temp);})
+      .attr("cy", function(d){return y(d.y);})
+      .attr("r",8)
+      .attr("fill",function(d) {return color(d.pH);})
+      .style("stroke", "darkgrey");
+  
+   plotCircles.transition()
+      .duration(1000)
+      .attr("class","circle")
+      .attr("cx", function(d) {return x(d.temp);})
+      .attr("cy", function(d){return y(d.y);})
+      .attr("r",8)
+      .attr("fill",function(d) {return color(d.pH);})
+      .style("stroke", "darkgrey");
+      
+//Select and update the rectangles in legend
+
+    plotRect.selectAll("rect")
+      .data(data)
+      .enter().append("rect")
+      .attr("class","rect")
+      .attr('x', width-50)
+      .attr('y', function(d,i) {return i*20;})
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('fill', function(d) {return color(d.pH);});
+      
+    plotRect.transition()
+      .duration(1000)
+      .attr("class","rect")
+      .attr('x', width-50)
+      .attr('y', function(d,i) {return i*20;})
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('fill', function(d) {return color(d.pH);});
+
+//Select and update the text in legend
+
+    plotText.selectAll("text")
+      .data(data)
+      .enter().append("text")
+      .attr("class","legend")
+      .attr('x', width-40)
+      .attr('y', function(d,i) {return i*21;})
+      .text(function(d) { return d.pH; });
+    
+    plotText.transition()
+      .duration(1000)
+      .attr("class","legend")
+      .attr('x', width-40)
+      .attr('y', function(d,i) {return i*21;})
+      .text(function(d) { return d.pH; });
+
+
+//Update the axes
+
+    svg.select(".x.axis")
+      .transition()
+      .duration(1000)
+      .call(xAxis);
+      
+    svg.select(".y.axis")
+      .transition()
+      .duration(1000)
+      .call(yAxis);
+
+
+//Error bars
+
+
+plotErrorbar.selectAll("g")
+      .data(data)
+    .enter()
+      .append("g")
+      .attr("transform", function(d) {return "translate("+ x(d.temp) +","+ y(d.y) +")"})
+      .style("stroke-dasharray", ("3, 3"))
+      .call(eb);
+
+plotErrorbar.transition()
+    .duration(1000)
+    .attr("transform", function(d) {return "translate("+ x(d.temp) +","+ y(d.y) +")"})
+      .style("stroke-dasharray", ("3, 3"))
+      .call(eb);
+
+
+//Remove Text, Rectangles and Circles
+
+
+    plotText.exit()
+      .transition()
+      .duration(1000)
+      .remove();
+    
+    plotRect.exit()
+      .transition()
+      .duration(1000)
+      .remove();
+      
+    plotCircles.exit()
+      .transition()
+      .duration(1000)
+      .remove();
+      
+     plotErrorbar.exit()
+      .transition()
+      .duration(1000)
+      .remove();
+
+  
+});    
+
+});
+ 
+ 
+</script>

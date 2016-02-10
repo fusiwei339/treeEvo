@@ -24,9 +24,9 @@
 }
 
 #flowPanel {
-    height: 100%;
+    height: 95%;
     width: 100%;
-    overflow: hidden;
+    overflow: auto;
     float: right;
     position: relative;
 }
@@ -45,4 +45,18 @@
 
 .overlay {
     fill: #fff;
+}
+
+.flowOption{
+    height: 5%;
+    border-bottom: 1px solid #ccc;
+}
+
+.bar{
+    fill:#666;
+}
+.stdLines{
+    fill: none;
+    stroke-width: 1px;
+    stroke:#666;
 }

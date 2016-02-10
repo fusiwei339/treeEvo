@@ -16,6 +16,35 @@ Template.lineage.dataProcessor = function() {
     		nodes:nodes,
     		links:edges,
     	};
+    };
+
+    ret.getScaleFunc=function(mode){
+        switch (mode){
+            case 'sqrt':
+                return function(node){
+                    node.value=Math.sqrt(node.man.length)*100;
+                };
+            case 'uni':
+                return function(node){
+                    node.value=10000;
+                };
+            case 'linear':
+                return function(node){
+                    node.value=node.man.length;
+                }
+        }
+    };
+
+    ret.getStatData=function(stat){
+        var ret=[];
+        for(var key in stat){
+            var temp={}
+            temp.name=key;
+            temp.mean=stat[key].mean;
+            temp.std=stat[key].std;
+            ret.push(temp);
+        }
+        return ret;
     }
 
 

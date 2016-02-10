@@ -13,7 +13,7 @@ Router.map(function() {
     return this.route('home', {
         path: '/',
         waitOn: function() {
-            // return Meteor.subscribe('nchForum', 4);
+            // return Meteor.subscribe('malePeople');
         },
         action: function() {
             this.render('layout');

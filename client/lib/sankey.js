@@ -4,21 +4,15 @@ d3.sankey = function() {
         nodePadding = 8,
         size = [1, 1],
         nodes = [],
-        width = 1,
-        height = 1,
+        scaleFunc = undefined,
         links = [];
 
-    sankey.width = function(_) {
-        if (!arguments.length) return width;
-        width = +_;
+    sankey.scaleFunc = function(_) {
+        if (!arguments.length) return scaleFunc;
+        scaleFunc = _;
         return sankey;
     };
 
-    sankey.height = function(_) {
-        if (!arguments.length) return height;
-        height = +_;
-        return sankey;
-    };
     sankey.nodeWidth = function(_) {
         if (!arguments.length) return nodeWidth;
         nodeWidth = +_;
@@ -49,11 +43,11 @@ d3.sankey = function() {
         return sankey;
     };
 
-    sankey.layout = function(iterations) {
+    sankey.layout = function() {
         computeNodeLinks();
         computeNodeValues();
         computeNodeBreadths();
-        computeNodeDepths(iterations);
+        computeNodeDepths();
         computeLinkDepths();
         return sankey;
     };
@@ -83,7 +77,6 @@ d3.sankey = function() {
                 .bezier_to(x3, l2y1, x2, l2y0, x0, l2y0)
                 .close_path()
                 .end();
-            // return "M" + x0 + "," + y0 + "C" + x2 + "," + y0 + " " + x3 + "," + y1 + " " + x1 + "," + y1;
         }
 
         link.curvature = function(_) {
@@ -95,8 +88,6 @@ d3.sankey = function() {
         return link;
     };
 
-    // Populate the sourceLinks and targetLinks for each node.
-    // Also, if the source and target are not objects, assume they are indices.
     function computeNodeLinks() {
         nodes.forEach(function(node) {
             node.sourceLinks = [];
@@ -114,25 +105,18 @@ d3.sankey = function() {
 
     // Compute the value (size) of each node by summing the associated links.
     function computeNodeValues() {
-        nodes.forEach(function(node) {
-            // node.value = node.man.length;
-            node.value = 1;
-        });
+        nodes.forEach(scaleFunc);
     }
 
-    // Iteratively assign the breadth (x-position) for each node.
-    // Nodes are assigned the maximum breadth of incoming neighbors plus one;
-    // nodes with no incoming links are assigned breadth zero, while
-    // nodes with no outgoing links are assigned the maximum breadth.
     function computeNodeBreadths() {
         x = 0;
 
         nodes.forEach(function(node) {
-            node.x = node.generation - 1;
+            node.x = node.generation;
             node.dx = nodeWidth;
             x = Math.max(x, node.x);
         })
-        scaleNodeBreadths((width - nodeWidth) / (x - 1));
+        scaleNodeBreadths((size[0] - nodeWidth) / (x + 1));
     }
 
     function scaleNodeBreadths(kx) {
@@ -141,7 +125,7 @@ d3.sankey = function() {
         });
     }
 
-    function computeNodeDepths(iterations) {
+    function computeNodeDepths() {
         var nodesByBreadth = d3.nest()
             .key(function(d) {
                 return d.x;
@@ -156,7 +140,7 @@ d3.sankey = function() {
 
         function sortVerti(a, b) {
             // return a.man.length - b.man.length;
-            return a.cluster - b.cluster;
+            return b.cluster - a.cluster;
         }
 
         _.each(nodesByBreadth, function(nodes, breadth) {
@@ -178,25 +162,19 @@ d3.sankey = function() {
                     nCluster++;
                 }
             })
-            var ky = d3.scale.linear()
-                .range([0, height - nCluster * nodePadding])
-                .domain([0, nPeople])
-                // var ky = d3.min(nodesByBreadth, function(nodes) {
-                //     return (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value);
-                // });
+
+            var ky = d3.min(nodesByBreadth, function(nodes) {
+                return (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value);
+            });
 
             nodesByBreadth.forEach(function(nodes) {
                 nodes.forEach(function(node, i) {
                     node.y = i;
-                    // node.dy = ky(node.value);
-                    node.dy = 100;
+                    node.dy = ky * node.value;
                 });
             });
 
             links.forEach(function(link) {
-                // link.dy = ky(link.value);
-                // link.sourcedy = ky(link.sourceVal.length)
-                // link.targetdy = ky(link.targetVal.length)
                 link.sourcedy = link.sourcePart * link.source.dy;
                 link.targetdy = link.targetPart * link.target.dy;
             });
