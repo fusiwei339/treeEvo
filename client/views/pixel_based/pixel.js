@@ -59,30 +59,15 @@ Template.lineage.rendered = function() {
         }
     })
 
+    //-------------------------draw stat diagrams-------------------------
     Deps.autorun(function() {
 
         Session.get('sankeyNodesReady');
         var data = conf.sankeyNodes;
-        if(!data)return;
+        if (!data) return;
 
-        var nodeSelection = featureCanvas.selectAll(".node")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "node")
-            .attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            })
-            .each(function(d, i){
-            	var statCanvas=d3.select(this);
-            	var errorBar=new d3.drawErrBar(statCanvas, d);
-            	errorBar.draw();	
-            })
-            .append("rect")
-            .attr('class', 'featureRect')
-            .attr("height", function(d) {
-                return d.dy;
-            })
-            .attr("width", 120)
+        var drawStat=new d3.drawStat(featureCanvas, data);
+        drawStat.draw();
 
     })
 

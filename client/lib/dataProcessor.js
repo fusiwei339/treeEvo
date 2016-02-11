@@ -37,13 +37,17 @@ Template.lineage.dataProcessor = function() {
 
     ret.getStatData=function(stat){
         var ret=[];
-        for(var key in stat){
+        var barTypes = ['f_mar_age', 'f_bir_age', 'l_bir_age', 'lastage', 'SON_COUNT'];
+
+        _.each(barTypes, function(key){
+            if(stat[key].mean===0) return;
             var temp={}
             temp.name=key;
             temp.mean=stat[key].mean;
             temp.std=stat[key].std;
             ret.push(temp);
-        }
+
+        })
         return ret;
     }
 

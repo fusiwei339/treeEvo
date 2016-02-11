@@ -52,10 +52,14 @@
     border-bottom: 1px solid #ccc;
 }
 
-.bar{
-    fill:#666;
+.ErrBarCircle{
+    cursor: pointer;
+    stroke-width: .8px;
+    stroke:#666;
+    /*fill:#666;*/
 }
-.stdLines{
+.linkings,
+.ErrBarLine{
     fill: none;
     stroke-width: 1px;
     stroke:#666;
