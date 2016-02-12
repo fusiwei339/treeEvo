@@ -79,12 +79,6 @@ d3.sankey = function() {
                 .end();
         }
 
-        link.curvature = function(_) {
-            if (!arguments.length) return curvature;
-            curvature = +_;
-            return link;
-        };
-
         return link;
     };
 

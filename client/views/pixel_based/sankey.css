@@ -24,3 +24,15 @@
   stroke:#ccc;
   stroke-width:1px;
 }
+
+.highlightlink{
+  fill: #000;
+  opacity: .5;
+}
+.highlightlink:hover{
+  opacity: 0.8;
+}
+.node{
+  stroke:#888;
+  stroke-width:2px;
+}

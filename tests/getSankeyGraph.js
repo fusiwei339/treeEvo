@@ -77,14 +77,14 @@ for (var currentGen = initGen; currentGen < maxGen; currentGen++) {
     }).toArray();
     print(allPeople.length)
 
-    var clustersTemp=_.groupBy(allPeople, function(d){
+    var clustersTemp = _.groupBy(allPeople, function(d) {
         return d.cluster;
     })
 
     _.each(clusters, function(cluster) {
-        var man=clustersTemp[cluster]?_.map(clustersTemp[cluster], function(d){
+        var man = clustersTemp[cluster] ? _.map(clustersTemp[cluster], function(d) {
             return d.personid;
-        }):[];
+        }) : [];
         db.sankeyNodes.insert({
             man: man,
             cluster: cluster,
@@ -121,14 +121,15 @@ _.each(generations, function(generation, idx) {
 
 
 var parseName = function(str) {
-        str = str.replace('gen', '').replace('cluster', ',');
-        var arr = str.split(',');
-        return {
-            generation: +arr[0],
-            cluster: arr[1]
-        };
-    }
-    //recalculate
+    str = str.replace('gen', '').replace('cluster', ',');
+    var arr = str.split(',');
+    return {
+        generation: +arr[0],
+        cluster: arr[1]
+    };
+}
+
+//recalculate
 print('get source and target part')
 db.sankeyEdges.find().forEach(function(edge) {
     //cal target val
