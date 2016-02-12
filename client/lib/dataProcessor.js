@@ -15,7 +15,7 @@ Template.lineage.dataProcessor = function() {
         })
         return {
             nodes: nodes,
-            links: _.filter(edges, function(link){
+            links: _.filter(edges, function(link) {
                 return link.sourcePart > 0;
             }),
         };
@@ -69,15 +69,14 @@ Template.lineage.dataProcessor = function() {
         return ret;
     };
 
-    ret.getDecendentNodes = function(node) {
+    var nodesByGen_decendent = function(node) {
         var currentGen = node.generation;
         var maxGen = d3.max(conf.generations);
 
         //get nodes by generation
         var nodesByGen = [];
-        var initFatherArr = [];
-        _.each(node.man, function(man) {
-            initFatherArr.push(conf.malePeopleObj_ori['' + man]);
+        var initFatherArr = _.map(node.man, function(man) {
+            return conf.malePeopleObj_ori['' + man];
         })
         var fatherArr = initFatherArr;
         for (var i = currentGen + 1; i < maxGen; i++) {
@@ -92,11 +91,50 @@ Template.lineage.dataProcessor = function() {
             fatherArr = temp.man;
         }
 
+        return nodesByGen;
+    }
+
+    var nodesByGen_ancient_current = function(node) {
+        var currentGen = node.generation;
+        var nodesByGen = [];
+        var childArr = _.map(node.man, function(child) {
+            return conf.malePeopleObj_ori['' + child];
+        });
+
+        //current
+        nodesByGen.push({
+            generation:currentGen,
+            man:childArr,
+        })
+
+        //ancient
+        for (var i = currentGen - 1; i >= 0; i--) {
+            var temp = {
+                generation: i,
+            }
+            var fatherids = _.uniq(_.map(childArr, function(child) {
+                return child.fatherid;
+            }))
+            var fatherArr = _.map(fatherids, function(father) {
+                return conf.malePeopleObj_ori['' + father];
+            })
+            temp.man = fatherArr;
+            nodesByGen.push(temp);
+
+            childArr=fatherArr;
+        }
+
+        return nodesByGen;
+    }
+
+    var getSankeyNodes = function(node) {
+
+        var nodesByGen = [];
+        nodesByGen.push(...nodesByGen_decendent(node))
+        nodesByGen.push(...nodesByGen_ancient_current(node))
+
         //get nodes
         var nodes = []
-        node.man = initFatherArr;
-        node.name = 'gen' + node.generation + 'cluster' + node.cluster;
-        nodes.push(node);
         _.each(nodesByGen, function(gen) {
             var clusters = d3.nest()
                 .key(function(d) {
@@ -115,48 +153,7 @@ Template.lineage.dataProcessor = function() {
         return nodes;
     };
 
-    ret.matchNodes = function(highlightNodes, nodes) {
-        var nodesObj = {}
-        var attrs = ['x', 'y', 'dx', 'dy']
-        _.each(nodes, function(node) {
-            nodesObj[node.name] = node;
-        })
-        _.each(highlightNodes, function(node) {
-            var node_ori = nodesObj[node.name];
-            _.each(attrs, function(attr) {
-                node[attr] = node_ori[attr];
-            })
-            node.dy = node.dy * node.man.length / node_ori.man.length;
-            node.y = node_ori.y + node_ori.dy - node.dy;
-        })
-        return highlightNodes;
-    }
-
-    ret.matchEdges = function(highlightEdges, edges) {
-        var edgesObj = {};
-        var attrs = ['sourcedy', 'sy', 'targetdy', 'ty'];
-        _.each(edges, function(edge) {
-            edgesObj[edge.source.name + edge.target.name] = edge;
-        })
-        _.each(highlightEdges, function(edge) {
-            var edge_ori = edgesObj[edge.source + edge.target];
-            _.each(attrs, function(attr) {
-                edge[attr] = edge_ori[attr];
-            })
-            edge.sourcedy = edge.sourcedy * edge.sourceVal.length / edge_ori.sourceVal.length;
-            edge.targetdy = edge.targetdy * edge.targetVal.length / edge_ori.targetVal.length;
-        })
-        return highlightEdges;
-
-    }
-
-    ret.getNodeConnections = function(nodes) {
-        var nodesByGen = d3.nest()
-            .key(function(d) {
-                return d.generation;
-            })
-            .sortKeys(d3.ascending)
-            .entries(nodes);
+    var getNodeConnections = function(nodes) {
         var nodesByGen = _.groupBy(nodes, function(node) {
             return node.generation;
         })
@@ -213,11 +210,46 @@ Template.lineage.dataProcessor = function() {
 
     }
 
+    var matchNodes = function(highlightNodes, nodes) {
+        var nodesObj = {}
+        var attrs = ['x', 'y', 'dx', 'dy']
+        _.each(nodes, function(node) {
+            nodesObj[node.name] = node;
+        })
+        _.each(highlightNodes, function(node) {
+            var node_ori = nodesObj[node.name];
+            _.each(attrs, function(attr) {
+                node[attr] = node_ori[attr];
+            })
+            node.dy = node.dy * node.man.length / node_ori.man.length;
+            node.y = node_ori.y + node_ori.dy - node.dy;
+        })
+        return highlightNodes;
+    }
+
+    var matchEdges = function(highlightEdges, edges) {
+        var edgesObj = {};
+        var attrs = ['sourcedy', 'sy', 'targetdy', 'ty'];
+        _.each(edges, function(edge) {
+            edgesObj[edge.source.name + edge.target.name] = edge;
+        })
+        _.each(highlightEdges, function(edge) {
+            var edge_ori = edgesObj[edge.source + edge.target];
+            _.each(attrs, function(attr) {
+                edge[attr] = edge_ori[attr];
+            })
+            edge.sourcedy = edge.sourcedy * edge.sourceVal.length / edge_ori.sourceVal.length;
+            edge.targetdy = edge.targetdy * edge.targetVal.length / edge_ori.targetVal.length;
+        })
+        return highlightEdges;
+
+    }
+
     function computeNodeLinks(links) {
-        var nodesObj={};
-        var nodes=conf.sankeyNodes;
+        var nodesObj = {};
+        var nodes = conf.sankeyNodes;
         nodes.forEach(function(node) {
-            nodesObj[node.name]=node;
+            nodesObj[node.name] = node;
         });
         links.forEach(function(link) {
             link.source = nodesObj[link.source];
@@ -226,11 +258,11 @@ Template.lineage.dataProcessor = function() {
     }
 
     ret.getHighlightSankeyGraph = function(node) {
-        var nodes = this.getDecendentNodes(node);
-        var links = this.getNodeConnections(nodes);
+        var nodes = getSankeyNodes(node);
+        var links = getNodeConnections(nodes);
 
-        nodes = this.matchNodes(nodes, conf.sankeyNodes);
-        links = this.matchEdges(links, conf.sankeyEdges);
+        nodes = matchNodes(nodes, conf.sankeyNodes);
+        links = matchEdges(links, conf.sankeyEdges);
         computeNodeLinks(links);
         return {
             nodes: nodes,

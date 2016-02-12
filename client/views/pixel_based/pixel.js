@@ -83,7 +83,7 @@ Template.lineage.rendered = function() {
                     });
                 })
                 .draw()
-                
+
             Session.set('sankeyNodesReady', new Date());
 
         }
