@@ -22,9 +22,9 @@ Template.lineage.dataProcessor = function() {
     };
 
     ret.calBasicInfo = function(nodes, edges) {
-        var generations = _.uniq(_.map(nodes, function(node) {
+        var max_generation = d3.max(nodes, function(node) {
             return node.generation;
-        }))
+        })
         var clusters = _.uniq(_.map(nodes, function(node) {
             return node.clusters;
         }))
@@ -32,7 +32,7 @@ Template.lineage.dataProcessor = function() {
         _.each(edges, function(edge) {
             conf.edgeObj[edge.source + edge.target] = edge;
         })
-        conf.generations = generations;
+        conf.max_generation = max_generation;
         conf.clusters = clusters;
     }
 
@@ -71,7 +71,7 @@ Template.lineage.dataProcessor = function() {
 
     var nodesByGen_decendent = function(node) {
         var currentGen = node.generation;
-        var maxGen = d3.max(conf.generations);
+        var maxGen = conf.max_generation;
 
         //get nodes by generation
         var nodesByGen = [];
@@ -79,7 +79,7 @@ Template.lineage.dataProcessor = function() {
             return conf.malePeopleObj_ori['' + man];
         })
         var fatherArr = initFatherArr;
-        for (var i = currentGen + 1; i < maxGen; i++) {
+        for (var i = currentGen + 1; i <= maxGen; i++) {
             var temp = {
                 generation: i,
                 man: [],
@@ -103,8 +103,8 @@ Template.lineage.dataProcessor = function() {
 
         //current
         nodesByGen.push({
-            generation:currentGen,
-            man:childArr,
+            generation: currentGen,
+            man: childArr,
         })
 
         //ancient
@@ -121,7 +121,7 @@ Template.lineage.dataProcessor = function() {
             temp.man = fatherArr;
             nodesByGen.push(temp);
 
-            childArr=fatherArr;
+            childArr = fatherArr;
         }
 
         return nodesByGen;

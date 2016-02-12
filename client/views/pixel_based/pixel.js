@@ -23,16 +23,13 @@ Template.lineage.rendered = function() {
 
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
             var malePeopleObj_ori = {};
-            var malePeopleObj_fatherson = {};
             _.each(result.data, function(male) {
                 malePeopleObj_ori[male.personid] = male;
-                malePeopleObj_fatherson['p' + male.personid + 'f' + male.fatherid] = male;
             });
             conf.malePeopleObj_father = _.groupBy(result.data, function(male) {
                 return male.fatherid;
             })
             conf.malePeopleObj_ori = malePeopleObj_ori;
-            conf.malePeopleObj_fatherson = malePeopleObj_fatherson;
             Session.set('malePeopleObj_ready', new Date());
         });
     })
@@ -114,8 +111,7 @@ Template.lineage.rendered = function() {
         if (!conf.malePeopleObj_ori ||
             !conf.malePeopleObj_father ||
             !node ||
-            !conf.generations ||
-            !conf.malePeopleObj_fatherson) return;
+            !conf.max_generation) return;
 
         var highlightSankeyGraph = dataProcessor.getHighlightSankeyGraph(node);
 
@@ -134,22 +130,6 @@ Template.lineage.rendered = function() {
             .draw();
 
     })
-
-    //-------------------------hover over a bar-------------------------
-    // Deps.autorun(function() {
-    //     Session.get('malePeopleObj_ready');
-    //     var node = Session.get('nodeHovered');
-    //     var conf = Template.lineage.configure;
-
-    //     if (!node) return;
-    //     if (!conf.malePeopleObj) return;
-
-    //     var people = [];
-    //     _.each(node.man, function(man) {
-    //         people.push(conf.malePeopleObj['' + man]);
-    //     })
-    //     console.log(people)
-    // })
 
 }
 
