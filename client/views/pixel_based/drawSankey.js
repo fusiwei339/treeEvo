@@ -42,9 +42,15 @@ d3.drawSankey = class {
             .attr("transform", function(d) {
                 return "translate(" + (d.x+xOffset) + "," + d.y + ")";
             })
-            .select('rect')
-            .attr("height", function(d) {
-                return d.dy;
+            .select('path')
+            .attr("d", function(d) {
+                return geom.path.begin() 
+                    .move_to(0, 0)
+                    .line_to(d.dx-xOffset*2, 0)
+                    .line_to(d.dx-xOffset*2, d.dy2)
+                    .line_to(0, d.dy1)
+                    .close_path()
+                    .end();
             })
 
         nodeSelection.exit()
@@ -57,13 +63,16 @@ d3.drawSankey = class {
                 return "translate(" + (d.x+xOffset) + "," + d.y + ")";
             })
             .on('click', clickFunc)
-            .append("rect")
+            .append('path')
             .attr('class', classStr+'flowBar')
-            .attr("height", function(d) {
-                return d.dy;
-            })
-            .attr("width", function(d){
-                return d.dx-xOffset*2;
+            .attr('d', function(d){
+                return geom.path.begin() 
+                    .move_to(0, 0)
+                    .line_to(d.dx-xOffset*2, 0)
+                    .line_to(d.dx-xOffset*2, d.dy2)
+                    .line_to(0, d.dy1)
+                    .close_path()
+                    .end();
             })
             .style("fill", function(d) {
                 return color(d.cluster);
@@ -77,6 +86,9 @@ d3.drawSankey = class {
         linkSelection.enter().append("path")
             .attr("class", classStr+"link")
             .attr("d", path)
+            .attr("fill", function(d) {
+                return color(d.source.cluster);
+            })
         linkSelection.exit()
             .transition()
             .duration(animationDur)

@@ -36,8 +36,9 @@ Template.lineage.rendered = function() {
 
     //-------------------------draw flow initially-------------------------
     Deps.autorun(function() {
-        //create canvas
         var scaleMethod = Session.get('scaleBar');
+        $('#'+scaleMethod).addClass('active');
+
         var dataProcessor = Template.lineage.dataProcessor;
 
         var nodeHandler = Meteor.subscribe('sankeyNodes');
@@ -60,18 +61,22 @@ Template.lineage.rendered = function() {
 
             conf.sankeyNodes = sankey.nodes();
             conf.sankeyEdges = sankey.links();
+            console.log(conf.sankeyEdges)
 
-            var colorDomain = _.uniq(_.map(graph.nodes, function(node) {
-                return node.cluster;
-            })).sort();
-            var color = d3.scale.ordinal()
-                .domain(colorDomain)
-                .range(['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#e5d8bd', '#fddaec', '#f2f2f2'])
-                // .range(['#a6cee3','#b2df8a','#fb9a99','#fdbf6f','#cab2d6','#ffff99'])
-            conf.colorScale = color;
+            if (!conf.colorScale) {
+                var colorDomain = _.uniq(_.map(graph.nodes, function(node) {
+                    return node.cluster;
+                })).sort();
+                var color = d3.scale.ordinal()
+                    .domain(colorDomain)
+                    .range(['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#e5d8bd', '#fddaec', '#f2f2f2'])
+                    // .range(['#a6cee3','#b2df8a','#fb9a99','#fdbf6f','#cab2d6','#ffff99'])
+                conf.colorScale = color;
+            }
+
             var sankeyDiagram = new d3.drawSankey(flowCanvas, graph)
                 .xOffset(0)
-                .color(color)
+                .color(conf.colorScale)
                 .clickFunc(function(d) {
                     Session.set('nodeSelected', {
                         generation: d.generation,
@@ -115,18 +120,21 @@ Template.lineage.rendered = function() {
 
         var highlightSankeyGraph = dataProcessor.getHighlightSankeyGraph(node);
 
-        var colorDomain = _.uniq(_.map(highlightSankeyGraph.nodes, function(node) {
-            return node.cluster;
-        })).sort();
-        var color = d3.scale.ordinal()
-            .domain(colorDomain)
-            .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#a65628', '#f781bf', '#999999'])
-            // .range(['#1f78b4','#33a02c','#e31a1c','#ff7f00','#6a3d9a','#b15928'])
+        if (!conf.highlightColorScale) {
+            var colorDomain = _.uniq(_.map(highlightSankeyGraph.nodes, function(node) {
+                return node.cluster;
+            })).sort();
+            var color = d3.scale.ordinal()
+                .domain(colorDomain)
+                .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#a65628', '#f781bf', '#999999'])
+            conf.highlightColorScale = color;
+        }
+        // .range(['#1f78b4','#33a02c','#e31a1c','#ff7f00','#6a3d9a','#b15928'])
 
         var sankeyDiagram = new d3.drawSankey(highlightFlowCanvas, highlightSankeyGraph)
             .xOffset(5)
             .classStr("highlight")
-            .color(color)
+            .color(conf.highlightColorScale)
             .draw();
 
     })
@@ -136,24 +144,22 @@ Template.lineage.rendered = function() {
 
 Template.lineage.helpers({
 
-
 })
 
 Template.lineage.events({
     'click #scaleBySqrt': function() {
-        Session.set('scaleBar', 'sqrt');
+        Session.set('scaleBar', 'scaleBySqrt');
     },
     'click #scaleByUni': function() {
-        Session.set('scaleBar', 'uni');
+        Session.set('scaleBar', 'scaleByUni');
     },
     'click #scaleByDefault': function() {
-        Session.set('scaleBar', 'linear');
+        Session.set('scaleBar', 'scaleByDefault');
     },
 
 });
 
 
 Meteor.startup(function() {
-    Session.set('scaleBar', 'uni');
-
+    Session.set('scaleBar', 'scaleByUni');
 })

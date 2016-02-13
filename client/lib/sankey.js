@@ -143,7 +143,7 @@ d3.sankey = function() {
                 if (i == 0)
                     node.y = 0;
                 else
-                    node.y = nodes[i - 1].y + nodes[i - 1].dy + nodePadding;
+                    node.y = nodes[i - 1].y + nodes[i - 1].dy2 + nodePadding;
             })
         })
 
@@ -151,26 +151,27 @@ d3.sankey = function() {
             var nPeople = 0,
                 nCluster = 0;
             _.each(nodes, function(node) {
-                if (node.generation == 1) {
-                    nPeople += node.man.length;
+                if (node.generation == 0) {
+                    nPeople += node.value2 || node.value1;
                     nCluster++;
                 }
             })
 
-            var ky = d3.min(nodesByBreadth, function(nodes) {
-                return (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value);
-            });
+            var ky = d3.scale.linear()
+                .domain([0, nPeople])
+                .range([0, size[1] - nCluster * nodePadding])
 
             nodesByBreadth.forEach(function(nodes) {
                 nodes.forEach(function(node, i) {
                     node.y = i;
-                    node.dy = ky * node.value;
+                    node.dy1 = ky(node.value1);
+                    node.dy2 = Math.max(ky(node.value2), node.dy1);
                 });
             });
 
             links.forEach(function(link) {
-                link.sourcedy = link.sourcePart * link.source.dy;
-                link.targetdy = link.targetPart * link.target.dy;
+                link.sourcedy = link.sourcePart * link.source.dy2;
+                link.targetdy = link.targetPart * link.target.dy1;
             });
         }
 
@@ -201,10 +202,6 @@ d3.sankey = function() {
         function ascendingTargetDepth(a, b) {
             return a.target.y - b.target.y;
         }
-    }
-
-    function center(node) {
-        return node.y + node.dy / 2;
     }
 
     function value(link) {

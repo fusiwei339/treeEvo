@@ -38,17 +38,20 @@ Template.lineage.dataProcessor = function() {
 
     ret.getScaleFunc = function(mode) {
         switch (mode) {
-            case 'sqrt':
+            case 'scaleBySqrt':
                 return function(node) {
-                    node.value = Math.sqrt(node.man.length) * 100;
+                    node.value1 = Math.sqrt(node.man.length);
+                    node.value2 = Math.sqrt(node.children.length);
                 };
-            case 'uni':
+            case 'scaleByUni':
                 return function(node) {
-                    node.value = 10000;
+                    node.value1 = 1;
+                    node.value2 = 1;
                 };
-            case 'linear':
+            case 'scaleByDefault':
                 return function(node) {
-                    node.value = node.man.length;
+                    node.value1 = node.man.length;
+                    node.value2 = node.children.length;
                 }
         }
     };
@@ -127,6 +130,15 @@ Template.lineage.dataProcessor = function() {
         return nodesByGen;
     }
 
+    function getNextGen(man) {
+        var nextGen = []
+        for (var i = 0, len = man.length; i < len; i++) {
+            var father = man[i];
+            var children = conf.malePeopleObj_father[father.personid];
+            nextGen.push(...children);
+        }
+        return nextGen;
+    }
     var getSankeyNodes = function(node) {
 
         var nodesByGen = [];
@@ -146,6 +158,7 @@ Template.lineage.dataProcessor = function() {
                     generation: gen.generation,
                     cluster: cluster.key,
                     man: cluster.values,
+                    children: getNextGen(cluster.values),
                     name: 'gen' + gen.generation + 'cluster' + cluster.key,
                 })
             })
@@ -181,14 +194,11 @@ Template.lineage.dataProcessor = function() {
                 if (oneMatch) peopleArr.push(oneMatch);
             })
 
-            var sourceVal = _.map(peopleArr, function(d) {
+            var personids = _.map(peopleArr, function(d) {
                 return d.personid;
             });
-            var targetVal = _.uniq(_.map(peopleArr, function(d) {
-                return d.fatherid;
-            }));
-            edge.sourceVal = sourceVal;
-            edge.targetVal = targetVal;
+            edge.sourceVal = personids;
+            edge.targetVal = personids;
 
             if (!edge.sourceVal.length) return null;
             return edge;
@@ -212,7 +222,7 @@ Template.lineage.dataProcessor = function() {
 
     var matchNodes = function(highlightNodes, nodes) {
         var nodesObj = {}
-        var attrs = ['x', 'y', 'dx', 'dy']
+        var attrs = ['x', 'y', 'dx', 'dy1', 'dy2']
         _.each(nodes, function(node) {
             nodesObj[node.name] = node;
         })
@@ -221,8 +231,9 @@ Template.lineage.dataProcessor = function() {
             _.each(attrs, function(attr) {
                 node[attr] = node_ori[attr];
             })
-            node.dy = node.dy * node.man.length / node_ori.man.length;
-            node.y = node_ori.y + node_ori.dy - node.dy;
+            node.dy1 = node.dy1 * node.man.length / node_ori.man.length;
+            node.dy2 = node_ori.children.length ? node.dy2 * node.children.length / node_ori.children.length : node.dy1;
+            node.y = node_ori.y;
         })
         return highlightNodes;
     }

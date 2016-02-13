@@ -1,8 +1,9 @@
 var dealWithMissVal = function(val) {
     return val === "" ? 0 : +val;
 }
+db.malePeople.ensureIndex({personid:1});
+
 db.sankeyNodes.find().forEach(function(node) {
-    print(node.name)
     var people = db.malePeople.find({
         personid: {
             $in: node.man
@@ -28,7 +29,9 @@ db.sankeyNodes.find().forEach(function(node) {
         result[attr].std = arr.length > 0 ? math.std(arr) : 0;
         result[attr].valArr=[];
     })
+    node.stat=result;
+    db.sankeyNodes.save(node);
 
-    db.nodeStat.insert(result);
+    // db.nodeStat.insert(result);
 
 })

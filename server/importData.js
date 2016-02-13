@@ -1,9 +1,8 @@
 var names = ['sankeyNodes', 'sankeyEdges'];
-var names=[];
 
 for (var i = 0; i < names.length; i++) {
     var name = names[i];
-    // Coll[name].remove({});
+    Coll[name].remove({});
 
     if (Coll[name].find({}).count() === 0) {
         var text = Assets.getText(name + '.json');
