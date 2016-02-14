@@ -16,7 +16,7 @@ Template.lineage.rendered = function() {
         .attr('transform', d3.translate(0, conf.margin))
     var featureCanvas = svg.append('g')
         .attr('class', 'flowCanvas')
-        .attr('transform', d3.translate(0, conf.margin + svgHeight / 2))
+        .attr('transform', d3.translate(0, conf.margin + svgHeight * conf.flowPart))
 
     //-------------------------initialize data-------------------------
     Deps.autorun(function() {
@@ -54,14 +54,13 @@ Template.lineage.rendered = function() {
                 .nodeWidth(conf.nodeWidth)
                 .scaleFunc(dataProcessor.getScaleFunc(scaleMethod))
                 .nodePadding(conf.nodePadding)
-                .size([conf.svgWidth - conf.margin, conf.svgHeight / 2 - conf.margin])
+                .size([conf.svgWidth - conf.margin, conf.svgHeight * conf.flowPart - conf.margin])
                 .nodes(graph.nodes)
                 .links(graph.links)
                 .layout();
 
             conf.sankeyNodes = sankey.nodes();
             conf.sankeyEdges = sankey.links();
-            console.log(conf.sankeyEdges)
 
             if (!conf.colorScale) {
                 var colorDomain = _.uniq(_.map(graph.nodes, function(node) {
@@ -132,7 +131,7 @@ Template.lineage.rendered = function() {
         // .range(['#1f78b4','#33a02c','#e31a1c','#ff7f00','#6a3d9a','#b15928'])
 
         var sankeyDiagram = new d3.drawSankey(highlightFlowCanvas, highlightSankeyGraph)
-            .xOffset(5)
+            .xOffset(0)
             .classStr("highlight")
             .color(conf.highlightColorScale)
             .draw();

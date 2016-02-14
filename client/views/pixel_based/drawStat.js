@@ -1,14 +1,14 @@
-d3.drawStat=class{
-	constructor(svg, data){
-		this.svg=svg;
-		this.data=data;
-	}	
+d3.drawStat = class {
+    constructor(svg, data) {
+        this.svg = svg;
+        this.data = data;
+    }
 
-	draw(){
+    draw() {
 
-		var data=this.data;
-		var featureCanvas=this.svg;
-		var conf=Template.lineage.configure;
+        var data = this.data;
+        var featureCanvas = this.svg;
+        var conf = Template.lineage.configure;
 
         var dataByGen = d3.nest()
             .key(function(d) {
@@ -24,18 +24,18 @@ d3.drawStat=class{
                 return "translate(" + d.values[0].x + "," + 0 + ")";
             })
 
-        var rectWidth=conf.rectWidth;
+        var rectWidth = conf.rectWidth;
         var barTypes = conf.demographicAttr_text;
+        var canvasHeight = conf.svgHeight * (1 - conf.flowPart) - conf.margin;
+        var padding = conf.padding;
 
         var x = d3.scale.ordinal()
             .domain(barTypes)
-            .rangePoints([conf.padding, rectWidth- conf.padding], 2);
+            .rangePoints([conf.padding, rectWidth - conf.padding], 2);
 
         genG.append("rect")
             .attr('class', 'featureRect')
-            .attr("height", function(d) {
-                return conf.svgHeight / 2 - conf.margin;
-            })
+            .attr("height", canvasHeight)
             .attr("width", rectWidth)
 
         genG.selectAll('.labelG')
@@ -44,20 +44,18 @@ d3.drawStat=class{
             .attr('class', 'labelG')
             .attr("transform", "rotate(-90)")
             .attr("x", -2)
-            .attr("y", function(d){
-            	return x(d)-4;
+            .attr("y", function(d) {
+                return x(d) - 4;
             })
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(function(d){
-            	return d;
+            .text(function(d) {
+                return d;
             });
-        var canvasHeight=conf.svgHeight/2-conf.margin;
-        var padding=conf.padding;
 
         //number of sons y axis
         var y2 = d3.scale.linear()
-            .range([canvasHeight-padding, padding])
+            .range([canvasHeight - padding, padding])
             .domain([0, 10]);
         var yAxis2 = d3.svg.axis()
             .scale(y2)
@@ -70,7 +68,7 @@ d3.drawStat=class{
 
         //general y axis
         var y = d3.scale.linear()
-            .range([canvasHeight-padding, padding])
+            .range([canvasHeight - padding, padding])
             .domain([0, 100]);
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -94,5 +92,5 @@ d3.drawStat=class{
                 errorBar.draw();
             })
 
-	}
+    }
 }

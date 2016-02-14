@@ -11,14 +11,14 @@ d3.drawErrBar = class {
         var conf = Template.lineage.configure;
         var dataProcessor = Template.lineage.dataProcessor;
         var animationDur = conf.animationDur;
-        var canvasHeight = conf.svgHeight / 2 - conf.margin;
+        var canvasHeight = conf.svgHeight * (1 - conf.flowPart) - conf.margin;
         var padding = conf.padding;
 
         var y = d3.scale.linear()
             .range([canvasHeight - padding, padding])
             .domain([0, 100]);
         var y2 = d3.scale.linear()
-            .range([canvasHeight-padding, padding])
+            .range([canvasHeight - padding, padding])
             .domain([0, 10]);
 
         var relativeH = d3.scale.linear()
@@ -28,11 +28,11 @@ d3.drawErrBar = class {
             .range([0, canvasHeight - 2 * padding])
             .domain([0, 10]);
 
-        var rectWidth=conf.rectWidth;
+        var rectWidth = conf.rectWidth;
         var barTypes = conf.demographicAttr;
         var x = d3.scale.ordinal()
             .domain(barTypes)
-            .rangePoints([conf.padding, rectWidth- conf.padding], 2);
+            .rangePoints([conf.padding, rectWidth - conf.padding], 2);
 
         var data2draw = dataProcessor.getStatData(this.data.stat);
 
@@ -74,9 +74,9 @@ d3.drawErrBar = class {
                 var centerX = x(d.name);
                 var centerY = y(d.mean);
                 var lineH = relativeH(d.std);
-                if(d.name==='SON_COUNT'){
-                    centerY=y2(d.mean);
-                    lineH=relativeH2(d.std);
+                if (d.name === 'SON_COUNT') {
+                    centerY = y2(d.mean);
+                    lineH = relativeH2(d.std);
                 }
                 var extra = 3;
 
@@ -104,7 +104,7 @@ d3.drawErrBar = class {
                 return x(d.name)
             })
             .attr('cy', function(d) {
-                if(d.name==='SON_COUNT') return y2(d.mean);
+                if (d.name === 'SON_COUNT') return y2(d.mean);
                 return y(d.mean)
             })
             .attr('r', function(d) {
