@@ -1,9 +1,9 @@
-Template.lineage.dataProcessor = function() {
+Template.flow.dataProcessor = function() {
     var ret = {
         version: 0.1
     };
 
-    var conf = Template.lineage.configure;
+    var conf = Template.flow.configure;
     ret.getSankeyGraph = function(nodes, edges) {
         var nodeObj = {}
         _.each(nodes, function(node, i) {
@@ -26,7 +26,7 @@ Template.lineage.dataProcessor = function() {
             return node.generation;
         })
         var clusters = _.uniq(_.map(nodes, function(node) {
-            return node.clusters;
+            return node.cluster;
         }))
         conf.edgeObj = {}
         _.each(edges, function(edge) {
@@ -220,7 +220,7 @@ Template.lineage.dataProcessor = function() {
 
     }
 
-    var matchNodes = function(highlightNodes, nodes) {
+    ret.matchNodes = function(highlightNodes, nodes) {
         var nodesObj = {}
         var attrs = ['x', 'y', 'dx', 'dy1', 'dy2']
         _.each(nodes, function(node) {
@@ -234,11 +234,12 @@ Template.lineage.dataProcessor = function() {
             node.dy1 = node.dy1 * node.man.length / node_ori.man.length;
             node.dy2 = node_ori.children.length ? node.dy2 * node.children.length / node_ori.children.length : node.dy1;
             node.y = node_ori.y;
+            node.color = node_ori.shadeColor;
         })
         return highlightNodes;
     }
 
-    var matchEdges = function(highlightEdges, edges) {
+    ret.matchEdges = function(highlightEdges, edges) {
         var edgesObj = {};
         var attrs = ['sourcedy', 'sy', 'targetdy', 'ty'];
         _.each(edges, function(edge) {
@@ -272,13 +273,117 @@ Template.lineage.dataProcessor = function() {
         var nodes = getSankeyNodes(node);
         var links = getNodeConnections(nodes);
 
-        nodes = matchNodes(nodes, conf.sankeyNodes);
-        links = matchEdges(links, conf.sankeyEdges);
+        nodes = this.matchNodes(nodes, conf.sankeyNodes);
+        links = this.matchEdges(links, conf.sankeyEdges);
         computeNodeLinks(links);
         return {
             nodes: nodes,
             links: links
         };
+    };
+
+    function mapIds(arr) {
+        return _.map(arr, function(d) {
+            return d.personid;
+        })
+    }
+
+    function getSankeyGraph_node_allPeople() {
+        var nodes = [];
+        var groupByGen = d3.nest()
+            .key(function(d) {
+                return d.generation;
+            })
+            .entries(conf.malePeople);
+
+        _.each(groupByGen, function(generation) {
+            var man = generation.values;
+            var clusters = d3.nest()
+                .key(function(d) {
+                    return d.cluster;
+                })
+                .entries(man);
+            _.each(clusters, function(cluster) {
+                nodes.push({
+                    generation: generation.key,
+                    cluster: cluster.key,
+                    man: mapIds(cluster.values),
+                    children: mapIds(getNextGen(cluster.values)),
+                    name: 'gen' + generation.key + 'cluster' + cluster.key,
+                })
+            })
+        })
+        return nodes;
+    }
+
+    function getSankeyGraph_edge_allPeople(nodes) {
+        var nodesByGen = _.groupBy(nodes, function(node) {
+            return node.generation;
+        })
+        var generations = _.keys(nodesByGen).sort(function(a, b) {
+            return +a - (+b);
+        })
+
+        var getEdge = function(fatherNode, sonNode) {
+            var fatherArr = fatherNode.man;
+            var sonArr = sonNode.man;
+            var edge = {
+                source: fatherNode.name,
+                target: sonNode.name
+            }
+            var peopleArr = []
+            var possibleSons = {}
+            _.each(fatherArr, function(father) {
+                var possibleSonsTemp = conf.malePeopleObj_father[father];
+                _.each(possibleSonsTemp, function(temp) {
+                    possibleSons[temp.personid] = temp;
+                })
+            })
+            _.each(sonArr, function(son) {
+                var oneMatch = possibleSons[son];
+                if (oneMatch) peopleArr.push(oneMatch);
+            })
+
+            edge.sourceVal = mapIds(peopleArr);
+            edge.targetVal = edge.sourceVal;
+            edge.sourcePart = edge.sourceVal.length / fatherNode.children.length;
+            edge.targetPart = edge.targetVal.length / sonNode.man.length;
+
+            if (!edge.sourceVal.length) return null;
+            return edge;
+        }
+
+        var edges = []
+        for (var i = 1; i < generations.length; i++) {
+            var fatherNodes = nodesByGen[generations[i - 1]];
+            var sonNodes = nodesByGen[generations[i]];
+            _.each(fatherNodes, function(fatherNode) {
+                _.each(sonNodes, function(sonNode) {
+                    var edge = getEdge(fatherNode, sonNode);
+                    if (edge) edges.push(edge);
+                })
+            })
+        }
+
+        return edges;
+    }
+
+    function computeNodeLinks_allPeople(nodes, links) {
+        var nodesObj = {};
+        nodes.forEach(function(node) {
+            nodesObj[node.name] = node;
+        });
+        links.forEach(function(link) {
+            link.source = nodesObj[link.source];
+            link.target = nodesObj[link.target];
+        });
+    }
+
+    ret.getSankeyGraph_allPeople = function() {
+        var nodes = getSankeyGraph_node_allPeople();
+        var edges = getSankeyGraph_edge_allPeople(nodes);
+        computeNodeLinks_allPeople(nodes, edges);
+        return { nodes: nodes, links: edges };
     }
 
 

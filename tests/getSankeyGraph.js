@@ -31,37 +31,57 @@ function mapIds(arr){
 }
 
 print('dealing with all generations')
-var currentGen = allPeople;
-while (currentGen.length > 0) {
-    var children = getNextGen(currentGen);
-    nodesByGen.push({
-        generation: initGen++,
-        man: currentGen,
-    })
-    currentGen = children;
-}
+// var currentGen = allPeople;
+// while (currentGen.length > 0) {
+//     var children = getNextGen(currentGen);
+//     nodesByGen.push({
+//         generation: initGen++,
+//         man: currentGen,
+//     })
+//     currentGen = children;
+// }
 
-print('generating nodes')
-    //get nodes
-var nodes = []
-_.each(nodesByGen, function(gen) {
+// print('generating nodes')
+//     //get nodes
+// var nodes = []
+// _.each(nodesByGen, function(gen) {
+//     var clusters = d3.nest()
+//         .key(function(d) {
+//             return d.cluster;
+//         })
+//         .entries(gen.man);
+//     _.each(clusters, function(cluster) {
+//         nodes.push({
+//             generation: gen.generation,
+//             cluster: cluster.key,
+//             man: mapIds(cluster.values),
+//             children: mapIds(getNextGen(cluster.values)),
+//             name: 'gen' + gen.generation + 'cluster' + cluster.key,
+//         })
+//     })
+// })
+// db.sankeyNodes.insert(nodes)
+
+var nodes=[];
+var generations=db.malePeople.distinct('generation');
+_.each(generations, function(generation){
+    var man=db.malePeople.find({generation:generation}).toArray();
     var clusters = d3.nest()
         .key(function(d) {
             return d.cluster;
         })
-        .entries(gen.man);
+        .entries(man);
     _.each(clusters, function(cluster) {
         nodes.push({
-            generation: gen.generation,
+            generation: generation,
             cluster: cluster.key,
             man: mapIds(cluster.values),
             children: mapIds(getNextGen(cluster.values)),
-            name: 'gen' + gen.generation + 'cluster' + cluster.key,
+            name: 'gen' + generation + 'cluster' + cluster.key,
         })
     })
 })
-db.sankeyNodes_test.drop();
-db.sankeyNodes_test.insert(nodes)
+db.sankeyNodes.insert(nodes)
 
 
 // // //get edges
@@ -69,8 +89,7 @@ print('dealing with edges')
 
 var edges=getNodeConnections(nodes);
 print(edges.length)
-db.sankeyEdges_test.drop();
-db.sankeyEdges_test.insert(edges);
+db.sankeyEdges.insert(edges);
 
 function getNodeConnections (nodes) {
     var nodesByGen = _.groupBy(nodes, function(node) {
@@ -101,7 +120,7 @@ function getNodeConnections (nodes) {
         })
 
         edge.sourceVal = mapIds(peopleArr);
-        edge.targetVal = mapIds(peopleArr);
+        edge.targetVal = edge.sourceVal; 
         edge.sourcePart=edge.sourceVal.length/fatherNode.children.length;
         edge.targetPart=edge.targetVal.length/sonNode.man.length;
 

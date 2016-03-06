@@ -1,0 +1,15 @@
+<template name="option">
+    <ul class="nav site-nav desktop">
+        {{#each attributeList}}
+        <li>
+            {{>optionItem attr=this}}
+        </li>
+        {{/each}}
+    </ul>
+</template>
+
+<template name="optionItem">
+	<div>
+		{{attr}}
+	</div>	
+</template>

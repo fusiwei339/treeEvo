@@ -1,0 +1,29 @@
+<template name="flow">
+    <div class="panel panel-default" id="mainPanel">
+        <div class="panel-body fullheight">
+            <div class="flowOption col-md-12">
+                <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Change Scale:</span>
+                <div class="btn-group" data-toggle="buttons">
+                    <label id="scaleBySqrt" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <i class="fa-fw" title="Number of users">&#8730;</i>
+                        <span>Square Root</span>
+                    </label>
+                    <label id="scaleByUni" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <i class="fa fa-bars fa-fw" title="Number of posts"></i>
+                        <span>Uniform</span>
+                    </label>
+                    <label id="scaleByDefault" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <i class="fa fa-hashtag fa-fw" title="Default"></i>
+                        <span>Default</span>
+                    </label>
+                </div>
+            </div>
+            <div id="flowPanel">
+                <svg id="flowView"></svg>
+            </div>
+        </div>
+    </div>
+</template>

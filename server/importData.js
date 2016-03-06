@@ -1,5 +1,5 @@
 var names = ['sankeyNodes', 'sankeyEdges'];
-
+var names=[];
 for (var i = 0; i < names.length; i++) {
     var name = names[i];
     Coll[name].remove({});

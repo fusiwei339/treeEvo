@@ -1,7 +1,8 @@
-Template.lineage.configure = {
+Template.flow.configure = {
     margin: 10,
     padding: 5,
     flowPart:0.7,
+    featurePart:0.3,
     nodePadding: 5,
     nodeWidth: 16,
     animationDur: 800,
@@ -20,5 +21,11 @@ Template.lineage.configure = {
 }
 
 Template.header.configure = {
+
+}
+
+Template.option.configure = {
+    // attributeList:["POSITION","SON_COUNT","birthorder","birthyear","cluster","district","ever_married","f_bir_age","f_bir_year","f_mar_age","f_mar_year","fatherid","founderid","has_son","householdid","l_bir_age","l_bir_year","lastage","personid","region","village"],
+    attributeList:["SON_COUNT","birthyear","lastage"],
 
 }
