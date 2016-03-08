@@ -85,9 +85,9 @@ d3.expandCells = function(cells, attr) {
     return arr;
 }
 
-d3.unionKey= function(cells, key) {
+d3.unionKey = function(cells, key) {
     var postsTemp = d3.expandCells(cells, 'posts');
-    var keys= _.keys(_.groupBy(postsTemp, function(d) {
+    var keys = _.keys(_.groupBy(postsTemp, function(d) {
         return d[key];
     }));
     return keys;
@@ -114,7 +114,7 @@ d3.unionKey= function(cells, key) {
 //     return ret;
 // }
 
-d3.intersectKey= function(cells, key) {
+d3.intersectKey = function(cells, key) {
     var keysPerCell = _.map(cells, function(cell) {
         var posts = cell.posts;
         return _.keys(_.groupBy(posts, function(d) {
@@ -208,3 +208,9 @@ d3.lineDistance = function(point1, point2) {
 
     return Math.sqrt(xs + ys);
 };
+d3.deepCopyArr = function(arr) {
+    var ret=_.map(arr, function(obj) {
+        return $.extend(true, {}, obj);
+    })
+    return ret;
+}

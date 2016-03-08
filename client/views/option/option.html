@@ -1,15 +1,20 @@
 <template name="option">
-    <ul class="list-group">
+    {{>multipleSelect options=options settings=settings }}
+    <ul class="list-group" style="margin-top: 10px; margin-bottom: 10px">
         {{#each attributeList}}
         <div class="list-group-item nopadding attrContainer">
-        	<center class="attrTitle">{{this}}</center>
+            <p class="attrTitle">{{this}}</p>
             {{>optionItem itemAttr=this}}
         </div>
         {{/each}}
     </ul>
+    <div class="btn-group" id="btn-group-attr" role="group">
+        <button type="button" id="filterBtn" class="btn btn-default btn-attr">Create Filter</button>
+        <button type="button" id="clusterBtn" class="btn btn-default btn-attr">Create Cluster</button>
+        <button type="button" id="clearBtn" class="btn btn-default btn-attr">Clear All</button>
+    </div>
 </template>
-
 <template name="optionItem">
-	<svg id={{itemAttr}} itemAttr={{itemAttr}} class="attrSvg">
-	</svg>	
+    <svg id={{itemAttr}} itemAttr={{itemAttr}} class="attrSvg">
+    </svg>
 </template>

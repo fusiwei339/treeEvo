@@ -8,8 +8,8 @@ Template.optionItem.rendered = function() {
 		var conf=Template.option.configure;
         var dataProcessor = Template.optionItem.dataProcessor;
 
-        if (!flowConf.malePeopleObj_ori ||
-            !flowConf.malePeople
+        if (!flowConf.malePeopleObj||
+            !flowConf.malePeople_toUse
         ) return;
 
         var malePeople = flowConf.malePeople;
@@ -17,6 +17,7 @@ Template.optionItem.rendered = function() {
     	var svgDom=self.find('svg');
         var svgStr = $(svgDom).attr('itemAttr');
         var svg=d3.select(svgDom)
+        svg.selectAll('*').remove();
 
         var option=dataProcessor.getOption(malePeople, svgStr);
 

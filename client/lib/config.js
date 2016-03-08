@@ -35,5 +35,8 @@ Template.option.configure = {
         left:35,
         right:15,
         bottom:20,
+    },
+    filter:{
+        
     }
 }

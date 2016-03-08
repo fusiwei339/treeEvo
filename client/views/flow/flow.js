@@ -22,29 +22,34 @@ Template.flow.rendered = function() {
     Deps.autorun(function() {
 
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
-            var malePeopleObj_ori = {};
+            var malePeopleObj = {};
             _.each(result.data, function(male) {
-                malePeopleObj_ori[male.personid] = male;
+                malePeopleObj[male.personid] = male;
             });
             conf.malePeopleObj_father = _.groupBy(result.data, function(male) {
                 return male.fatherid;
             })
-            conf.malePeopleObj_ori = malePeopleObj_ori;
-            conf.malePeople=result.data;
+            conf.malePeopleObj = malePeopleObj;
+            conf.malePeople = result.data;
+
+            conf.malePeople_toUse = d3.deepCopyArr(conf.malePeople);
+            conf.malePeopleObj_father_toUse=$.extend(true, {}, conf.malePeopleObj_father);
+
             Session.set('malePeopleObj_ready', new Date());
         });
     })
 
-    Deps.autorun(function(){
+    //prepare sankey diagram data
+    Deps.autorun(function() {
         Session.get('malePeopleObj_ready');
 
-        if (!conf.malePeopleObj_ori ||
-            !conf.malePeople
-            ) return;
+        if (!conf.malePeopleObj ||
+            !conf.malePeople_toUse
+        ) return;
 
 
         var dataProcessor = Template.flow.dataProcessor;
-        var graph=dataProcessor.getSankeyGraph_allPeople(conf.malePeople);
+        var graph = dataProcessor.getSankeyGraph_allPeople(conf.malePeople_toUse);
 
         dataProcessor.calBasicInfo(graph.nodes, graph.links);
         Session.set('sankeyGraph_toDraw', graph);
@@ -56,12 +61,12 @@ Template.flow.rendered = function() {
         var scaleMethod = Session.get('scaleBar');
         $('#' + scaleMethod).addClass('active');
         var dataProcessor = Template.flow.dataProcessor;
-        var graph=Session.get('sankeyGraph_toDraw');
+        var graph = Session.get('sankeyGraph_toDraw');
 
-        if (!conf.malePeopleObj_ori ||
-            !conf.malePeople ||
+        if (!conf.malePeopleObj ||
+            !conf.malePeople_toUse ||
             !graph.nodes
-            ) return;
+        ) return;
 
         var sankey = d3.sankey()
             .nodeWidth(conf.nodeWidth)
@@ -105,43 +110,43 @@ Template.flow.rendered = function() {
     //-------------------------draw stat diagrams-------------------------
     Deps.autorun(function() {
 
-        Session.get('sankeyNodesReady');
-        var data = conf.sankeyNodes;
-        if (!data) return;
+        // Session.get('sankeyNodesReady');
+        // var data = conf.sankeyNodes;
+        // if (!data) return;
 
-        var drawStat = new d3.drawStat(featureCanvas, data);
-        drawStat.draw();
+        // var drawStat = new d3.drawStat(featureCanvas, data);
+        // drawStat.draw();
 
     })
 
     //-------------------------click a bar-------------------------
     Deps.autorun(function() {
 
-        Session.get('malePeopleObj_ready');
-        Session.get('sankeyNodesReady');
-        var scaleMethod = Session.get('scaleBar');
+        // Session.get('malePeopleObj_ready');
+        // Session.get('sankeyNodesReady');
+        // var scaleMethod = Session.get('scaleBar');
 
-        var conf = Template.flow.configure;
-        var node = Session.get('nodeSelected');
-        var dataProcessor = Template.flow.dataProcessor;
+        // var conf = Template.flow.configure;
+        // var node = Session.get('nodeSelected');
+        // var dataProcessor = Template.flow.dataProcessor;
 
-        if (!conf.malePeopleObj_ori ||
-            !conf.malePeopleObj_father ||
-            !node ||
-            !conf.max_generation ||
-            !conf.color) return;
+        // if (!conf.malePeopleObj_ori ||
+        //     !conf.malePeopleObj_father ||
+        //     !node ||
+        //     !conf.max_generation ||
+        //     !conf.color) return;
 
-        var highlightSankeyGraph = dataProcessor.getHighlightSankeyGraph(node);
+        // var highlightSankeyGraph = dataProcessor.getHighlightSankeyGraph(node);
 
-        var colorRange = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#f781bf'];
-        conf.color.range(colorRange);
-        // .range(['#1f78b4','#33a02c','#e31a1c','#ff7f00','#6a3d9a','#b15928'])
+        // var colorRange = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#f781bf'];
+        // conf.color.range(colorRange);
+        // // .range(['#1f78b4','#33a02c','#e31a1c','#ff7f00','#6a3d9a','#b15928'])
 
-        var sankeyDiagram = new d3.drawSankey(highlightFlowCanvas, highlightSankeyGraph)
-            .xOffset(0)
-            .classStr("highlight")
-            .color(conf.color)
-            .draw();
+        // var sankeyDiagram = new d3.drawSankey(highlightFlowCanvas, highlightSankeyGraph)
+        //     .xOffset(0)
+        //     .classStr("highlight")
+        //     .color(conf.color)
+        //     .draw();
 
     })
 

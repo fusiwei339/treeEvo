@@ -20,42 +20,46 @@ d3.attrStat = class {
 
     draw() {
         var option = this._option;
-        var scale= option.isConti ? this.drawFlow() : this.drawBar();
+        var scale = option.isConti ? this.drawFlow() : this.drawBar();
         this.drawAxis(scale);
         this.drawBrush(scale);
     }
 
-    drawBrush(scale){
+    drawBrush(scale) {
         var conf = Template.option.configure;
-        var width = this._width-conf.margin.left-conf.margin.right,
-            height = this._height-conf.margin.top-conf.margin.bottom,
+        var width = this._width - conf.margin.left - conf.margin.right,
+            height = this._height - conf.margin.top - conf.margin.bottom,
             option = this._option,
             svg = this.svg;
 
+        var brush = d3.svg.brush().x(scale.x)
+            .on('brushstart', function() {
+
+            })
+            .on('brush', function() {})
+            .on('brushend', function() {
+                var ext0 = brush.extent();
+                var ext1 = ext0.map(function(e) {
+                    return Math.round(e);
+                })
+                d3.select(this).transition()
+                    .call(brush.extent(ext1))
+
+                conf.filter[option.svgStr] = brush.extent();
+            })
         svg.append('g')
             .attr('class', 'brush')
             .attr('transform', d3.translate(conf.margin.left, conf.margin.top))
-            .call(
-                d3.svg.brush().x(scale.x)
-                    .on('brushstart', function(){
-
-                    })
-                    .on('brush', function(){
-                        
-                    })
-                    .on('brushend', function(){
-                        
-                    })
-            )
+            .call(brush)
             .selectAll('rect')
-                .attr('height', height)
+            .attr('height', height)
 
     }
 
     drawBar() {
         var conf = Template.option.configure;
-        var width = this._width-conf.margin.left-conf.margin.right,
-            height = this._height-conf.margin.top-conf.margin.bottom,
+        var width = this._width - conf.margin.left - conf.margin.right,
+            height = this._height - conf.margin.top - conf.margin.bottom,
             option = this._option,
             svg = this.svg,
             data = this.data;
@@ -69,7 +73,7 @@ d3.attrStat = class {
                 return +a.key - (+b.key);
             })
 
-        var histData= _.map(days, function(d) {
+        var histData = _.map(days, function(d) {
             return {
                 date: d.key,
                 size: d.values.length
@@ -108,23 +112,23 @@ d3.attrStat = class {
             })
 
         return {
-            x:x,
-            y:y
+            x: x,
+            y: y
         }
 
     }
 
     drawFlow() {
         var conf = Template.option.configure;
-        var width = this._width-conf.margin.left-conf.margin.right,
-            height = this._height-conf.margin.top-conf.margin.bottom,
+        var width = this._width - conf.margin.left - conf.margin.right,
+            height = this._height - conf.margin.top - conf.margin.bottom,
             option = this._option,
             svg = this.svg,
             data = this.data;
 
-        if(option.filter){
-            data=_.filter(data, function(d){
-                return d[option.svgStr]!==option.filter;
+        if (option.filter) {
+            data = _.filter(data, function(d) {
+                return d[option.svgStr] !== option.filter;
             })
         }
 
@@ -150,11 +154,11 @@ d3.attrStat = class {
             })])
             .range([height, 0]);
 
-        var xDomain=null;
-        if(option.range){
-            xDomain=option.range;
-        }else{
-            xDomain=d3.extent(riverData, function(d) {
+        var xDomain = null;
+        if (option.range) {
+            xDomain = option.range;
+        } else {
+            xDomain = d3.extent(riverData, function(d) {
                 return d.date;
             })
         }
@@ -180,15 +184,15 @@ d3.attrStat = class {
             .attr("d", area)
 
         return {
-            x:x,
-            y:y
+            x: x,
+            y: y
         }
     }
 
-    drawAxis(scale){
+    drawAxis(scale) {
         var conf = Template.option.configure;
-        var width = this._width-conf.margin.left-conf.margin.right,
-            height = this._height-conf.margin.top-conf.margin.bottom,
+        var width = this._width - conf.margin.left - conf.margin.right,
+            height = this._height - conf.margin.top - conf.margin.bottom,
             option = this._option,
             svg = this.svg;
 
@@ -214,7 +218,7 @@ d3.attrStat = class {
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", function() {
-                return d3.translate(conf.margin.left, height+conf.margin.top);
+                return d3.translate(conf.margin.left, height + conf.margin.top);
             })
             .call(xAxis)
     }

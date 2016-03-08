@@ -84,7 +84,8 @@ d3.sankey = function() {
 
     function computeNodeLinks() {
         var names = nodes.map(function(e) {
-            return e.name; })
+            return e.name;
+        })
         links.forEach(function(link) {
             link.source = names.indexOf(link.source);
             link.target = names.indexOf(link.target);
@@ -149,7 +150,7 @@ d3.sankey = function() {
                 if (i == 0)
                     node.y = 0;
                 else
-                    node.y = nodes[i - 1].y + nodes[i - 1].dy2 + nodePadding;
+                    node.y = nodes[i - 1].y + Math.max(nodes[i - 1].dy2, nodes[i - 1].dy1) + nodePadding;
             })
         })
 
