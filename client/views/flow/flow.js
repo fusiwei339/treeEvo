@@ -35,10 +35,7 @@ Template.flow.rendered = function() {
         });
     })
 
-    //-------------------------draw flow initially-------------------------
-    Deps.autorun(function() {
-        var scaleMethod = Session.get('scaleBar');
-        $('#' + scaleMethod).addClass('active');
+    Deps.autorun(function(){
         Session.get('malePeopleObj_ready');
 
         if (!conf.malePeopleObj_ori ||
@@ -47,9 +44,24 @@ Template.flow.rendered = function() {
 
 
         var dataProcessor = Template.flow.dataProcessor;
-        var graph=dataProcessor.getSankeyGraph_allPeople();
+        var graph=dataProcessor.getSankeyGraph_allPeople(conf.malePeople);
 
         dataProcessor.calBasicInfo(graph.nodes, graph.links);
+        Session.set('sankeyGraph_toDraw', graph);
+
+    })
+
+    //-------------------------draw flow initially-------------------------
+    Deps.autorun(function() {
+        var scaleMethod = Session.get('scaleBar');
+        $('#' + scaleMethod).addClass('active');
+        var dataProcessor = Template.flow.dataProcessor;
+        var graph=Session.get('sankeyGraph_toDraw');
+
+        if (!conf.malePeopleObj_ori ||
+            !conf.malePeople ||
+            !graph.nodes
+            ) return;
 
         var sankey = d3.sankey()
             .nodeWidth(conf.nodeWidth)

@@ -83,6 +83,12 @@ d3.sankey = function() {
     };
 
     function computeNodeLinks() {
+        var names = nodes.map(function(e) {
+            return e.name; })
+        links.forEach(function(link) {
+            link.source = names.indexOf(link.source);
+            link.target = names.indexOf(link.target);
+        });
         nodes.forEach(function(node) {
             node.sourceLinks = [];
             node.targetLinks = [];
@@ -151,13 +157,13 @@ d3.sankey = function() {
             var nPeople = 0,
                 nCluster = 0;
 
-            var nPeople=d3.max(nodesByBreadth, function(nodes){
-                var v=d3.sum(nodes, function(node){
+            var nPeople = d3.max(nodesByBreadth, function(nodes) {
+                var v = d3.sum(nodes, function(node) {
                     return Math.max(node.value1, node.value2);
                 })
                 return v;
             })
-            var nCluster=nodesByBreadth[0].length;
+            var nCluster = nodesByBreadth[0].length;
 
 
             var ky = d3.scale.linear()

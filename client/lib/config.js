@@ -26,6 +26,14 @@ Template.header.configure = {
 
 Template.option.configure = {
     // attributeList:["POSITION","SON_COUNT","birthorder","birthyear","cluster","district","ever_married","f_bir_age","f_bir_year","f_mar_age","f_mar_year","fatherid","founderid","has_son","householdid","l_bir_age","l_bir_year","lastage","personid","region","village"],
-    attributeList:["SON_COUNT","birthyear","lastage"],
-
+    attributeList:["SON_COUNT","birthyear","lastage", "f_bir_age", "l_bir_age"],
+    svgHeight:100,
+    animationDur:800,
+    barPadding:2,
+    margin:{
+        top:8,
+        left:35,
+        right:15,
+        bottom:20,
+    }
 }

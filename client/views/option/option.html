@@ -1,15 +1,15 @@
 <template name="option">
-    <ul class="nav site-nav desktop">
+    <ul class="list-group">
         {{#each attributeList}}
-        <li>
-            {{>optionItem attr=this}}
-        </li>
+        <div class="list-group-item nopadding attrContainer">
+        	<center class="attrTitle">{{this}}</center>
+            {{>optionItem itemAttr=this}}
+        </div>
         {{/each}}
     </ul>
 </template>
 
 <template name="optionItem">
-	<div>
-		{{attr}}
-	</div>	
+	<svg id={{itemAttr}} itemAttr={{itemAttr}} class="attrSvg">
+	</svg>	
 </template>
