@@ -21,6 +21,8 @@ Template.flow.rendered = function() {
     //-------------------------initialize data-------------------------
     Deps.autorun(function() {
 
+        var dataProcessor_option = Template.option.dataProcessor;
+        
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
             var malePeopleObj = {};
             _.each(result.data, function(male) {
@@ -33,7 +35,8 @@ Template.flow.rendered = function() {
             conf.malePeople = result.data;
 
             conf.malePeople_toUse = d3.deepCopyArr(conf.malePeople);
-            conf.malePeopleObj_father_toUse=$.extend(true, {}, conf.malePeopleObj_father);
+            dataProcessor_option.assignGeneration(conf.malePeople_toUse);
+            conf.malePeopleObj_father_toUse = $.extend(true, {}, conf.malePeopleObj_father);
 
             Session.set('malePeopleObj_ready', new Date());
         });

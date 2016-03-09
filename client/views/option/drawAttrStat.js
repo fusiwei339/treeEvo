@@ -21,11 +21,11 @@ d3.attrStat = class {
     draw() {
         var option = this._option;
         var scale = option.isConti ? this.drawFlow() : this.drawBar();
-        this.drawAxis(scale);
-        this.drawBrush(scale);
+        var xAxis=this.drawAxis(scale);
+        this.drawBrush(scale, xAxis);
     }
 
-    drawBrush(scale) {
+    drawBrush(scale, xAxis) {
         var conf = Template.option.configure;
         var width = this._width - conf.margin.left - conf.margin.right,
             height = this._height - conf.margin.top - conf.margin.bottom,
@@ -35,17 +35,73 @@ d3.attrStat = class {
         var brush = d3.svg.brush().x(scale.x)
             .on('brushstart', function() {
 
-            })
-            .on('brush', function() {})
-            .on('brushend', function() {
-                var ext0 = brush.extent();
-                var ext1 = ext0.map(function(e) {
-                    return Math.round(e);
-                })
-                d3.select(this).transition()
-                    .call(brush.extent(ext1))
+                //make the ticks an array of 4
+                if (option.isConti) {
+                    var ext0 = brush.extent();
+                    var ext1 = ext0.map(function(e) {
+                        return Math.round(e);
+                    })
 
-                conf.filter[option.svgStr] = brush.extent();
+                    var ticks=xAxis.tickValues();
+                    var ticksTemp=ticks.slice(0);
+                    if(ticksTemp.length==2)
+                        ticksTemp.push(...ext1);
+
+                    ticksTemp.sort(function(a, b){
+                        return a-b;
+                    })
+                    xAxis.tickValues(ticksTemp);
+                }
+
+            })
+            .on('brush', function() {
+
+                //update the the axis when brushing
+                if (option.isConti) {
+                    var ext0 = brush.extent();
+                    var ext1 = ext0.map(function(e) {
+                        return Math.round(e);
+                    })
+
+                    var ticks=xAxis.tickValues();
+                    ticks[1]=ext1[0];
+                    ticks[2]=ext1[1];
+                    xAxis.tickValues(ticks);
+
+                    svg.selectAll('.x.axis').call(xAxis)
+
+                }
+            })
+            .on('brushend', function() {
+                if (option.isConti) {
+
+                    var ext0 = brush.extent();
+                    var ext1 = ext0.map(function(e) {
+                        return Math.round(e);
+                    })
+                    d3.select(this).transition()
+                        .call(brush.extent(ext1))
+
+                    conf.filter[option.svgStr] = brush.extent();
+                }else{
+                    var ext0 = brush.extent();
+
+                    var data=d3.select('#'+option.svgStr).selectAll('.histBar').data()
+                    var selected=_.filter(data, function(d){
+                        var xCoord=scale.x(d.date);
+                        return xCoord>=ext0[0] && xCoord<=ext0[1];
+                    })
+                    var xDomain=d3.extent(selected, function(d){
+                        return d.date;
+                    })
+                    d3.select(this).transition()
+                        .call(brush.extent(xDomain.map(function(d, i){
+                            var xCoord=scale.x(d);
+                            if(i===0) return xCoord;
+                            return scale.x.rangeBand()+xCoord;
+                        })))
+                    conf.filter[option.svgStr] = [xDomain[0], xDomain[1]+0.1]
+                }
             })
         svg.append('g')
             .attr('class', 'brush')
@@ -75,7 +131,7 @@ d3.attrStat = class {
 
         var histData = _.map(days, function(d) {
             return {
-                date: d.key,
+                date: +d.key,
                 size: d.values.length
             };
         })
@@ -221,5 +277,7 @@ d3.attrStat = class {
                 return d3.translate(conf.margin.left, height + conf.margin.top);
             })
             .call(xAxis)
+
+        return xAxis;
     }
 }

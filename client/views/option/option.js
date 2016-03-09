@@ -1,19 +1,42 @@
 Template.option.rendered = function() {
     var conf = Template.option.configure;
     var flowConf = Template.flow.configure;
+    var dataProcessor = Template.option.dataProcessor;
+
+    //init
+    var list = Template.option.configure.attributeList;
+    $('select[multiple]').multipleSelect('setSelects', list);
+    Session.set('showAttrs', list)
 
     Deps.autorun(function() {
 
         var filter = Session.get('filterMalePeople')
-        if (!filter) return;
-
         var malePeople = d3.deepCopyArr(flowConf.malePeople)
-        _.each(filter, function(val, key) {
-            malePeople = _.filter(malePeople, function(p) {
-                return p[key] >= val[0] && p[key] < val[1];
+
+        if (_.keys(filter).length !== 0) {
+            _.each(filter, function(val, key) {
+                malePeople = _.filter(malePeople, function(p) {
+                    return p[key] >= val[0] && p[key] < val[1];
+                })
             })
-        })
+        }
+
         flowConf.malePeople_toUse = malePeople;
+        dataProcessor.assignGeneration(flowConf.malePeople_toUse);
+        flowConf.malePeopleObj_father_toUse = _.groupBy(malePeople, function(male) {
+            return male.fatherid;
+        })
+
+        Session.set('malePeopleObj_ready', new Date());
+    })
+
+    Deps.autorun(function() {
+        var clusters = Session.get('clusterMalePeople');
+        if(clusters.length===0) return;
+
+        var malePeople = flowConf.malePeople_toUse;
+
+        dataProcessor.assignCluster(malePeople, clusters);
         flowConf.malePeopleObj_father_toUse = _.groupBy(malePeople, function(male) {
             return male.fatherid;
         })
@@ -25,7 +48,7 @@ Template.option.rendered = function() {
 
 Template.option.helpers({
     'attributeList': function() {
-        return Template.option.configure.attributeList;
+        return Session.get('showAttrs');
     },
     'settings': function() {
         return {
@@ -34,7 +57,8 @@ Template.option.helpers({
             multiple: false,
             keepOpen: false,
             onClose: function() {
-                console.log($('select[multiple]').multipleSelect('getSelects'))
+                var attrs = $('select[multiple]').multipleSelect('getSelects');
+                Session.set('showAttrs', attrs);
             },
         };
     },
@@ -51,16 +75,31 @@ Template.option.helpers({
 
 Template.option.events({
     'click #filterBtn': function() {
+        var dataProcessor = Template.option.dataProcessor;
         var filter = Template.option.configure.filter;
-        var query = {};
-        _.each(filter, function(val, key) {
-            if (val[0] !== val[1]) {
-                query[key] = val;
-            }
-        })
+        var query = dataProcessor.processSelection(filter);
         Session.set('filterMalePeople', query);
+        filter = {};
     },
-    'click #scaleByUni': function() {},
-    'click #scaleByDefault': function() {},
+    'click #clearBtn': function() {
+        var conf= Template.option.configure;
+        conf.filter={};
+        conf.clusters=[];
+        Session.set('filterMalePeople', {});
+        Session.set('filterMalePeople', []);
+    },
+    'click #clusterBtn': function() {
+        var dataProcessor = Template.option.dataProcessor;
+        var filter = Template.option.configure.filter;
+        var cluster = dataProcessor.processSelection(filter);
+
+        var clusters = Template.option.configure.clusters;
+        clusters.push({
+            order: clusters.length,
+            description: cluster,
+        });
+        Session.set('clusterMalePeople', clusters);
+        filter = {};
+    },
 
 });
