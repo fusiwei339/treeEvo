@@ -37,5 +37,7 @@ Template.option.configure = {
         bottom: 20,
     },
     filter: {},
-    clusters: [],
+    clusters: [{description:'all', order:0}],
+    clusterColors:['#b2df8a','#a6cee3','#ffff99','#fdbf6f','#cab2d6','#fb9a99',],
+    clusterShadeColors:['#33a02c','#1f78b4','#b15928','#ff7f00','#6a3d9a','#e31a1c'],
 }

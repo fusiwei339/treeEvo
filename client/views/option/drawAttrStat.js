@@ -85,6 +85,7 @@ d3.attrStat = class {
                     conf.filter[option.svgStr] = brush.extent();
                 }else{
                     var ext0 = brush.extent();
+                    if(ext0[0]===ext0[1]) return;
 
                     var data=d3.select('#'+option.svgStr).selectAll('.histBar').data()
                     var selected=_.filter(data, function(d){

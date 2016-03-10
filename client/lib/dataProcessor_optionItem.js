@@ -110,7 +110,16 @@ Template.option.dataProcessor = function() {
     };
 
     ret.assignCluster = function(malePeople, clusters) {
+        var otherOrder=-1;
+        _.each(clusters, function(c){
+            if(typeof c.description==='string')
+                otherOrder=c.order;
+        })
 
+        for (var i = 0, len = malePeople.length; i < len; i++) {
+            var p = malePeople[i];
+            p.cluster=otherOrder;
+        }
         _.each(clusters, function(cluster) {
             for (var i = 0, len = malePeople.length; i < len; i++) {
                 var p = malePeople[i];
@@ -126,7 +135,12 @@ Template.option.dataProcessor = function() {
                 }
             }
         })
+    };
 
+    ret.clearCluster = function(malePeople) {
+        for (var i = malePeople.length - 1; i >= 0; i--) {
+            malePeople[i].cluster = 0;
+        }
     }
 
 

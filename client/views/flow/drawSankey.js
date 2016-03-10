@@ -13,10 +13,6 @@ d3.drawSankey = class {
         this._clsssStr=val;
         return this;
     }
-    color(val){
-        this._color=val;
-        return this;
-    }
     clickFunc(val){
         this._clickFunc=val;
         return this;
@@ -25,7 +21,6 @@ d3.drawSankey = class {
     draw() {
         var xOffset=this._xOffset;
         var classStr=this._clsssStr || '';
-        var color=this._color;
         var clickFunc= this._clickFunc || null;
 
         var conf = Template.flow.configure;
@@ -88,7 +83,6 @@ d3.drawSankey = class {
             .attr("d", path)
             .attr("fill", function(d) {
                 return d.source.shadeColor;
-                // return color(d.source.cluster);
             })
         linkSelection.exit()
             .transition()

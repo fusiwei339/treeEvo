@@ -306,7 +306,7 @@ Template.flow.dataProcessor = function() {
             _.each(clusters, function(cluster) {
                 nodes.push({
                     generation: generation.key,
-                    cluster: cluster.key,
+                    cluster: +cluster.key,
                     man: mapIds(cluster.values),
                     children: mapIds(getNextGen(cluster.values)),
                     name: 'gen' + generation.key + 'cluster' + cluster.key,
@@ -372,7 +372,58 @@ Template.flow.dataProcessor = function() {
     ret.getSankeyGraph_allPeople = function(malePeople) {
         var nodes = getSankeyGraph_node_allPeople(malePeople);
         var edges = getSankeyGraph_edge_allPeople(nodes);
+        assignColor(nodes);
+        calStat(nodes);
         return { nodes: nodes, links: edges };
+    }
+
+    var calStat = function(nodes) {
+        var dealWithMissVal = function(val) {
+            return val === "" ? 0 : +val;
+        }
+        var malePeople=conf.malePeople_toUse;
+        var malePeopleObj={};
+        _.each(malePeople, function(male) {
+            malePeopleObj[male.personid] = male;
+        });
+
+        nodes.forEach(function(node) {
+            var people=_.map(node.man, function(one){
+                return malePeopleObj[one];
+            })
+
+            var attrArr = ['f_mar_age', 'SON_COUNT', 'lastage', 'f_bir_age', 'l_bir_age'];
+
+            var result = { name: node.name };
+
+            _.each(attrArr, function(attr) {
+                result[attr] = {
+                    valArr: []
+                }
+                _.each(people, function(d) {
+                    result[attr].valArr.push(dealWithMissVal(d[attr]));
+                })
+            })
+
+            _.each(attrArr, function(attr) {
+                var arr = result[attr].valArr;
+                result[attr].mean = arr.length > 0 ? math.mean(arr) : 0;
+                result[attr].std = arr.length > 0 ? math.std(arr) : 0;
+                result[attr].valArr = [];
+            })
+            node.stat = result;
+
+        })
+
+    }
+
+    var assignColor = function(nodes) {
+        var colorArr = Template.option.configure.clusterColors;
+        var shadeColorArr = Template.option.configure.clusterShadeColors;
+        _.each(nodes, function(node) {
+            node.color = colorArr[node.cluster];
+            node.shadeColor = shadeColorArr[node.cluster];
+        })
     }
 
     return ret;

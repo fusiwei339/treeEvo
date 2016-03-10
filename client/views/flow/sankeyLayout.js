@@ -175,7 +175,7 @@ d3.sankey = function() {
                 nodes.forEach(function(node, i) {
                     node.y = i;
                     node.dy1 = ky(node.value1);
-                    node.dy2 = node.value2 == 0 ? ky(node.value1) : ky(node.value2);
+                    node.dy2 = ky(node.value2);
                     // node.dy2 = Math.max(ky(node.value2), node.dy1);
                 });
             });
