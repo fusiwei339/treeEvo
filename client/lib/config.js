@@ -15,9 +15,6 @@ Template.flow.configure = {
     sankeyEdges: undefined,
     generations: undefined,
     clusters: undefined,
-    malePeopleObj_ori: undefined,
-    malePeopleObj_father: undefined,
-
 }
 
 Template.header.configure = {

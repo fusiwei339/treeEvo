@@ -1,7 +1,8 @@
 Template.option.rendered = function() {
     var conf = Template.option.configure;
     var flowConf = Template.flow.configure;
-    var dataProcessor = Template.option.dataProcessor;
+    var dataProcessor_option = Template.option.dataProcessor;
+    var dataProcessor_flow = Template.flow.dataProcessor;
 
     //init attr list
     var attrList = Template.option.configure.attributeList;
@@ -52,7 +53,7 @@ Template.option.rendered = function() {
 
     Deps.autorun(function() {
         var clusters = Session.get('clusterMalePeople');
-        console.log(clusters)
+
         $('#sortableList').empty();
         d3.select('#sortableList')
             .selectAll('.list-group-item')
@@ -63,7 +64,7 @@ Template.option.rendered = function() {
                 var colorArr = Template.option.configure.clusterColors;
                 return colorArr[d.order];
             })
-            .text(function(d){
+            .text(function(d) {
                 return JSON.stringify(d.description);
             })
         defineSortable();
@@ -72,38 +73,40 @@ Template.option.rendered = function() {
     Deps.autorun(function() {
 
         var filter = Session.get('filterMalePeople')
+        if(_.isEmpty(flowConf.malePeople)) return;
+
         var malePeople = d3.deepCopyArr(flowConf.malePeople)
 
         if (_.keys(filter).length !== 0) {
-            _.each(filter, function(val, key) {
-                malePeople = _.filter(malePeople, function(p) {
-                    return p[key] >= val[0] && p[key] < val[1];
+
+            malePeople = _.filter(malePeople, function(p) {
+                var flag = true;
+                _.each(filter, function(val, key) {
+                    var flagTemp = (p[key] >= val[0] && p[key] < val[1])
+                    flag = flag && flagTemp;
                 })
+
+                return flag;
             })
         }
 
-        flowConf.malePeople_toUse = malePeople;
-        dataProcessor.assignGeneration(flowConf.malePeople_toUse);
-        flowConf.malePeopleObj_father_toUse = _.groupBy(malePeople, function(male) {
-            return male.fatherid;
-        })
-
+        dataProcessor_flow.calGlobalData_toUse(malePeople, true);
         Session.set('malePeopleObj_ready', new Date());
     })
 
     Deps.autorun(function() {
+
         var clusters = Session.get('clusterMalePeople');
         var malePeople = flowConf.malePeople_toUse;
+        if(_.isEmpty(malePeople)) return;
 
         if (clusters.length > 1) {
-            dataProcessor.assignCluster(malePeople, clusters);
+            dataProcessor_option.assignCluster(malePeople, clusters);
         } else {
-            dataProcessor.clearCluster(malePeople);
+            dataProcessor_option.clearCluster(malePeople);
         }
 
-        flowConf.malePeopleObj_father_toUse = _.groupBy(malePeople, function(male) {
-            return male.fatherid;
-        })
+        dataProcessor_flow.calGlobalData_toUse(malePeople, false);
 
         Session.set('malePeopleObj_ready', new Date());
     })
@@ -143,9 +146,9 @@ Template.option.helpers({
         Session.get('clusterChanged');
         var clusters = Session.get('clusterMalePeople');
         var temp = clusters.sort(function(a, b) {
-            return +a.order - (+b.order);
-        })
-        // console.log(temp)
+                return +a.order - (+b.order);
+            })
+            // console.log(temp)
         return temp;
     },
     'clusterChanged': function() {
@@ -176,6 +179,7 @@ Template.option.events({
         conf.filter = {};
         conf.clusters = [{ description: 'all', order: 0 }];
         Session.set('filterMalePeople', {});
+        Session.set('nodeSelected', null);
         Session.set('clusterMalePeople', [{ description: 'all', order: 0 }]);
     },
     'click #clusterBtn': function() {

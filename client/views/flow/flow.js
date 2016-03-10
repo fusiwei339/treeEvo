@@ -22,21 +22,13 @@ Template.flow.rendered = function() {
     Deps.autorun(function() {
 
         var dataProcessor_option = Template.option.dataProcessor;
-        
+        var dataProcessor_flow = Template.flow.dataProcessor;
+
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
-            var malePeopleObj = {};
-            _.each(result.data, function(male) {
-                malePeopleObj[male.personid] = male;
-            });
-            conf.malePeopleObj_father = _.groupBy(result.data, function(male) {
-                return male.fatherid;
-            })
-            conf.malePeopleObj = malePeopleObj;
             conf.malePeople = result.data;
 
             conf.malePeople_toUse = d3.deepCopyArr(conf.malePeople);
-            dataProcessor_option.assignGeneration(conf.malePeople_toUse);
-            conf.malePeopleObj_father_toUse = $.extend(true, {}, conf.malePeopleObj_father);
+            dataProcessor_flow.calGlobalData_toUse(conf.malePeople_toUse, true);
 
             Session.set('malePeopleObj_ready', new Date());
         });
@@ -46,7 +38,7 @@ Template.flow.rendered = function() {
     Deps.autorun(function() {
         Session.get('malePeopleObj_ready');
 
-        if (!conf.malePeopleObj ||
+        if (!conf.malePeopleObj_toUse ||
             !conf.malePeople_toUse
         ) return;
 
@@ -66,7 +58,7 @@ Template.flow.rendered = function() {
         var dataProcessor = Template.flow.dataProcessor;
         var graph = Session.get('sankeyGraph_toDraw');
 
-        if (!conf.malePeopleObj ||
+        if (!conf.malePeopleObj_toUse ||
             !conf.malePeople_toUse ||
             !graph.nodes
         ) return;
@@ -91,8 +83,8 @@ Template.flow.rendered = function() {
             })
             .draw()
 
-        conf.sankeyNodes=graph.nodes;
-        conf.sankeyLinks=graph.links;
+        conf.sankeyNodes = graph.nodes;
+        conf.sankeyEdges = graph.links;
 
         Session.set('sankeyNodesReady', new Date());
 
@@ -106,7 +98,7 @@ Template.flow.rendered = function() {
         if (!data) return;
 
         featureCanvas.selectAll('g').remove();
-        var canvas=featureCanvas.append('g')
+        var canvas = featureCanvas.append('g')
             .attr('class', 'statG')
 
         var drawStat = new d3.drawStat(featureCanvas, data);
@@ -115,30 +107,32 @@ Template.flow.rendered = function() {
     })
 
     //-------------------------click a bar-------------------------
-    // Deps.autorun(function() {
+    Deps.autorun(function() {
 
-    //     Session.get('malePeopleObj_ready');
-    //     Session.get('sankeyNodesReady');
-    //     var scaleMethod = Session.get('scaleBar');
+        Session.get('malePeopleObj_ready');
+        Session.get('sankeyNodesReady');
+        var scaleMethod = Session.get('scaleBar');
 
-    //     var conf = Template.flow.configure;
-    //     var node = Session.get('nodeSelected');
-    //     var dataProcessor = Template.flow.dataProcessor;
+        var conf = Template.flow.configure;
+        var node = Session.get('nodeSelected');
+        var dataProcessor = Template.flow.dataProcessor;
 
-    //     if (!conf.malePeopleObj_ori ||
-    //         !conf.malePeopleObj_father ||
-    //         !node ||
-    //         !conf.max_generation ||
-    //         !conf.color) return;
+        if (!conf.malePeopleObj_toUse ||
+            !conf.malePeopleObj_father_toUse ||
+            !conf.max_generation ||
+            !node) {
+            highlightFlowCanvas.selectAll('*').remove();
+            return;
+        }
 
-    //     var highlightSankeyGraph = dataProcessor.getHighlightSankeyGraph(node);
+        var highlightSankeyGraph = dataProcessor.getHighlightSankeyGraph(node);
 
-    //     var sankeyDiagram = new d3.drawSankey(highlightFlowCanvas, highlightSankeyGraph)
-    //         .xOffset(0)
-    //         .classStr("highlight")
-    //         .draw();
+        var sankeyDiagram = new d3.drawSankey(highlightFlowCanvas, highlightSankeyGraph)
+            .xOffset(0)
+            .classStr("highlight")
+            .draw();
 
-    // })
+    })
 
 }
 

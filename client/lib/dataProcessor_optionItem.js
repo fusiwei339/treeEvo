@@ -58,15 +58,9 @@ Template.option.dataProcessor = function() {
 
 
     ret.assignGeneration = function(malePeople) {
-        var malePeopleObj = {},
-            malePeopleObj_father = {};
-
-        _.each(malePeople, function(male) {
-            malePeopleObj[male.personid] = male;
-        });
-        malePeopleObj_father = _.groupBy(malePeople, function(male) {
-            return male.fatherid;
-        });
+        var flowConf=Template.flow.configure;
+        var malePeopleObj = flowConf.malePeopleObj_toUse,
+            malePeopleObj_father = flowConf.malePeopleObj_father_toUse;
 
         function trackUp(people) {
             if (!malePeopleObj[people.fatherid]) {

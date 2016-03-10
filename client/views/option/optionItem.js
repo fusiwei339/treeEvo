@@ -8,9 +8,7 @@ Template.optionItem.rendered = function() {
 		var conf=Template.option.configure;
         var dataProcessor = Template.optionItem.dataProcessor;
 
-        if (!flowConf.malePeopleObj||
-            !flowConf.malePeople_toUse
-        ) return;
+        if (!flowConf.malePeople) return;
 
         var malePeople = flowConf.malePeople;
 
@@ -20,7 +18,6 @@ Template.optionItem.rendered = function() {
         svg.selectAll('*').remove();
 
         var option=dataProcessor.getOption(malePeople, svgStr);
-
 
         var attrStat=new d3.attrStat(svg, malePeople)
         	.width($(svgDom).width())
