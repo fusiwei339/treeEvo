@@ -23,7 +23,7 @@ Template.header.configure = {
 
 Template.option.configure = {
     // attributeList:["POSITION","SON_COUNT","birthorder","birthyear","cluster","district","ever_married","f_bir_age","f_bir_year","f_mar_age","f_mar_year","fatherid","founderid","has_son","householdid","l_bir_age","l_bir_year","lastage","personid","region","village"],
-    attributeList: ["SON_COUNT", "birthyear", "lastage", "f_bir_age", "l_bir_age"],
+    attributeList: ["SON_COUNT", "lastage", "birthyear", "f_bir_age", "l_bir_age"],
     svgHeight: 100,
     animationDur: 800,
     barPadding: 2,
@@ -37,4 +37,8 @@ Template.option.configure = {
     clusters: [{description:'all', order:0}],
     clusterColors:['#b2df8a','#a6cee3','#ffff99','#fdbf6f','#cab2d6','#fb9a99',],
     clusterShadeColors:['#33a02c','#1f78b4','#b15928','#ff7f00','#6a3d9a','#e31a1c'],
+}
+
+Template.optionItem.configure={
+    clusterRange:{},
 }

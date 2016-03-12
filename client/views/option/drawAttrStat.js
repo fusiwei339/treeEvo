@@ -3,28 +3,139 @@ d3.attrStat = class {
     constructor(svg, data) {
         this.svg = svg;
         this.data = data;
+        this._xAxis;
+        this._dots=[];
     }
 
     option(val) {
+        if(! val) return this._option;
         this._option = val;
         return this;
     }
     width(val) {
+        if(! val) return this._width;
         this._width = val;
         return this;
     }
     height(val) {
+        if(! val) return this._height;
         this._height = val;
         return this;
     }
+    clearDots(){
+        //clear labels
+        this._dots=this._dotsOri.slice(0);
+        this._xAxis.tickValues(this._dots);
+        this.svg.selectAll('.x.axis').call(this._xAxis)
 
-    draw() {
-        var option = this._option;
-        var scale = option.isConti ? this.drawFlow() : this.drawBar();
-        var xAxis=this.drawAxis(scale);
-        this.drawBrush(scale, xAxis);
+        //clear vertical lines
+        this.svg.selectAll('.slice').selectAll('*').remove();
+        return this;
+    }
+    get dots(){
+        return this._dots;
     }
 
+    draw() {
+        var dataProcessor = Template.option.dataProcessor;
+        var option = this._option;
+        var scale = option.isConti ? this.drawFlow() : this.drawBar();
+        var xAxis = this.drawAxis(scale);
+        this._xAxis=xAxis;
+        this._dotsOri=dataProcessor.getTickValues(xAxis);
+        this._dots=dataProcessor.getTickValues(xAxis);
+
+        this.drawSliceLines(scale, xAxis)
+        return this;
+            // this.drawBrush(scale, xAxis);
+    }
+
+    drawSliceLines(scale, xAxis) {
+        var dataProcessor = Template.option.dataProcessor;
+        var conf = Template.option.configure;
+        var optionItem_conf = Template.optionItem.configure;
+        var width = this._width - conf.margin.left - conf.margin.right,
+            height = this._height - conf.margin.top - conf.margin.bottom,
+            option = this._option,
+            svg = this.svg;
+        var self=this;
+
+        var g = svg.append('g')
+            .attr('class', 'tempSlice')
+            .attr('transform', d3.translate(conf.margin.left, conf.margin.top))
+        var rect = g.append('rect')
+            .attr('class', 'overlayRect')
+            .attr('width', width)
+            .attr('height', height)
+        var sliceG = svg.append('g')
+            .attr('class', 'slice')
+            .attr('transform', d3.translate(conf.margin.left, conf.margin.top))
+
+        rect
+            .on('mouseenter', function(e) {
+                var coord = d3.mouse(this);
+                g.append('path')
+                    .attr('class', 'moving')
+
+                self._dots = dataProcessor.getTickValues(xAxis);
+            })
+            .on('mouseout', function(e) {
+                //remove temp lines
+                g.selectAll('.moving').remove();
+
+                //remove a tick
+                var ticksTemp = dataProcessor.getTickValues(xAxis);
+                ticksTemp.pop()
+                xAxis.tickValues(ticksTemp)
+                svg.selectAll('.x.axis').call(xAxis)
+            })
+            .on('mousemove', function(e) {
+                //show line
+                var coord = d3.mouse(this);
+                g.selectAll('.moving')
+                    .attr('d', function() {
+                        return geom.path.begin()
+                            .move_to(coord[0] - 2, 0)
+                            .line_to(coord[0] - 2, height+conf.margin.top)
+                            .end()
+                    })
+
+                //show x label
+                try {
+                    var xVal = Math.round(scale.x.invert(coord[0] - 2));
+                    var ticksTemp = dataProcessor.getTickValues(xAxis);
+
+                    if (ticksTemp.length > self._dots.length) ticksTemp[ticksTemp.length - 1] = xVal;
+                    else ticksTemp.push(xVal);
+
+                    xAxis.tickValues(ticksTemp)
+                    svg.selectAll('.x.axis').call(xAxis)
+                } catch (e) {
+                    console.log('x scale error')
+                }
+            })
+            .on('click', function(e) {
+                var coord = d3.mouse(this);
+                //draw line
+                sliceG.append('path')
+                    .attr('class', 'slice')
+                    .attr('d', function() {
+                        return geom.path.begin()
+                            .move_to(coord[0] - 2, 0)
+                            .line_to(coord[0] - 2, height+conf.margin.top)
+                            .end()
+                    })
+
+                //draw label
+                var ticksTemp = dataProcessor.getTickValues(xAxis);
+
+                self._dots=ticksTemp;
+                optionItem_conf.clusterRange[option.svgStr]=self._dots;
+                xAxis.tickValues(ticksTemp)
+                svg.selectAll('.x.axis').call(xAxis)
+
+            })
+    }
     drawBrush(scale, xAxis) {
         var conf = Template.option.configure;
         var width = this._width - conf.margin.left - conf.margin.right,
@@ -42,13 +153,13 @@ d3.attrStat = class {
                         return Math.round(e);
                     })
 
-                    var ticks=xAxis.tickValues();
-                    var ticksTemp=ticks.slice(0);
-                    if(ticksTemp.length==2)
+                    var ticks = xAxis.tickValues();
+                    var ticksTemp = ticks.slice(0);
+                    if (ticksTemp.length == 2)
                         ticksTemp.push(...ext1);
 
-                    ticksTemp.sort(function(a, b){
-                        return a-b;
+                    ticksTemp.sort(function(a, b) {
+                        return a - b;
                     })
                     xAxis.tickValues(ticksTemp);
                 }
@@ -63,9 +174,9 @@ d3.attrStat = class {
                         return Math.round(e);
                     })
 
-                    var ticks=xAxis.tickValues();
-                    ticks[1]=ext1[0];
-                    ticks[2]=ext1[1];
+                    var ticks = xAxis.tickValues();
+                    ticks[1] = ext1[0];
+                    ticks[2] = ext1[1];
                     xAxis.tickValues(ticks);
 
                     svg.selectAll('.x.axis').call(xAxis)
@@ -83,25 +194,25 @@ d3.attrStat = class {
                         .call(brush.extent(ext1))
 
                     conf.filter[option.svgStr] = brush.extent();
-                }else{
+                } else {
                     var ext0 = brush.extent();
-                    if(ext0[0]===ext0[1]) return;
+                    if (ext0[0] === ext0[1]) return;
 
-                    var data=d3.select('#'+option.svgStr).selectAll('.histBar').data()
-                    var selected=_.filter(data, function(d){
-                        var xCoord=scale.x(d.date);
-                        return xCoord>=ext0[0] && xCoord<=ext0[1];
+                    var data = d3.select('#' + option.svgStr).selectAll('.histBar').data()
+                    var selected = _.filter(data, function(d) {
+                        var xCoord = scale.x(d.date);
+                        return xCoord >= ext0[0] && xCoord <= ext0[1];
                     })
-                    var xDomain=d3.extent(selected, function(d){
+                    var xDomain = d3.extent(selected, function(d) {
                         return d.date;
                     })
                     d3.select(this).transition()
-                        .call(brush.extent(xDomain.map(function(d, i){
-                            var xCoord=scale.x(d);
-                            if(i===0) return xCoord;
-                            return scale.x.rangeBand()+xCoord;
+                        .call(brush.extent(xDomain.map(function(d, i) {
+                            var xCoord = scale.x(d);
+                            if (i === 0) return xCoord;
+                            return scale.x.rangeBand() + xCoord;
                         })))
-                    conf.filter[option.svgStr] = [xDomain[0], xDomain[1]+0.1]
+                    conf.filter[option.svgStr] = [xDomain[0], xDomain[1] + 0.1]
                 }
             })
         svg.append('g')

@@ -181,20 +181,24 @@ Template.option.events({
         Session.set('filterMalePeople', {});
         Session.set('nodeSelected', null);
         Session.set('clusterMalePeople', [{ description: 'all', order: 0 }]);
+        Session.set('clearBtn', new Date());
     },
     'click #clusterBtn': function() {
-        var dataProcessor = Template.option.dataProcessor;
-        var filter = Template.option.configure.filter;
-        var cluster = dataProcessor.processSelection(filter);
+        // var dataProcessor = Template.option.dataProcessor;
+        // var filter = Template.option.configure.filter;
+        // var cluster = dataProcessor.processSelection(filter);
 
-        var clusters = Template.option.configure.clusters;
-        clusters.push({
-            order: clusters.length,
-            description: cluster,
-        });
-        clusters[0].description = 'others';
-        Template.option.configure.filter = {};
-        Session.set('clusterMalePeople', clusters);
+        // var clusters = Template.option.configure.clusters;
+        // clusters.push({
+        //     order: clusters.length,
+        //     description: cluster,
+        // });
+        // clusters[0].description = 'others';
+        // Template.option.configure.filter = {};
+        // Session.set('clusterMalePeople', clusters);
+        $('#clusterModal').modal('show');
+
+        Session.set('clusterBtn', new Date());
     },
 
 });

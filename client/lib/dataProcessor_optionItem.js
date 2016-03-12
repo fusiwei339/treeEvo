@@ -58,7 +58,7 @@ Template.option.dataProcessor = function() {
 
 
     ret.assignGeneration = function(malePeople) {
-        var flowConf=Template.flow.configure;
+        var flowConf = Template.flow.configure;
         var malePeopleObj = flowConf.malePeopleObj_toUse,
             malePeopleObj_father = flowConf.malePeopleObj_father_toUse;
 
@@ -104,15 +104,15 @@ Template.option.dataProcessor = function() {
     };
 
     ret.assignCluster = function(malePeople, clusters) {
-        var otherOrder=-1;
-        _.each(clusters, function(c){
-            if(typeof c.description==='string')
-                otherOrder=c.order;
+        var otherOrder = -1;
+        _.each(clusters, function(c) {
+            if (typeof c.description === 'string')
+                otherOrder = c.order;
         })
 
         for (var i = 0, len = malePeople.length; i < len; i++) {
             var p = malePeople[i];
-            p.cluster=otherOrder;
+            p.cluster = otherOrder;
         }
         _.each(clusters, function(cluster) {
             for (var i = 0, len = malePeople.length; i < len; i++) {
@@ -135,6 +135,11 @@ Template.option.dataProcessor = function() {
         for (var i = malePeople.length - 1; i >= 0; i--) {
             malePeople[i].cluster = 0;
         }
+    }
+
+    ret.getTickValues = function(axis) {
+        var ticks = axis.tickValues();
+        return ticks.slice(0);
     }
 
 

@@ -2,11 +2,8 @@
     <div class="attrListDiv">
         {{>multipleSelect options=selectOptions settings=selectSettings }}
         <ul class="list-group" style="margin-top: 10px; margin-bottom: 10px">
-            {{#each attributeList}}
-            <div class="list-group-item nopadding attrContainer">
-                <p class="attrTitle">{{this}}</p>
-                {{>optionItem itemAttr=this}}
-            </div>
+            {{#each attributeList}} 
+                {{>optionItem itemAttr=this}} 
             {{/each}}
         </ul>
         <div class="btn-group" id="btn-group-attr" role="group">
@@ -16,16 +13,44 @@
         </div>
     </div>
     <div class="attrSetDiv">
-        <strong>Filter:</strong> 
+        <strong>Filter:</strong>
         <li class="list-group-item">
             {{filter}}
         </li>
-        <strong>Clusters:</strong> 
-        <div id="sortableList">
-        </div>
+        <strong>Clusters:</strong>
+        <div id="sortableList"></div>
+    </div>
+    {{>clusterWindow}}
+</template>
+
+<template name="optionItem">
+    <div class="list-group-item nopadding attrContainer">
+        <p class="attrTitle col-md-6">{{itemAttr}}
+            <label id="{{itemAttr}}clear" class="attrOption btn btn-default">
+                <i class="fa fa-refresh fa-fw" title="Clear Markers"></i>
+            </label>
+        </p>
+        <svg id={{itemAttr}} itemAttr={{itemAttr}} class="attrSvg"></svg>
     </div>
 </template>
-<template name="optionItem">
-    <svg id={{itemAttr}} itemAttr={{itemAttr}} class="attrSvg">
-    </svg>
+
+<template name="clusterWindow">
+    <!-- Modal -->
+    <div class="modal fade" id="clusterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Cluster Definition</h4>
+                </div>
+                <div class="modal-body">
+                    {{clusters}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="finishClusterDef" type="button" class="btn btn-primary">Finish</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
