@@ -35,10 +35,27 @@ Template.option.configure = {
     },
     filter: {},
     clusters: [{description:'all', order:0}],
-    clusterColors:['#b2df8a','#a6cee3','#ffff99','#fdbf6f','#cab2d6','#fb9a99',],
-    clusterShadeColors:['#33a02c','#1f78b4','#b15928','#ff7f00','#6a3d9a','#e31a1c'],
+    clusterColors:['#b2df8a','#a6cee3','#ffff99','#fdbf6f','#cab2d6','#fb9a99','#fde0ef'],
+    clusterShadeColors:['#33a02c','#1f78b4','#b15928','#ff7f00','#6a3d9a','#e31a1c', '#8e0152'],
 }
 
 Template.optionItem.configure={
     clusterRange:{},
+}
+
+Template.clusterWindow.configure={
+    labelPart:0.1,
+    chartPart:0.9,
+    oneLineHeight:100,
+    lineMarginTop:30,
+    svgBtn:{
+        halfY:15,
+        width:100,
+        round:15,
+    },
+    clusterPreview:{
+        height:30,
+        width:300,
+        round:5,
+    }
 }

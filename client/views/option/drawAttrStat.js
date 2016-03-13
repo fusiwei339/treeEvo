@@ -4,27 +4,32 @@ d3.attrStat = class {
         this.svg = svg;
         this.data = data;
         this._xAxis;
-        this._dots=[];
+        this._dots = [];
     }
 
     option(val) {
-        if(! val) return this._option;
+        if (!val) return this._option;
         this._option = val;
         return this;
     }
     width(val) {
-        if(! val) return this._width;
+        if (!val) return this._width;
         this._width = val;
         return this;
     }
     height(val) {
-        if(! val) return this._height;
+        if (!val) return this._height;
         this._height = val;
         return this;
     }
-    clearDots(){
+    drawSlice(val) {
+        if (!val) this._drawSlice = false;
+        else this._drawSlice = val;
+        return this;
+    }
+    clearDots() {
         //clear labels
-        this._dots=this._dotsOri.slice(0);
+        this._dots = this._dotsOri.slice(0);
         this._xAxis.tickValues(this._dots);
         this.svg.selectAll('.x.axis').call(this._xAxis)
 
@@ -32,7 +37,7 @@ d3.attrStat = class {
         this.svg.selectAll('.slice').selectAll('*').remove();
         return this;
     }
-    get dots(){
+    get dots() {
         return this._dots;
     }
 
@@ -41,13 +46,16 @@ d3.attrStat = class {
         var option = this._option;
         var scale = option.isConti ? this.drawFlow() : this.drawBar();
         var xAxis = this.drawAxis(scale);
-        this._xAxis=xAxis;
-        this._dotsOri=dataProcessor.getTickValues(xAxis);
-        this._dots=dataProcessor.getTickValues(xAxis);
+        this._xAxis = xAxis;
+        this._dotsOri = dataProcessor.getTickValues(xAxis);
+        this._dots = dataProcessor.getTickValues(xAxis);
 
-        this.drawSliceLines(scale, xAxis)
+        if (this._drawSlice) {
+            this.drawSliceLines(scale, xAxis)
+        }
+
         return this;
-            // this.drawBrush(scale, xAxis);
+        // this.drawBrush(scale, xAxis);
     }
 
     drawSliceLines(scale, xAxis) {
@@ -58,7 +66,7 @@ d3.attrStat = class {
             height = this._height - conf.margin.top - conf.margin.bottom,
             option = this._option,
             svg = this.svg;
-        var self=this;
+        var self = this;
 
         var g = svg.append('g')
             .attr('class', 'tempSlice')
@@ -96,7 +104,7 @@ d3.attrStat = class {
                     .attr('d', function() {
                         return geom.path.begin()
                             .move_to(coord[0] - 2, 0)
-                            .line_to(coord[0] - 2, height+conf.margin.top)
+                            .line_to(coord[0] - 2, height + conf.margin.top)
                             .end()
                     })
 
@@ -122,15 +130,15 @@ d3.attrStat = class {
                     .attr('d', function() {
                         return geom.path.begin()
                             .move_to(coord[0] - 2, 0)
-                            .line_to(coord[0] - 2, height+conf.margin.top)
+                            .line_to(coord[0] - 2, height + conf.margin.top)
                             .end()
                     })
 
                 //draw label
                 var ticksTemp = dataProcessor.getTickValues(xAxis);
 
-                self._dots=ticksTemp;
-                optionItem_conf.clusterRange[option.svgStr]=self._dots;
+                self._dots = ticksTemp;
+                optionItem_conf.clusterRange[option.svgStr] = self._dots;
                 xAxis.tickValues(ticksTemp)
                 svg.selectAll('.x.axis').call(xAxis)
 
@@ -288,23 +296,21 @@ d3.attrStat = class {
 
     drawFlow() {
         var conf = Template.option.configure;
+        var dataProcessor_clusterWindow=Template.clusterWindow.dataProcessor;
+
         var width = this._width - conf.margin.left - conf.margin.right,
             height = this._height - conf.margin.top - conf.margin.bottom,
             option = this._option,
             svg = this.svg,
             data = this.data;
 
-        if (option.filter) {
-            data = _.filter(data, function(d) {
-                return d[option.svgStr] !== option.filter;
-            })
-        }
+        var filteredData = dataProcessor_clusterWindow.applyFilter(data, option.filter, option.svgStr);
 
         var days = d3.nest()
             .key(function(d) {
                 return d[option.svgStr]
             })
-            .entries(data)
+            .entries(filteredData)
             .sort(function(a, b) {
                 return +a.key - (+b.key);
             })
@@ -316,10 +322,11 @@ d3.attrStat = class {
             };
         })
 
+        var yMax = option.yMax || d3.max(riverData, function(d) {
+            return d.size;
+        })
         var y = d3.scale.linear()
-            .domain([0, d3.max(riverData, function(d) {
-                return d.size;
-            })])
+            .domain([0, yMax])
             .range([height, 0]);
 
         var xDomain = null;

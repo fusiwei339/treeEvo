@@ -1,0 +1,29 @@
+#clusterWindow {
+    width: 568px;
+    height: 500px;
+}
+
+.overlayRect {
+    stroke: #ccc;
+    stroke-width: 2px;
+    fill: white;
+    opacity: 0;
+}
+
+.dragable {
+    cursor: pointer;
+}
+
+.partition {
+    stroke: #ccc;
+    stroke-width: 1.5px;
+    fill:white;
+    cursor: pointer;
+}
+.partitionText{
+	font-size: 14px;
+    cursor: pointer;
+}
+.partitionBtn:hover{
+	fill:#d8d8d8 !important;
+}

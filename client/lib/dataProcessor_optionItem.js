@@ -17,17 +17,20 @@ Template.optionItem.dataProcessor = function() {
                     range: xDomain,
                     svgStr: attr,
                     isConti: false,
+                    filter: [],
                 };
             case 'birthyear':
                 return {
                     isConti: true,
                     svgStr: attr,
+                    filter: [],
                     // range: xDomain,
                 };
             case 'lastage':
                 return {
                     isConti: true,
                     svgStr: attr,
+                    filter: [],
                     range: [0, 100],
                 };
             case 'f_bir_age':
@@ -35,14 +38,14 @@ Template.optionItem.dataProcessor = function() {
                     isConti: true,
                     svgStr: attr,
                     range: [0, 100],
-                    filter: " ",
+                    filter: [" "],
                 };
             case 'l_bir_age':
                 return {
                     isConti: true,
                     svgStr: attr,
                     range: [0, 100],
-                    filter: " ",
+                    filter: [" "],
                 };
         }
 
@@ -140,6 +143,91 @@ Template.option.dataProcessor = function() {
     ret.getTickValues = function(axis) {
         var ticks = axis.tickValues();
         return ticks.slice(0);
+    }
+
+
+    return ret;
+}();
+
+Template.clusterWindow.dataProcessor = function() {
+    var ret = {
+        version: 0.1,
+    }
+
+    function getDist(a, b) {
+        return Math.abs(a - b);
+    }
+
+    ret.getClusterData = function(obj) {
+        var ret = [];
+        _.each(obj, function(vals, key) {
+            if (vals.length < 3) return;
+
+            vals.sort(function(a, b) {
+                return a - b;
+            })
+            var temp = { name: key, value: [] };
+            for (var i = 0; i < vals.length - 1; i++) {
+                var current = vals[i],
+                    next = vals[i + 1];
+                temp.value.push({
+                    width: getDist(current, next) / getDist(vals[0], vals[vals.length - 1]),
+                    range: [current, next],
+                    name:key,
+                });
+            }
+
+            ret.push(temp);
+        })
+
+        return ret;
+    };
+
+    ret.applyFilter = function(data, filter, svgStr) {
+
+        var filteredData = [];
+        if (filter && filter.length) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                var p = data[i]
+                var flag = true;
+
+                _.each(filter, function(fil) {
+                    var flagTemp;
+                    if (fil.constructor === Array) {
+                        flagTemp = (p[svgStr] >= fil[0] && p[svgStr] < fil[1])
+                    } else {
+                        flagTemp = p[svgStr] !== fil;
+                    }
+                    flag = flag && flagTemp;
+                })
+
+                if (flag) filteredData.push(p);
+            }
+        } else {
+            filteredData = data.slice(0);
+        }
+
+        return filteredData;
+
+    }
+
+    ret.formatClusters=function(permutationResult){
+        var ret=[{order:-1, description:'others'}];
+        if(permutationResult.length==0){
+            ret[0].description='all';
+            return ret;
+        }
+        _.each(permutationResult, function(r){
+            var temp={order:0, description:{}};
+            _.each(r, function(c){
+                temp.description[c.name]=c.range;
+            })
+            ret.push(temp);
+        })
+        _.each(ret, function(c, i){
+            c.order=i;
+        })
+        return ret;
     }
 
 

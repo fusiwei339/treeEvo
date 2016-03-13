@@ -24,6 +24,7 @@ Template.optionItem.rendered = function() {
             .width($(svgDom).width())
             .height($(svgDom).height())
             .option(option)
+            .drawSlice(true)
             .draw()
     })
 
