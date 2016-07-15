@@ -196,7 +196,9 @@ Template.option.events({
         // clusters[0].description = 'others';
         // Template.option.configure.filter = {};
         // Session.set('clusterMalePeople', clusters);
-        $('#clusterModal').modal('show');
+        var items = Template.clusterWindow.dataProcessor.getClusterData(Template.optionItem.configure.clusterRange);
+        console.log(items)
+        // $('#clusterModal').modal('show');
 
         Session.set('clusterBtn', new Date());
     },

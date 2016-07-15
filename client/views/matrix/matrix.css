@@ -1,0 +1,29 @@
+#matrixPanel {
+    height: 100%;
+    border: 1px solid #ccc;
+}
+
+#matrixView {
+    height: 100%;
+    width: 100%;
+}
+
+.node {
+    cursor: pointer;
+}
+
+.overlay {
+    background-color: #EEE;
+}
+
+.node rect{
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 4px;
+}

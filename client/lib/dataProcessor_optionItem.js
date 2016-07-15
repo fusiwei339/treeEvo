@@ -170,17 +170,13 @@ Template.clusterWindow.dataProcessor = function() {
             for (var i = 0; i < vals.length - 1; i++) {
                 var current = vals[i],
                     next = vals[i + 1];
-                temp.value.push({
-                    width: getDist(current, next) / getDist(vals[0], vals[vals.length - 1]),
-                    range: [current, next],
-                    name:key,
-                });
+                temp.value.push([current, next]);
             }
 
             ret.push(temp);
         })
 
-        return ret;
+        return ret[0];
     };
 
     ret.applyFilter = function(data, filter, svgStr) {

@@ -59,3 +59,6 @@ Template.clusterWindow.configure={
         round:5,
     }
 }
+
+Template.matrix.configure={
+}

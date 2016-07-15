@@ -368,8 +368,9 @@ Template.flow.dataProcessor = function() {
         return edges;
     }
 
-    ret.calGlobalData_toUse = function(malePeople, assignGeneration) {
-        conf.malePeople_toUse = malePeople;
+    ret.calGlobalData_toUse = function(assignGeneration) {
+        var malePeople=conf.malePeople_toUse;
+        
         var malePeopleObj_toUse = {};
         var dataProcessor_option = Template.option.dataProcessor;
 

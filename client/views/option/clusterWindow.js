@@ -187,7 +187,8 @@ Template.clusterWindow.helpers({
 Template.clusterWindow.events({
     'click #finishClusterDef': function(e, template) {
         var clusters=Session.get('clusterPreview')
-        Session.set('clusterMalePeople', clusters);
+        console.log(clusters)
+        // Session.set('clusterMalePeople', clusters);
         $('#clusterModal').modal('hide');
     }
 });
