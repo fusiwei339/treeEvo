@@ -163,7 +163,6 @@ Template.option.helpers({
         return colorArr[order];
     },
 
-
 })
 
 Template.option.events({
@@ -184,7 +183,7 @@ Template.option.events({
         Session.set('clearBtn', new Date());
     },
     'click #clusterBtn': function() {
-        // var dataProcessor = Template.option.dataProcessor;
+        var dataProcessor = Template.clusterWindow.dataProcessor;
         // var filter = Template.option.configure.filter;
         // var cluster = dataProcessor.processSelection(filter);
 
@@ -196,8 +195,11 @@ Template.option.events({
         // clusters[0].description = 'others';
         // Template.option.configure.filter = {};
         // Session.set('clusterMalePeople', clusters);
-        var items = Template.clusterWindow.dataProcessor.getClusterData(Template.optionItem.configure.clusterRange);
-        console.log(items)
+
+        var items = dataProcessor.getClusters(Template.optionItem.configure.clusterRange);
+        var clusters= dataProcessor.getClusterData(items);
+        Meteor.call('insertClusters', clusters)
+        Meteor.call('gspan')
         // $('#clusterModal').modal('show');
 
         Session.set('clusterBtn', new Date());

@@ -158,7 +158,7 @@ Template.clusterWindow.dataProcessor = function() {
         return Math.abs(a - b);
     }
 
-    ret.getClusterData = function(obj) {
+    ret.getClusters= function(obj) {
         var ret = [];
         _.each(obj, function(vals, key) {
             if (vals.length < 3) return;
@@ -178,6 +178,25 @@ Template.clusterWindow.dataProcessor = function() {
 
         return ret[0];
     };
+
+    ret.getClusterData=function(clusters){
+        var ret=[]
+        var malePeople=Template.flow.configure.malePeople;
+
+        _.each(clusters.value, range=>{
+            var filteredMale=_.filter(malePeople, male=>{
+                return male[clusters.name]>=range[0] && male[clusters.name]<range[1] && male.depth>1;
+            })
+            var ids=_.map(filteredMale, male=>male.personid);
+            ret.push({
+                name:clusters.name,
+                range,
+                ids,
+            })
+        })
+
+        return ret;
+    }
 
     ret.applyFilter = function(data, filter, svgStr) {
 

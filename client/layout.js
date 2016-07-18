@@ -13,7 +13,7 @@ Router.map(function() {
     return this.route('home', {
         path: '/',
         waitOn: function() {
-            // return Meteor.subscribe('malePeople');
+            return Meteor.subscribe('sankeyNodes');
         },
         action: function() {
             this.render('layout');
