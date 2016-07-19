@@ -198,8 +198,10 @@ Template.option.events({
 
         var items = dataProcessor.getClusters(Template.optionItem.configure.clusterRange);
         var clusters= dataProcessor.getClusterData(items);
+        Template.option.configure.clusters=clusters;
         Meteor.call('insertClusters', clusters)
         Meteor.call('gspan')
+
         // $('#clusterModal').modal('show');
 
         Session.set('clusterBtn', new Date());

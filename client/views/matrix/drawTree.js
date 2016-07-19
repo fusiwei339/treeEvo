@@ -4,12 +4,12 @@ d3.drawTree = class {
         this.data = data;
     }
 
-    generation(val) {
-        this._generation = val;
+    height(val) {
+        this._height= val;
         return this;
     }
-    nSons(val) {
-        this._sons = val;
+    width(val) {
+        this._width= val;
         return this;
     }
 
@@ -17,38 +17,33 @@ d3.drawTree = class {
 
         var root = this.data;
         var svg = this.svg;
-        var generation = this._generation || 3;
-        var nSons = this._sons || 3;
+        var width= this._width|| 3;
+        var height= this._height|| 3;
 
         var maxLabelLength = 20;
         var duration = 750;
         var i = 0;
         var nodeSize=5;
 
-        // size of the diagram
-        var viewerWidth = svg.attr('width');
-        var viewerHeight = svg.attr('height');
-
         var tree = d3.layout.tree()
-            .separation((a, b) => a.parent == b.parent ? 1 : 2)
-            .nodeSize([nodeSize, nodeSize])
+            .size([width, height])
 
         var diagonal = d3.svg.diagonal()
             .projection(function(d) {
                 return [d.x, d.y];
             });
 
-        var zoomListener = d3.behavior.zoom()
-            .scaleExtent([0.1, 3])
-            .on("zoom", () => {
-                svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            });
+        // var zoomListener = d3.behavior.zoom()
+        //     .scaleExtent([0.1, 3])
+        //     .on("zoom", () => {
+        //         svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        //     });
 
-        svg.call(zoomListener);
+        // svg.call(zoomListener);
         var svgGroup = svg.append("g");
 
         // Define the root
-        root.x0 = viewerHeight / 2;
+        root.x0 = width/ 2;
         root.y0 = 0;
 
         // Layout the tree initially and center on the root node.
@@ -58,24 +53,12 @@ d3.drawTree = class {
 
             // Compute the new tree layout.
             var nodes = tree.nodes(root);
-            _.each(nodes, node => {
-                if (!node.parent) {
-                    node.shink = false;
-                    return;
-                }
-                let flag = +node.birthOrder >= nSons ||
-                    +node.gen >= generation ||
-                    +node.parent.birthOrder >= nSons ||
-                    +node.parent.gen >= generation;
-
-                node.shink = flag ? true : false;
-            })
             var links = tree.links(nodes);
 
-            // Set widths between levels based on maxLabelLength.
-            nodes.forEach(function(d) {
-                d.y = (d.depth * (maxLabelLength * 10)); //maxLabelLength * 10px
-            });
+            // // Set widths between levels based on maxLabelLength.
+            // nodes.forEach(function(d) {
+            //     d.y = (d.depth * (maxLabelLength * 10)); //maxLabelLength * 10px
+            // });
 
             // // Update the nodes…
             node = svgGroup.selectAll("g.node")
@@ -89,17 +72,10 @@ d3.drawTree = class {
                 .attr("transform", function(d) {
                     return "translate(" + source.x0 + "," + source.y0 + ")";
                 })
-                .append("rect")
-                .attr('class', 'nodeCircle')
-                .attr('width', d=>{
-                	return d.shink?1:5;
-                })
-                .attr("height", d => {
-                    return d.shink ? 1 : 5;
-                })
+                .append("circle")
                 .attr({
-                    x:-2.5,
-                    y:-2.5
+                    class: 'nodeCircle',
+                    r:2,
                 })
                 .style("fill", function(d) {
                     return d._children ? "lightsteelblue" : "#fff";
