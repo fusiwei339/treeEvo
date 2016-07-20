@@ -66,5 +66,5 @@ Template.matrix.configure={
     treePadding:2,
     patternPart:60,
     margin:10,
-
+    labelPart:25,
 }

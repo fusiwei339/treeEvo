@@ -36,3 +36,17 @@
 .background{
     opacity: 0.5;
 }
+
+.highlightRect{
+    stroke:#333;
+    stroke-width:2px;
+}
+
+.selectedRect{
+    stroke:red;
+    stroke-width:2px;
+}
+
+.xLabel{
+    font-size: 18px
+}

@@ -18,15 +18,14 @@ Template.matrix.rendered = function() {
     });
 
     var svg = d3.select('#matrixView');
-    var patternPart = conf.patternPart;
     svg.append('g')
         .attr('class', 'rectCanvas')
         .attr('id', 'rectCanvas')
-        .attr('transform', d3.translate(patternPart, 0))
+        .attr('transform', d3.translate(conf.patternPart, conf.labelPart))
     svg.append('g')
         .attr('class', 'patternCanvas')
         .attr('id', 'patternCanvas')
-        .attr('transform', d3.translate(0, 0))
+        .attr('transform', d3.translate(0, conf.labelPart))
 
     Tracker.autorun(() => {
 
@@ -48,7 +47,7 @@ Template.matrix.rendered = function() {
             })
 
             new d3.drawMatrix(svg, data)
-                .patternPart(patternPart)
+                .patternPart(conf.patternPart)
                 .draw();
         }
     })
