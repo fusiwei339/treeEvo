@@ -5,14 +5,21 @@
 
 3. go to the directory, run 'meteor' in the command line
 
-4. copy data file to ./public folder
+4. copy malePeople.json file to ./public folder
 
-5. in chrome, open http://localhost:3000
+5. import tree.json to the database via 'mongoimport' command. Sample command is like: mongoimport --port 3001 -d meteor -c trees --file trees.json --jsonArray
+
+6. in chrome, open http://localhost:3000
 
 
 # Dependencies:
-python (with pymongo library)
-Node.js
-meteor.js
-mongodb
+* data (malePeople.json, tree.json)
+
+* python (with pymongo library)
+
+* Node.js
+
+* meteor.js
+
+* mongodb
 
