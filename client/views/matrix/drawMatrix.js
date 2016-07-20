@@ -3,85 +3,126 @@ d3.drawMatrix = class {
         this.svg = svg;
         this.data = data;
     }
-
-    // draw() {
-    //     this.drawRect();
-    //     this.drawTrees():
-    // }
+    patternPart(val) {
+        this._patternPart = val;
+        return this;
+    }
 
     draw() {
 
+        var conf = Template.matrix.configure;
+
         var data = this.data;
         var svg = this.svg;
-        var patternPart=30;
+        var animationDur = 500;
+        var patternPart = this._patternPart;
+        var circleR = conf.circleR;
+        var totalWidth = $(svg[0]).width() / 2;
 
-        var rectCanvas=svg.append('g')
-            .attr('class', 'rectCanvas')
-            .attr('transform', d3.translate(patternPart, 0))
-        var patternCanvas=svg.append('g')
-            .attr('class', 'patternCanvas')
-            .attr('transform', d3.translate(0, 0))
-
-        _.each(data, d => {
-            d.values = d.values.sort((a, b) => b.freq - a.freq)
-            d.values = d.values.slice(0, 15);
-        })
+        var rectCanvas = svg.select('#rectCanvas')
+        var patternCanvas = svg.select('#patternCanvas')
 
         //draw rect
         var xScale = d3.scale.ordinal()
-            .domain(_.map(data, d => d.key))
-            .rangeBands([patternPart, $(svg[0]).width()])
+            .domain(_.uniq(_.map(data, d => d.clusterRange)).sort())
+            .rangeBands([conf.margin, totalWidth])
 
-        var yDomain = _.union(..._.map(data, d => {
-            return _.map(d.values, e => e.path)
-        }))
         var yScale = d3.scale.ordinal()
-            .domain(yDomain)
+            .domain(_.uniq(_.map(data, d => d.path)))
             .rangeBands([0, $(svg[0]).height()])
 
-        var colorDomain = _.union(..._.map(data, d => {
-            return _.map(d.values, e => e.freq / e.dbSize)
-        }))
+        var colorDomain = _.map(data, d => d.freq / d.dbSize)
         var colorScale = d3.scale.linear()
             .domain([0, d3.max(colorDomain)])
             .range(['white', '#54278f'])
 
-        rectCanvas.selectAll('.matrixRow')
-            .data(data).enter()
-            .append('g').attr('class', 'matrixRow')
-            .selectAll('.matrixCell')
-            .data(d => d.values).enter()
+        var rectSelection = rectCanvas.selectAll('.matrixCell')
+            .data(data, d => d.id = d.clusterRange + '-' + d.path)
+
+        rectSelection.enter()
             .append('rect')
             .attr({
                 class: 'matrixCell',
                 width: xScale.rangeBand(),
                 height: yScale.rangeBand(),
             })
-            .attr('x', d => xScale(d.clusterRange))
             .attr('y', d => yScale(d.path))
+            .attr('x', d => xScale(d.clusterRange))
             .attr('fill', d => colorScale(d.freq / d.dbSize))
+
+        rectSelection.transition()
+            .duration(animationDur)
+            .attr({
+                class: 'matrixCell',
+                width: xScale.rangeBand(),
+                height: yScale.rangeBand(),
+            })
+            .attr('y', d => yScale(d.path))
+            .attr('x', d => xScale(d.clusterRange))
+            .attr('fill', d => colorScale(d.freq / d.dbSize))
+
+        rectSelection.exit()
+            .transition()
+            .duration(animationDur)
+            .remove()
+
 
         //draw trees
         var treeMap = {};
-        _.each(data, col => {
-            _.each(col.values, pattern => {
-                treeMap[pattern.path] = pattern.tree;
-            })
+        _.each(data, pattern => {
+            treeMap[pattern.path] = pattern.tree;
         })
 
-        patternCanvas.selectAll('.patternTree')
-            .data(yDomain).enter()
+        var patternTreeSelection = patternCanvas.selectAll('.patternTree')
+            .data(yScale.domain(), (d, i) => {
+                return d.id = i;
+            })
+        patternTreeSelection.exit()
+            .transition()
+            .duration(animationDur)
+            .remove()
+
+        patternTreeSelection.enter()
             .append('g').attr('class', 'patternTree')
-            .attr('transform', d=>d3.translate(0, yScale(d)))
-            .each(function(d, i){
-                var canvas=d3.select(this);
-                var data=treeMap[d]
-                var yMargin=5;
-                new d3.drawTree(canvas, data)
-                    .height(yScale.rangeBand()-yMargin*2)
-                    .width(50)
+            .attr('transform', d => d3.translate(0, yScale(d) + conf.treePadding))
+            .each(function(d, i) {
+                var canvas = d3.select(this);
+                let tree = treeMap[d]
+                var yMargin = 5;
+                canvas.append('rect')
+                    .attr('class', 'background')
+                    .attr({
+                        width: patternPart,
+                        height: yScale.rangeBand() - conf.treePadding * 2,
+                        fill: '#ccc',
+                        y: -conf.treePadding,
+                    })
+                new d3.drawTree(canvas, tree)
+                    .height(yScale.rangeBand() - yMargin * 2)
+                    .width(patternPart)
                     .draw()
             })
+
+        patternTreeSelection.transition()
+            .duration(animationDur)
+            .attr('transform', d => d3.translate(0, yScale(d) + conf.treePadding))
+            .each(function(d, i) {
+                var canvas = d3.select(this);
+                let tree = treeMap[d]
+                var yMargin = 5;
+                canvas.selectAll('.background')
+                    .attr({
+                        width: patternPart,
+                        height: yScale.rangeBand() - 2 * conf.treePadding,
+                        fill: '#ccc',
+                        y: -conf.treePadding,
+                    })
+                new d3.drawTree(canvas, tree)
+                    .height(yScale.rangeBand() - yMargin * 2)
+                    .width(patternPart)
+                    .draw()
+            })
+
 
     }
 

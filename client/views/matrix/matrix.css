@@ -8,7 +8,7 @@
     width: 100%;
 }
 
-.node {
+.patternTree{
     cursor: pointer;
 }
 
@@ -25,10 +25,14 @@
 .link {
     fill: none;
     stroke: steelblue;
-    stroke-width: 4px;
+    stroke-width: 1.5px;
 }
 
 .matrixCell {
     stroke: white;
     stroke-width: 2;
+}
+
+.background{
+    opacity: 0.5;
 }

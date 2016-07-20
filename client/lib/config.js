@@ -61,4 +61,10 @@ Template.clusterWindow.configure={
 }
 
 Template.matrix.configure={
+    circleR:2,
+    duration:500,
+    treePadding:2,
+    patternPart:60,
+    margin:10,
+
 }

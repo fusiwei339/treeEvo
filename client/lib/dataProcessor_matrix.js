@@ -4,6 +4,7 @@ Template.matrix.dataProcessor = function() {
     }
 
     var conf_flow = Template.flow.configure;
+    var conf= Template.matrix.configure;
 
     ret.getMatrixData = function(roots) {
         var ret = { children: [], label: '0' };
@@ -30,6 +31,19 @@ Template.matrix.dataProcessor = function() {
         recursion(roots, 0, 0, ret);
 
         return ret;
+    }
+
+    ret.calLean=function(tree){
+        var nDescendents=0;
+        function trackDown(root){
+            _.each(root.children, child=>{
+                if(child.children.length>0){
+                    trackDown(child);
+                }else{
+                    nDescendents++;
+                }
+            })
+        }
     }
 
     ret.generateFakeTree = function(nGen, nSons) {

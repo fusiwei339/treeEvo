@@ -5,25 +5,24 @@ d3.drawTree = class {
     }
 
     height(val) {
-        this._height= val;
+        this._height = val;
         return this;
     }
     width(val) {
-        this._width= val;
+        this._width = val;
         return this;
     }
 
     draw() {
 
         var root = this.data;
-        var svg = this.svg;
-        var width= this._width|| 3;
-        var height= this._height|| 3;
+        var svgGroup = this.svg;
+        var width = this._width || 3;
+        var height = this._height || 3;
+        var conf = Template.matrix.configure;
 
-        var maxLabelLength = 20;
-        var duration = 750;
+        var duration = conf.duration;
         var i = 0;
-        var nodeSize=5;
 
         var tree = d3.layout.tree()
             .size([width, height])
@@ -33,18 +32,9 @@ d3.drawTree = class {
                 return [d.x, d.y];
             });
 
-        // var zoomListener = d3.behavior.zoom()
-        //     .scaleExtent([0.1, 3])
-        //     .on("zoom", () => {
-        //         svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-        //     });
-
-        // svg.call(zoomListener);
-        var svgGroup = svg.append("g");
-
         // Define the root
-        root.x0 = width/ 2;
-        root.y0 = 0;
+        root.x0 = width / 2;
+        root.y0 = conf.treePadding * 2;
 
         // Layout the tree initially and center on the root node.
         update(root);
@@ -54,11 +44,6 @@ d3.drawTree = class {
             // Compute the new tree layout.
             var nodes = tree.nodes(root);
             var links = tree.links(nodes);
-
-            // // Set widths between levels based on maxLabelLength.
-            // nodes.forEach(function(d) {
-            //     d.y = (d.depth * (maxLabelLength * 10)); //maxLabelLength * 10px
-            // });
 
             // // Update the nodes…
             node = svgGroup.selectAll("g.node")
@@ -75,7 +60,7 @@ d3.drawTree = class {
                 .append("circle")
                 .attr({
                     class: 'nodeCircle',
-                    r:2,
+                    r: conf.circleR,
                 })
                 .style("fill", function(d) {
                     return d._children ? "lightsteelblue" : "#fff";
@@ -95,8 +80,6 @@ d3.drawTree = class {
                     return "translate(" + source.x + "," + source.y + ")";
                 })
                 .remove()
-                .select("circle")
-                .attr("r", 0);
 
 
             // Update the links…

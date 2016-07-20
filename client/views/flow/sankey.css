@@ -8,10 +8,6 @@
   text-shadow: 0 1px 0 #fff;
 }
 
-.link {
-  opacity: .2;
-}
-
 .link:hover {
   opacity: .5;
 }
