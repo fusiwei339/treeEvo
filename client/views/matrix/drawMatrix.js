@@ -56,6 +56,7 @@ d3.drawMatrix = class {
                 new d3.drawLine(canvas, d)
                     .width(xScale.rangeBand()-conf.margin)
                     .height(yScale.rangeBand())
+                    .standardize(true)
                     .draw();
             })
             // .attr('fill', d => colorScale(d.freq / d.dbSize))

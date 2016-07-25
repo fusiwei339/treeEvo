@@ -11,15 +11,26 @@ d3.drawLine = class {
         this._height = val;
         return this;
     }
+    standardize(val) {
+        this._standardize = val;
+        return this;
+    }
 
     draw() {
-        var conf = Template.option.configure;
+        var conf = Template.matrix.configure;
 
         var width = this._width,
             height = this._height,
-            option = this._option,
+            standardize = this._standardize,
             svg = this.svg,
             data = this.data.freqArr;
+
+        if (standardize) {
+            _.each(data, (d, i) => {
+                var overall = conf.stat[this.data.attr][i].y
+                d.y = overall ? (d.y / overall) : d.y;
+            })
+        }
 
         var y = d3.scale.linear()
             .domain([0, d3.max(data, d => d.y)])
