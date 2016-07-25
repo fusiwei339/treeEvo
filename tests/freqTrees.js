@@ -49,32 +49,3 @@ _.each(trees, function(tree, idx) {
 db.tree2.drop()
 db.tree2.insert(ret)
 
-
-function sortObj(obj){
-	var arr=[];
-	_.each(obj, function(val, key){
-		arr.push([val, key])
-	})
-	arr.sort(function(a, b){
-		return a[0].length-b[0].length;
-	})
-	var ret={}
-	_.each(arr, function(elem, idx){
-		if(idx<5){
-			ret[elem[1]]=elem[0];
-		}
-	})
-	return ret;
-}
-var depths = [2, 3, 4, 5, 6];
-_.each(depths, function(depth) {
-	var query={};
-	var key='depth'+depth;
-	query[key]={$exists:true};
-    var ids = db.trees_complex.find(query).toArray()
-    var patterns=_.groupBy(ids, function(id){
-    	return id[key];
-    })
-    patterns=sortObj(patterns);
-
-})

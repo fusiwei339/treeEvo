@@ -67,4 +67,19 @@ Template.matrix.configure={
     patternPart:60,
     margin:10,
     labelPart:25,
+    attrConf:{
+        lastage:{
+            range:[0, 100]
+        },
+        f_bir_age:{
+            range:[0, 100]
+        },
+        l_bir_age:{
+            range:[0, 100]
+        },
+        birthyear:{
+            range:[1675, 1909]
+        },
+    },
+    attrs:['lastage', 'f_bir_age', 'l_bir_age', 'birthyear']
 }

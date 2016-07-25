@@ -114,6 +114,76 @@ Template.matrix.dataProcessor = function() {
         appendChild(ret);
         return ret;
 
+    };
+
+    ret.seq2tree = function(seq) {
+        var ret = { label: '0', children: [] };
+        seq = seq.sort();
+        var flag = true;
+        if (seq[0] !== '0') return {};
+
+        for (var i = 1; i < seq.length; i++) {
+            var item = seq[i];
+            var elems = item.split('g');
+            elems.shift();
+            flag = walk(elems, ret);
+            if (flag) continue;
+            else return {};
+        }
+        return ret;
+
+        function walk(items, obj) {
+            if (items.length < 1)
+                return true;
+
+            var first = +items.shift();
+            if (obj.children) {
+                if (obj.children.length === first) {
+                    obj.children.push({
+                        label: obj.label + 'g' + first,
+                        children: [],
+                    })
+                    return walk(items, obj.children[first]);
+                } else if (obj.children.length < first) {
+                    return false;
+                } else {
+                    return walk(items, obj.children[first])
+                }
+            }
+            return false;
+        }
+    };
+
+    ret.getMatrixData_attr=function(attrs, trees){
+        var ret=[]
+        _.each(attrs, attr=>{
+            _.each(trees, tree=>{
+                ret.push({
+                    tree:this.seq2tree(tree.pattern.split(',')),
+                    path:tree.pattern,
+                    attr:attr,
+                    freqArr:this.getFreq(tree.ids, attr)
+                })
+            })
+        })
+        return ret;
+    }
+
+    ret.getFreq = function(ids, attr) {
+        var arr=_.map(ids, id=>conf_flow.malePeopleObj_toUse[''+id][attr]);
+
+        var range = conf.attrConf[attr].range;
+        var temp = _.groupBy(arr, d => d);
+        var ret = [];
+        for (var i = range[0]; i <= range[1]; i++) {
+            if (temp['' + i])
+                ret.push({
+                    x: i,
+                    y: temp['' + i].length,
+                })
+            else ret.push({ x: i, y: 0 });
+        }
+        return ret;
     }
 
     return ret;

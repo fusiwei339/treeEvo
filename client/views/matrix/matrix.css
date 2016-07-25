@@ -50,3 +50,9 @@
 .xLabel{
     font-size: 18px
 }
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}

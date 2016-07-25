@@ -18,7 +18,7 @@ d3.drawMatrix = class {
         var animationDur = 500;
         var patternPart = this._patternPart;
         var circleR = conf.circleR;
-        var totalWidth = $(svg[0]).width() / 2;
+        var totalWidth = $(svg[0]).width();
         var totalHeight = $(svg[0]).height() - conf.labelPart;
 
         var rectCanvas = svg.select('#rectCanvas')
@@ -26,51 +26,55 @@ d3.drawMatrix = class {
 
         //draw rect
         var xScale = d3.scale.ordinal()
-            .domain(_.uniq(_.map(data, d => d.clusterRange)).sort())
+            .domain(_.uniq(_.map(data, d => d.attr)).sort(), .1, 0)
             .rangeBands([conf.margin, totalWidth])
 
         var yScale = d3.scale.ordinal()
             .domain(_.uniq(_.map(data, d => d.path)))
             .rangeBands([0, totalHeight])
 
-        var colorDomain = _.map(data, d => d.freq / d.dbSize)
-        var colorScale = d3.scale.linear()
-            .domain([0, d3.max(colorDomain)])
-            .range(['white', '#54278f'])
+        // var colorDomain = _.map(data, d => d.freq / d.dbSize)
+        // var colorScale = d3.scale.linear()
+        //     .domain([0, d3.max(colorDomain)])
+        //     .range(['white', '#54278f'])
 
         var leanColor = d3.scale.linear()
             .domain([-1, 0, 1])
             .range(['#e08214', '#f7f7f7', '#8073ac'])
 
         var rectSelection = rectCanvas.selectAll('.matrixCell')
-            .data(data, d => d.id = d.clusterRange + '-' + d.path)
+            .data(data, d => d.id = d.attr+ '-' + d.path)
 
         rectSelection.enter()
-            .append('rect')
+            .append('g')
             .attr({
                 class: 'matrixCell',
-                width: xScale.rangeBand(),
-                height: yScale.rangeBand(),
             })
-            .attr('y', d => yScale(d.path))
-            .attr('x', d => xScale(d.clusterRange))
-            .attr('fill', d => colorScale(d.freq / d.dbSize))
-
-        rectSelection.transition()
-            .duration(animationDur)
-            .attr({
-                class: 'matrixCell',
-                width: xScale.rangeBand(),
-                height: yScale.rangeBand(),
+            .attr('transform', d => d3.translate(xScale(d.attr), yScale(d.path)))
+            .each(function(d, i){
+                var canvas=d3.select(this);
+                new d3.drawLine(canvas, d)
+                    .width(xScale.rangeBand()-conf.margin)
+                    .height(yScale.rangeBand())
+                    .draw();
             })
-            .attr('y', d => yScale(d.path))
-            .attr('x', d => xScale(d.clusterRange))
-            .attr('fill', d => colorScale(d.freq / d.dbSize))
+            // .attr('fill', d => colorScale(d.freq / d.dbSize))
 
-        rectSelection.exit()
-            .transition()
-            .duration(animationDur)
-            .remove()
+        // rectSelection.transition()
+        //     .duration(animationDur)
+        //     .attr({
+        //         class: 'matrixCell',
+        //         width: xScale.rangeBand(),
+        //         height: yScale.rangeBand(),
+        //     })
+        //     .attr('y', d => yScale(d.path))
+        //     .attr('x', d => xScale(d.clusterRange))
+        //     .attr('fill', d => colorScale(d.freq / d.dbSize))
+
+        // rectSelection.exit()
+        //     .transition()
+        //     .duration(animationDur)
+        //     .remove()
 
         //draw x scale
         var labelSelection = rectCanvas.selectAll('.xLabel')
@@ -86,12 +90,12 @@ d3.drawMatrix = class {
             .attr('class', 'xLabel')
             .attr('x', d => xScale(d))
             .attr('y', -5)
-            .text(d => data[0].clusterName + ': ' + d)
+            .text(d => d)
         labelSelection.transition()
             .duration(animationDur)
             .attr('x', d => xScale(d))
             .attr('y', -5)
-            .text(d => data[0].clusterName + ': ' + d)
+            .text(d => d)
 
 
 

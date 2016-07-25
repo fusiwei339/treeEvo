@@ -6,6 +6,9 @@ Meteor.publish('test', function() {
     return Coll.test.find();
 })
 
+Meteor.publish('freqPatterns', function() {
+    return Coll.freqPatterns.find();
+})
 // Meteor.publish('sankeyEdges', function(){
 // 	return Coll.sankeyEdges.find();
 // })
