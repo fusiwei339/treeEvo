@@ -9,6 +9,10 @@ Meteor.publish('test', function() {
 Meteor.publish('freqPatterns', function() {
     return Coll.freqPatterns.find();
 })
+
+Meteor.publish('rPretty', function() {
+    return Coll.rPretty.find();
+})
 // Meteor.publish('sankeyEdges', function(){
 // 	return Coll.sankeyEdges.find();
 // })

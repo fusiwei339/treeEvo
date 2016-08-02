@@ -57,21 +57,14 @@ Template.matrix.rendered = function() {
         Session.get('malePeopleObj_ready', new Date());
         if (!conf_flow.malePeopleObj_toUse) return;
 
-        var handler = Meteor.subscribe('freqPatterns')
+        var handler = Meteor.subscribe('rPretty')
         if (handler.ready()) {
 
-            var patterns = Coll.freqPatterns.find().fetch().sort((a, b) => {
-                if (a.depth === b.depth) {
-                    return a.pattern - b.pattern;
-                } else {
-                    return a.depth - b.depth;
-                }
-            }).slice(0, 15);
+            var patterns = Coll.rPretty.find().fetch();
+            // var data = dataProcessor_matrix.getMatrixData_attr(conf.attrs, patterns);
+            console.log(patterns)
 
-            var data = dataProcessor_matrix.getMatrixData_attr(conf.attrs, patterns);
-            console.log(data)
-
-            new d3.drawMatrix(svg, data)
+            new d3.drawMatrix(svg, patterns)
                 .patternPart(conf.patternPart)
                 .draw();
 

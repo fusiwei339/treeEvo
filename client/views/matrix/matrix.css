@@ -34,7 +34,7 @@
 }
 
 .background{
-    opacity: 0.5;
+    fill:none;
 }
 
 .highlightRect{
@@ -51,8 +51,13 @@
     font-size: 18px
 }
 
-.line {
+.marginLine {
   fill: none;
-  stroke: steelblue;
   stroke-width: 1.5px;
+}
+
+.axis text{
+    stroke:black;
+    stroke-width:0.5px;
+    font-size: 12px;
 }

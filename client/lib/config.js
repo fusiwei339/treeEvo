@@ -81,6 +81,12 @@ Template.matrix.configure = {
             range: [1675, 1909]
         },
     },
+    plotMargin:{
+        top:5,
+        left:40,
+        right:5,
+        bottom:20,
+    },
     attrs: ['lastage', 'f_bir_age', 'l_bir_age', 'birthyear'],
     stat: {
         "lastage": [{
