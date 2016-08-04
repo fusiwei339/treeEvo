@@ -13,7 +13,13 @@ Template.matrix.rendered = function() {
             conf_flow.malePeople_toUse = d3.deepCopyArr(conf_flow.malePeople);
             dataProcessor_flow.calGlobalData_toUse(false);
 
-            Session.set('malePeopleObj_ready', new Date());
+            HTTP.get(Meteor.absoluteUrl("/patterns.json"), function(err, result) {
+                conf_flow.patterns= result.data;
+                conf_flow.patternsObj=_.groupBy(conf_flow.patterns, p=>p.depth);
+
+                console.log('ready')
+                Session.set('malePeopleObj_ready', new Date());
+            });
         });
     });
 

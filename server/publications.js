@@ -13,6 +13,10 @@ Meteor.publish('freqPatterns', function() {
 Meteor.publish('rPretty', function() {
     return Coll.rPretty.find();
 })
+
+Meteor.publish('patternsDepth', function(depth) {
+    return Coll.patternsDepth.find({depth:depth}).limit(10);
+})
 // Meteor.publish('sankeyEdges', function(){
 // 	return Coll.sankeyEdges.find();
 // })

@@ -71,7 +71,6 @@ d3.drawMultiTrees = class {
                         .draw()
                 })
 
-
         }).on('mouseleave', () => {
             svg.selectAll('.multiSample').remove()
 

@@ -1,31 +1,29 @@
 <template name="option">
-    <div class="attrListDiv">
-        {{>multipleSelect options=selectOptions settings=selectSettings }}
-        <ul class="list-group" style="margin-top: 10px; margin-bottom: 10px">
-            {{#each attributeList}} 
-                {{>optionItem itemAttr=this}} 
-            {{/each}}
+    <div id="optionPanel" class="col-md-12">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active optionTabs"><a href="#attrListContainer" aria-controls="home" role="tab" data-toggle="tab">Attribute List</a></li>
+            <li role="presentation"><a href="#structureContainer" aria-controls="profile" role="tab" data-toggle="tab" class="optionTabs">Structure List</a></li>
         </ul>
-        <div class="btn-group" id="btn-group-attr" role="group">
-            <button type="button" id="filterBtn" class="btn btn-default btn-attr">Create Filter</button>
-            <button type="button" id="clusterBtn" class="btn btn-default btn-attr">Add Cluster</button>
-            <button type="button" id="clearBtn" class="btn btn-default btn-attr">Clear All</button>
+    </div>
+    <div class="tab-content">
+        <div id="attrListContainer" role="tabpanel" class="tab-pane active">
+            {{>multipleSelect options=selectOptions settings=selectSettings }}
+            <ul class="list-group" style="margin-bottom: 10px; margin-top:10px">
+                {{#each attributeList}} {{>optionItem itemAttr=this}} {{/each}}
+            </ul>
+        </div>
+        <div id="structureContainer" role="tabpanel" class="tab-pane">
+            <ul class="list-group" style="margin-bottom: 10px">
+                {{#each structureList}} {{>structureItem depth=this}} {{/each}}
+            </ul>
         </div>
     </div>
-    <div class="attrSetDiv">
-        <strong>Filter:</strong>
-        <li class="list-group-item">
-            {{filter}}
-        </li>
-        <strong>Clusters:</strong>
-        <div id="sortableList"></div>
-    </div>
-    {{>clusterWindow}}
 </template>
 
 <template name="optionItem">
     <div class="list-group-item nopadding attrContainer">
-        <p class="attrTitle col-md-6">{{itemAttr}}
+        <p class="attrTitle col-md-6">
+            {{itemAttr}}
             <label id="{{itemAttr}}clear" class="attrOption btn btn-default">
                 <i class="fa fa-refresh fa-fw" title="Clear Markers"></i>
             </label>
@@ -34,23 +32,14 @@
     </div>
 </template>
 
-<template name="clusterWindow">
-    <!-- Modal -->
-    <div class="modal fade" id="clusterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Cluster Definition</h4>
-                </div>
-                <div class="modal-body">
-                    <svg id="clusterWindow"></svg>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="finishClusterDef" type="button" class="btn btn-primary">Finish</button>
-                </div>
-            </div>
+<template name="structureItem">
+    <div class="list-group-item nopadding structureContainer">
+        <p class="depthTitle col-md-6">
+            Depth: {{depth}}
+        </p>
+        <div class="structureDiv">
+            <svg id="depth{{depth}}" depth={{depth}} class="structureSvg"></svg>
         </div>
     </div>
 </template>
+<template name="clusterWindow"></template>

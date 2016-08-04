@@ -23,7 +23,7 @@ Template.header.configure = {
 
 Template.option.configure = {
     // attributeList:["POSITION","SON_COUNT","birthorder","birthyear","cluster","district","ever_married","f_bir_age","f_bir_year","f_mar_age","f_mar_year","fatherid","founderid","has_son","householdid","l_bir_age","l_bir_year","lastage","personid","region","village"],
-    attributeList: ["SON_COUNT", "lastage", "birthyear", "f_bir_age", "l_bir_age"],
+    attributeList: ["lastage", "birthyear", "f_bir_age", "l_bir_age"],
     svgHeight: 100,
     animationDur: 800,
     barPadding: 2,
@@ -41,6 +41,14 @@ Template.option.configure = {
 
 Template.optionItem.configure = {
     clusterRange: {},
+}
+
+Template.structureItem.configure = {
+    pattern:{
+        width:50,
+        height:50,
+        margin:5,
+    },
 }
 
 Template.clusterWindow.configure = {
