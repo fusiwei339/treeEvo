@@ -12,13 +12,18 @@ d3.drawTree = class {
         this._width = val;
         return this;
     }
+    padding(val) {
+        this._padding= val;
+        return this;
+    }
 
     draw() {
 
         var root = this.data;
         var svgGroup = this.svg;
         var width = this._width || 3;
-        var height = this._height || 3;
+        var padding= this._padding|| 0;
+        var height = this._height-padding*2;
         var conf = Template.matrix.configure;
 
         var duration = conf.duration;

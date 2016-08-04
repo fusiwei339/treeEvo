@@ -31,7 +31,7 @@ d3.drawMatrix = class {
 
         var yScale = d3.scale.ordinal()
             .domain(_.map(data[0].marginY, d => d.path))
-            .rangeBands([0, totalHeight])
+            .rangeBands([0, totalHeight], .1, 0)
 
         var groupColor = d3.scale.category10()
             .domain(_.map(data[0].marginY, d => d.path))
@@ -61,31 +61,7 @@ d3.drawMatrix = class {
                     .standardize(true)
                     .lineColor(groupColor)
                     .draw();
-
-                // canvas.append('rect')
-                //     .attr({
-                //         width: xScale.rangeBand() - conf.margin,
-                //         height: yScale.rangeBand() * 5,
-                //         fill: '#ccc'
-                //     })
             })
-            // .attr('fill', d => colorScale(d.freq / d.dbSize))
-
-        // rectSelection.transition()
-        //     .duration(animationDur)
-        //     .attr({
-        //         class: 'matrixCell',
-        //         width: xScale.rangeBand(),
-        //         height: yScale.rangeBand(),
-        //     })
-        //     .attr('y', d => yScale(d.path))
-        //     .attr('x', d => xScale(d.clusterRange))
-        //     .attr('fill', d => colorScale(d.freq / d.dbSize))
-
-        // rectSelection.exit()
-        //     .transition()
-        //     .duration(animationDur)
-        //     .remove()
 
         //draw x scale
         var labelSelection = rectCanvas.selectAll('.xLabel')
@@ -113,8 +89,10 @@ d3.drawMatrix = class {
         //draw trees
         var treeMap = {};
         _.each(data[0].marginY, pattern => {
-            if (pattern.path === 'others' || pattern.path === 'base') {
-                treeMap[pattern.path] = null;
+            if (pattern.path.includes(';')) {
+                let paths = pattern.path.split(';');
+                let pathArr = _.map(paths, path => dataProcessor.seq2tree(path.split(',')));
+                treeMap[pattern.path] = pathArr
             } else {
                 treeMap[pattern.path] = dataProcessor.seq2tree(pattern.path.split(','));
             }
@@ -132,78 +110,33 @@ d3.drawMatrix = class {
         patternTreeSelection.enter()
             .append('g').attr('class', 'patternTree')
             .attr('transform', d => d3.translate(0, yScale(d) + conf.treePadding))
-            .on('click', function(d) {
-                d3.selectAll('.patternTree').classed('selectedRect', false)
-                d3.select(this).classed('selectedRect', true)
-
-                d3.selectAll('.patternTree')
-                    .classed('highlightRect', false);
-
-                d3.selectAll('.patternTree')
-                    .filter(e => {
-                        if (dataProcessor.calDistance(e, d) === 1)
-                            return true;
-                        return false;
-                    })
-                    .classed('highlightRect', true);
-            })
             .each(function(d, i) {
                 var canvas = d3.select(this);
                 let tree = treeMap[d]
-                canvas.append('rect')
-                    .attr('class', 'background')
-                    .attr({
-                        width: patternPart,
-                        height: yScale.rangeBand() - conf.treePadding * 2,
-                        // fill: leanColor(dataProcessor.calLean(tree)),
-                        stroke: groupColor(d),
-                        'stroke-width': 2.5,
-                        y: -conf.treePadding,
-                    })
-                if (tree) {
-                    var yMargin = 5;
+                var yMargin = 5;
+                if (!Array.isArray(tree)) {
+                    canvas.append('rect')
+                        .attr('class', 'background')
+                        .attr({
+                            width: patternPart,
+                            height: yScale.rangeBand(),
+                            stroke: groupColor(d),
+                            y:-conf.treePadding,
+                        })
+                    // var g=canvas.append('g').attr('transform', d3.translate(0, conf.treePadding))
                     new d3.drawTree(canvas, tree)
-                        .height(yScale.rangeBand() - yMargin * 2)
+                        .height(yScale.rangeBand())
                         .width(patternPart)
+                        .padding(5)
                         .draw()
                 } else {
-                    canvas.append('text')
-                        .text(d)
-                        .attr('x', 5)
-                        .attr('y', 20)
-                        .attr('font-size', 16)
+                    new d3.drawMultiTrees(canvas, tree)
+                        .height(yScale.rangeBand())
+                        .width(patternPart)
+                        .stroke(groupColor(d))
+                        .draw()
                 }
             })
-
-        // patternTreeSelection.transition()
-        //     .duration(animationDur)
-        //     .attr('transform', d => d3.translate(0, yScale(d) + conf.treePadding))
-        //     .each(function(d, i) {
-        //         var canvas = d3.select(this);
-        //         let tree = treeMap[d]
-        //         canvas.append('rect')
-        //             .attr('class', 'background')
-        //             .attr({
-        //                 width: patternPart,
-        //                 height: yScale.rangeBand() - conf.treePadding * 2,
-        //                 // fill: leanColor(dataProcessor.calLean(tree)),
-        //                 fill: groupColor(d),
-        //                 y: -conf.treePadding,
-        //             })
-        //         if (tree) {
-        //             var yMargin = 5;
-        //             new d3.drawTree(canvas, tree)
-        //                 .height(yScale.rangeBand() - yMargin * 2)
-        //                 .width(patternPart)
-        //                 .draw()
-        //         } else {
-        //             canvas.append('text')
-        //                 .text(d)
-        //                 .attr('x', 10)
-        //                 .attr('y', 20)
-        //         }
-        //     })
-
 
 
     }

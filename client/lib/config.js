@@ -63,7 +63,7 @@ Template.clusterWindow.configure = {
 Template.matrix.configure = {
     circleR: 2,
     duration: 500,
-    treePadding: 2,
+    treePadding: 5,
     patternPart: 60,
     margin: 10,
     labelPart: 25,
@@ -85,7 +85,7 @@ Template.matrix.configure = {
         top:5,
         left:40,
         right:5,
-        bottom:20,
+        bottom:5,
     },
     attrs: ['lastage', 'f_bir_age', 'l_bir_age', 'birthyear'],
     stat: {

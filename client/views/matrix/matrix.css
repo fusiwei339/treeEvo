@@ -34,7 +34,8 @@
 }
 
 .background{
-    fill:none;
+    fill:white;
+    stroke-width:2.5px;
 }
 
 .highlightRect{
@@ -60,4 +61,8 @@
     stroke:black;
     stroke-width:0.5px;
     font-size: 12px;
+}
+
+.shadowLine{
+    stroke-width:0.5px;
 }

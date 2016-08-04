@@ -7,27 +7,40 @@ var malePeopleObj = {};
 _.each(malePeople, function(p) {
     malePeopleObj[p.personid] = p;
 })
-var arr = db.tree_complete.aggregate([
+
+
+var ret = []
+//get topGroups
+var topPatterns= db.tree_complete.aggregate([
     { $match: { depth: focusDepth } },
     { $group: { _id: '$path', count: { $sum: 1 } } },
     { $sort: { count: -1 } },
-    { $limit: limit }
-]).toArray()
-
-var topPatterns = _.map(arr, function(e) {
-    return e._id
+    { $limit: limit+5 }
+]).map(function(d){
+    return d._id;
 })
+var others=topPatterns.splice(3).join(';');
+var topThree=topPatterns;
 
-var ret = []
 var selectedPeople = db.tree_complete.find({ depth: focusDepth }).forEach(function(p) {
-    var idx = topPatterns.indexOf(p.path);
-    var temp = { group: idx, pattern: topPatterns[idx] ? topPatterns[idx] : 'others' };
+    var idx = topThree.indexOf(p.path);
+    var temp = { group: idx, pattern: topPatterns[idx] ? topPatterns[idx] : others };
     _.each(attrs, function(attr) { temp[attr] = malePeopleObj[p.personid][attr]; })
     ret.push(temp)
 });
 
+//get base gruops
+var basePatterns=db.tree_complete.aggregate([
+    { $match: { depth: focusDepth-1 } },
+    { $group: { _id: '$path', count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $limit: limit+2 }
+]).map(function(d){
+    return d._id;
+}).join(';')
+
 var basePeople = db.tree_complete.find({ depth: focusDepth - 1 }).forEach(function(p) {
-    var temp = { group: limit, pattern: 'base'};
+    var temp = { group: limit, pattern: basePatterns};
     _.each(attrs, function(attr) { temp[attr] = malePeopleObj[p.personid][attr]; })
     ret.push(temp)
 })

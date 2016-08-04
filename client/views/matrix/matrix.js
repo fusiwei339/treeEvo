@@ -25,7 +25,7 @@ Template.matrix.rendered = function() {
     svg.append('g')
         .attr('class', 'patternCanvas')
         .attr('id', 'patternCanvas')
-        .attr('transform', d3.translate(0, conf.labelPart))
+        .attr('transform', d3.translate(5, conf.labelPart))
 
     // Tracker.autorun(() => {
     //     // dataProcessor_matrix.getFreq([2, 1, 4, 3, 5, 35, 2, 11, 1, 1])
