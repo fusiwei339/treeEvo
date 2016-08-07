@@ -13,7 +13,7 @@ d3.drawFreqPatterns = class {
         return this;
     }
     depth(val) {
-        this._depth= val;
+        this._depth = val;
         return this;
     }
 
@@ -22,12 +22,12 @@ d3.drawFreqPatterns = class {
         var svg = this.svg;
         var width = this._width;
         var height = this._height;
-        var depth= this._depth;
+        var depth = this._depth;
         var conf = Template.structureItem.configure;
         var dataProcessor = Template.matrix.dataProcessor;
 
 
-        var pattern = { width: width / 5, height: 50+10*(depth-1)};
+        var pattern = { width: width / 5, height: 50 + 10 * (depth - 1) };
         var top = data.slice(0, 15);
 
         var xScale = d3.scale.ordinal()
@@ -38,7 +38,7 @@ d3.drawFreqPatterns = class {
             .enter().append('g')
             .attr('class', 'structureG')
             .attr('transform', (d, i) => {
-                let y = Math.floor(i / 5) * pattern.height+conf.pattern.margin;
+                let y = Math.floor(i / 5) * pattern.height + conf.pattern.margin;
                 return d3.translate(xScale(i % 5), y)
             })
             .each(function(d, i) {
@@ -48,7 +48,7 @@ d3.drawFreqPatterns = class {
                 canvas.append('rect')
                     .attr('width', pattern.width)
                     .attr('height', pattern.height)
-                    .attr('y', -conf.pattern.margin/2)
+                    .attr('y', -conf.pattern.margin / 2)
                     .attr('fill', '#fff')
                 new d3.drawTree(canvas, tree)
                     .height(pattern.height)
@@ -57,11 +57,11 @@ d3.drawFreqPatterns = class {
                     .draw()
 
             })
-            .on('mouseover', function(d){
+            .on('mouseover', function(d) {
                 d3.select(this).select('rect')
                     .attr('fill', '#ddd')
             })
-            .on('mouseleave', function(d){
+            .on('mouseleave', function(d) {
                 d3.select(this).select('rect')
                     .attr('fill', '#fff')
             })

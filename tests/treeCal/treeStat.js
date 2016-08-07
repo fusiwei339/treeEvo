@@ -1,6 +1,6 @@
 var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 var ret = []
-_.each(depth, d=> {
+_.each(depth, d => {
     var match = { $match: {} }
     match.$match['depth' + d] = { $exists: true }
     ret.push(...db.tree_complete.aggregate([
@@ -19,3 +19,5 @@ _.each(depth, d=> {
 
 db.patternsDepth.drop()
 db.patternsDepth.insert(ret)
+
+
