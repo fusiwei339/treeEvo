@@ -93,7 +93,7 @@ Template.matrix.dataProcessor = function() {
         }
         trackDown(tree);
         if (left === right) return 0;
-        return (left - right) / Math.max(left, right);
+        return (left - right) / (left + right);
     }
 
     ret.generateFakeTree = function(nGen, children, length) {
