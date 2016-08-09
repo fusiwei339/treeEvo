@@ -121,7 +121,6 @@ d3.drawMatrix = class {
                             width: patternPart,
                             height: yScale.rangeBand(),
                             stroke: groupColor(d),
-                            y:-conf.treePadding,
                         })
                     // var g=canvas.append('g').attr('transform', d3.translate(0, conf.treePadding))
                     new d3.drawTree(canvas, tree)

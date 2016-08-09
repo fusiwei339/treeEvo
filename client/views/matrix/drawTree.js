@@ -13,7 +13,7 @@ d3.drawTree = class {
         return this;
     }
     padding(val) {
-        this._padding= val;
+        this._padding = val;
         return this;
     }
 
@@ -22,8 +22,8 @@ d3.drawTree = class {
         var root = this.data;
         var svgGroup = this.svg;
         var width = this._width || 3;
-        var padding= this._padding|| 0;
-        var height = this._height-padding*2;
+        var padding = this._padding || 5;
+        var height = this._height - padding * 2;
         var conf = Template.matrix.configure;
 
         var duration = conf.duration;
@@ -60,7 +60,7 @@ d3.drawTree = class {
             var nodeEnter = node.enter().append("g")
                 .attr("class", "node")
                 .attr("transform", function(d) {
-                    return "translate(" + source.x0 + "," + source.y0 + ")";
+                    return "translate(" + source.x0 + "," + (source.y0+padding) + ")";
                 })
                 .append("circle")
                 .attr({
@@ -75,24 +75,21 @@ d3.drawTree = class {
             var nodeUpdate = node.transition()
                 .duration(duration)
                 .attr("transform", function(d) {
-                    return "translate(" + d.x + "," + d.y + ")";
+                    return "translate(" + d.x + "," + (d.y+padding) + ")";
                 });
 
             // Transition exiting nodes to the parent's new position.
             var nodeExit = node.exit().transition()
                 .duration(duration)
                 .attr("transform", function(d) {
-                    return "translate(" + source.x + "," + source.y + ")";
+                    return "translate(" + source.x + "," + (source.y+padding) + ")";
                 })
                 .remove()
 
 
             // Update the links…
-            let filteredlinks = _.filter(links, d => {
-                return !d.target.shink && !d.source.shink
-            })
             var link = svgGroup.selectAll("path.link")
-                .data(filteredlinks, function(d) {
+                .data(links, function(d) {
                     return d.target.id;
                 });
 
@@ -100,34 +97,25 @@ d3.drawTree = class {
             link.enter().insert("path", "g")
                 .attr("class", "link")
                 .attr("d", function(d) {
-                    var o = {
-                        x: source.x0,
-                        y: source.y0
-                    };
                     return diagonal({
-                        source: o,
-                        target: o
+                        source: {x:d.source.x, y:d.source.y+padding},
+                        target: {x:d.target.x, y:d.target.y+padding},
                     });
-                });
+                })
 
             // Transition links to their new position.
             link.transition()
                 .duration(duration)
-                .attr("d", diagonal);
+                .attr("d", function(d) {
+                    return diagonal({
+                        source: {x:d.source.x, y:d.source.y+padding},
+                        target: {x:d.target.x, y:d.target.y+padding},
+                    });
+                });
 
             // Transition exiting nodes to the parent's new position.
             link.exit().transition()
                 .duration(duration)
-                .attr("d", function(d) {
-                    var o = {
-                        x: source.x,
-                        y: source.y
-                    };
-                    return diagonal({
-                        source: o,
-                        target: o
-                    });
-                })
                 .remove();
 
         }

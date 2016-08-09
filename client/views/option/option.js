@@ -12,6 +12,27 @@ Template.option.rendered = function() {
     //init structure list
     Session.set('showStructures', [1, 2, 3, 4, 5])
 
+    Deps.autorun(()=>{
+        Session.get('renewTabs')
+        Session.get('malePeopleObj_ready')
+        if(! flowConf.treeInTree) return;
+
+        var base=$('#attrListContainer')
+        $('#structureContainer').css('height', 800)
+        $('#structureSvg').css('height', 800)
+
+        var data=flowConf.treeInTree;
+        var svg=d3.select('#structureSvg');
+        svg.selectAll('*').remove();
+        
+        new d3.drawTreeInTree(svg, data)
+            .height(base.height())
+            .width(base.width())
+            .padding(5)
+            .draw()
+
+    })
+
 }
 
 
@@ -86,10 +107,6 @@ Template.option.events({
         Session.set('nodeSelected', null);
         Session.set('clusterMalePeople', [{ description: 'all', order: 0 }]);
         Session.set('clearBtn', new Date());
-    },
-    'click .optionTabs'(){
-        Session.set('renewTabs', new Date())
-        console.log('rendered')
     },
     'click #clusterBtn': function() {
         var dataProcessor = Template.clusterWindow.dataProcessor;

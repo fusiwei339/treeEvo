@@ -78,7 +78,7 @@ _.each(node_parent, (val, key)=>{
 		print(key)
 		return;
 	}
-	nodemap[key].children=val;
+	nodemap[key].children=val.slice(0, 4);
 })
 _.each(graph.nodes, node=>{
 	if(node.depth===1){

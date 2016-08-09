@@ -34,7 +34,6 @@ d3.drawMultiTrees = class {
                 width: width,
                 height: height,
                 stroke: stroke,
-                y: -conf.treePadding,
             })
 
         svg.on('mouseenter', () => {
@@ -95,8 +94,8 @@ d3.drawMultiTrees = class {
                 .data(shadowArr).enter()
                 .append('path')
                 .attr('d', d => geom.path.begin()
-                    .move_to(width + d, -conf.treePadding)
-                    .vertical_to(height - conf.treePadding)
+                    .move_to(width + d, 0)
+                    .vertical_to(height)
                     .end())
                 .attr('class', 'shadowLine')
                 .attr('stroke', stroke)

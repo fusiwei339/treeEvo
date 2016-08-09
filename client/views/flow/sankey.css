@@ -1,5 +1,4 @@
 .node rect {
-  fill-opacity: .9;
   shape-rendering: crispEdges;
 }
 
@@ -25,10 +24,7 @@
 .highlightlink:hover{
   opacity: 0.8;
 }
-.node{
-  stroke:#888;
-  stroke-width:2px;
-}
+
 
 .flowOption{
     height: 5%;

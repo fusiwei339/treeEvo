@@ -13,9 +13,7 @@
             </ul>
         </div>
         <div id="structureContainer" role="tabpanel" class="tab-pane">
-            <ul class="list-group" style="margin-bottom: 10px">
-                {{#each structureList}} {{>structureItem depth=this}} {{/each}}
-            </ul>
+            <svg id="structureSvg"></svg>
         </div>
     </div>
 </template>
@@ -32,7 +30,7 @@
     </div>
 </template>
 
-<template name="structureItem">
+<!-- <template name="structureItem">
     <div class="list-group-item nopadding structureContainer">
         <p class="depthTitle col-md-6">
             Depth: {{depth}}
@@ -41,5 +39,5 @@
             <svg id="depth{{depth}}" depth={{depth}} class="structureSvg"></svg>
         </div>
     </div>
-</template>
+</template> -->
 <template name="clusterWindow"></template>

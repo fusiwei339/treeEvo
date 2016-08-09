@@ -14,11 +14,14 @@ Template.matrix.rendered = function() {
             dataProcessor_flow.calGlobalData_toUse(false);
 
             HTTP.get(Meteor.absoluteUrl("/patterns.json"), function(err, result) {
-                conf_flow.patterns= result.data;
-                conf_flow.patternsObj=_.groupBy(conf_flow.patterns, p=>p.depth);
+                conf_flow.patterns = result.data;
+                conf_flow.patternsObj = _.groupBy(conf_flow.patterns, p => p.depth);
 
-                console.log('ready')
-                Session.set('malePeopleObj_ready', new Date());
+                HTTP.get(Meteor.absoluteUrl("/tree.json"), function(err, result) {
+                    conf_flow.treeInTree= result.data;
+
+                    Session.set('malePeopleObj_ready', new Date());
+                });
             });
         });
     });

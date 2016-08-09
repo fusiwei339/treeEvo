@@ -43,13 +43,13 @@ Template.optionItem.configure = {
     clusterRange: {},
 }
 
-Template.structureItem.configure = {
-    pattern:{
-        width:50,
-        height:50,
-        margin:5,
-    },
-}
+// Template.structureItem.configure = {
+//     pattern:{
+//         width:50,
+//         height:50,
+//         margin:5,
+//     },
+// }
 
 Template.clusterWindow.configure = {
     labelPart: 0.1,
