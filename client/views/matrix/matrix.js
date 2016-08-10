@@ -17,9 +17,9 @@ Template.matrix.rendered = function() {
                 conf_flow.patterns = result.data;
                 conf_flow.patternsObj = _.groupBy(conf_flow.patterns, p => p.depth);
 
-                HTTP.get(Meteor.absoluteUrl("/tree.json"), function(err, result) {
-                    conf_flow.treeInTree= result.data;
-
+                HTTP.get(Meteor.absoluteUrl("/sankeyData.json"), function(err, result) {
+                    
+                    conf_flow.sankeyData = result.data;
                     Session.set('malePeopleObj_ready', new Date());
                 });
             });

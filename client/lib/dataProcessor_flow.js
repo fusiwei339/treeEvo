@@ -40,8 +40,8 @@ Template.flow.dataProcessor = function() {
         switch (mode) {
             case 'scaleBySqrt':
                 return function(node) {
-                    node.value1 = Math.sqrt(node.man.length);
-                    node.value2 = Math.sqrt(node.children.length);
+                    node.value1 = Math.sqrt(node.people.length);
+                    node.value2 = Math.sqrt(node.people.length);
                 };
             case 'scaleByUni':
                 return function(node) {
@@ -50,8 +50,8 @@ Template.flow.dataProcessor = function() {
                 };
             case 'scaleByDefault':
                 return function(node) {
-                    node.value1 = node.man.length;
-                    node.value2 = node.children.length;
+                    node.value1 = node.people.length;
+                    node.value2 = node.people.length;
                 }
         }
     };

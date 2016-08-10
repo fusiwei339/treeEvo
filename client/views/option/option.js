@@ -12,24 +12,39 @@ Template.option.rendered = function() {
     //init structure list
     Session.set('showStructures', [1, 2, 3, 4, 5])
 
-    Deps.autorun(()=>{
-        Session.get('renewTabs')
+    Deps.autorun(() => {
         Session.get('malePeopleObj_ready')
-        if(! flowConf.treeInTree) return;
+        if (!flowConf.sankeyData) return;
 
-        var base=$('#attrListContainer')
-        $('#structureContainer').css('height', 800)
-        $('#structureSvg').css('height', 800)
+        var base = $('#attrListContainer')
+        $('#structureContainer').css('height', 900)
+        $('#structureSvg').css('height', 900)
 
-        var data=flowConf.treeInTree;
-        var svg=d3.select('#structureSvg');
+        var graph = flowConf.sankeyData;
+
+        var svg = d3.select('#structureSvg');
         svg.selectAll('*').remove();
-        
-        new d3.drawTreeInTree(svg, data)
-            .height(base.height())
-            .width(base.width())
-            .padding(5)
+        var flowCanvas = svg.append('g')
+            .attr('transform', d3.translate(conf.sankey.margin, conf.sankey.margin))
+
+        conf.sankey.svgWidth = $('#structureSvg').width()
+        conf.sankey.svgHeight = $('#structureSvg').height()
+
+        var scaleMethod = 'scaleBySqrt';
+
+        var sankeyLayout = d3.sankey()
+            .nodeWidth(conf.sankey.nodeWidth)
+            .scaleFunc(dataProcessor_flow.getScaleFunc(scaleMethod))
+            .nodePadding(conf.sankey.padding)
+            .size([conf.sankey.svgHeight- conf.sankey.margin * 2, conf.sankey.svgWidth- conf.sankey.margin * 2])
+            .nodes(graph.nodes)
+            .links(graph.edges)
+            .layout();
+
+        var sankeyDiagram = new d3.drawSankey(flowCanvas, graph)
+            .xOffset(0)
             .draw()
+        console.log(graph)
 
     })
 
@@ -123,8 +138,8 @@ Template.option.events({
         // Session.set('clusterMalePeople', clusters);
 
         var items = dataProcessor.getClusters(Template.optionItem.configure.clusterRange);
-        var clusters= dataProcessor.getClusterData(items);
-        Template.option.configure.clusters=clusters;
+        var clusters = dataProcessor.getClusterData(items);
+        Template.option.configure.clusters = clusters;
         Meteor.call('insertClusters', clusters)
         Meteor.call('gspan')
 

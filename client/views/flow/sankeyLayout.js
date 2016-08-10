@@ -70,11 +70,18 @@ d3.sankey = function() {
                 l2y0 = d.source.y + d.sy + d.sourcedy,
                 l1y1 = d.target.y + d.ty,
                 l2y1 = d.target.y + d.ty + d.targetdy;
+            // return geom.path.begin()
+            //     .move_to(x0, l1y0)
+            //     .bezier_to(x2, l1y0, x3, l1y1, x1, l1y1)
+            //     .line_to(x1, l2y1)
+            //     .bezier_to(x3, l2y1, x2, l2y0, x0, l2y0)
+            //     .close_path()
+            //     .end();
             return geom.path.begin()
-                .move_to(x0, l1y0)
-                .bezier_to(x2, l1y0, x3, l1y1, x1, l1y1)
-                .line_to(x1, l2y1)
-                .bezier_to(x3, l2y1, x2, l2y0, x0, l2y0)
+                .move_to(l1y0, x0)
+                .bezier_to(l1y0, x2, l1y1, x3, l1y1, x1)
+                .line_to(l2y1, x1)
+                .bezier_to(l2y1, x3, l2y0, x2, l2y0, x0)
                 .close_path()
                 .end();
         }
@@ -112,18 +119,13 @@ d3.sankey = function() {
     function computeNodeBreadths() {
         x = 0;
 
-        nodes.forEach(function(node) {
-            node.x = node.generation;
-            node.dx = nodeWidth;
-            x = Math.max(x, node.x);
-        })
-        scaleNodeBreadths((size[0] - nodeWidth) / (x + 1));
-    }
+        var xScale = d3.scale.ordinal()
+            .domain(_.map(nodes, d => d.depth))
+            .rangeBands([0, size[0]])
 
-    function scaleNodeBreadths(kx) {
-        Template.flow.configure.rectWidth = kx;
-        nodes.forEach(function(node) {
-            node.x *= kx;
+        nodes.forEach(function(node, i) {
+            node.dx = nodeWidth+(node.depth-1)*10;
+            node.x = xScale(node.depth);
         });
     }
 
@@ -141,7 +143,7 @@ d3.sankey = function() {
         initializeNodeDepth();
 
         function sortVerti(a, b) {
-            return a.cluster- b.cluster;
+            return a.cluster - b.cluster;
         }
 
         _.each(nodesByBreadth, function(nodes, breadth) {
@@ -164,7 +166,7 @@ d3.sankey = function() {
                 })
                 return v;
             })
-            var nCluster = nodesByBreadth[0].length;
+            var nCluster = nodesByBreadth[1].length;
 
 
             var ky = d3.scale.linear()

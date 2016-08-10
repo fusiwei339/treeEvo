@@ -1,18 +1,18 @@
 <template name="option">
     <div id="optionPanel" class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active optionTabs"><a href="#attrListContainer" aria-controls="home" role="tab" data-toggle="tab">Attribute List</a></li>
-            <li role="presentation"><a href="#structureContainer" aria-controls="profile" role="tab" data-toggle="tab" class="optionTabs">Structure List</a></li>
+            <li role="presentation" class="optionTabs"><a href="#attrListContainer" aria-controls="profile" role="tab" data-toggle="tab">Attribute List</a></li>
+            <li role="presentation"><a href="#structureContainer" aria-controls="home" role="tab" data-toggle="tab" class="optionTabs active">Structure List</a></li>
         </ul>
     </div>
     <div class="tab-content">
-        <div id="attrListContainer" role="tabpanel" class="tab-pane active">
+        <div id="attrListContainer" role="tabpanel" class="tab-pane">
             {{>multipleSelect options=selectOptions settings=selectSettings }}
             <ul class="list-group" style="margin-bottom: 10px; margin-top:10px">
                 {{#each attributeList}} {{>optionItem itemAttr=this}} {{/each}}
             </ul>
         </div>
-        <div id="structureContainer" role="tabpanel" class="tab-pane">
+        <div id="structureContainer" role="tabpanel" class="tab-pane active">
             <svg id="structureSvg"></svg>
         </div>
     </div>

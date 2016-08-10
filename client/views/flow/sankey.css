@@ -7,8 +7,13 @@
   text-shadow: 0 1px 0 #fff;
 }
 
-.link:hover {
+.sankeyLink:hover {
   opacity: .5;
+}
+
+.sankeyLink{
+  fill:#eee;
+  stroke-width:0;
 }
 
 .featureRect{
