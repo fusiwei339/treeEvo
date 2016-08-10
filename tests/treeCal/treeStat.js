@@ -20,4 +20,3 @@ _.each(depth, d => {
 db.patternsDepth.drop()
 db.patternsDepth.insert(ret)
 
-

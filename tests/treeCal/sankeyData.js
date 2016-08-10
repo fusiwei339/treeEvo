@@ -1,5 +1,9 @@
+// db.patternsDepth.find().forEach(d=>{
+// 	d.pattern=d.pattern.sort();
+// 	db.patternsDepth.save(d);
+// })
 var patterns = db.patternsDepth.find().toArray()
-var pattern_parent = _.groupBy(patterns, pattern => pattern.parent);
+// var pattern_parent = _.groupBy(patterns, pattern => pattern.parent);
 
 var nodes = sankeyNodes(patterns);
 var edges = sankeyEdges(nodes);
@@ -8,6 +12,12 @@ db.sankeyNodes.drop()
 db.sankeyEdges.drop()
 db.sankeyNodes.insert(nodes)
 db.sankeyEdges.insert(edges)
+
+db.sankeyData.drop()
+// db.sankeyData.insert({
+// 	nodes:nodes,
+// 	edges:edges,
+// })
 
 
 // var patterns_with_parent=assignParent(patterns);
@@ -74,22 +84,18 @@ function sankeyNodes(patterns) {
             .entries(patterns);
 
         _.each(clusters, function(cluster) {
-        	var people=[];
-        	_.each(cluster.values, tree=>people.push())
+            var people = [];
+            _.each(cluster.values, tree => people.push(...tree.personids))
             nodes.push({
                 depth: +oneDepth.key,
                 cluster: cluster.key,
                 trees: cluster.values,
-                people:_.map(cluster.values, d=>)
+                people: people,
                 name: 'depth' + oneDepth.key + 'cluster' + cluster.key,
             })
         })
     })
     return nodes;
-}
-
-function isParent(father, son) {
-    return father.pattern.sort().join(',') === son.parent.sort().join(',')
 }
 
 function sankeyEdges(ndoes) {
@@ -107,28 +113,17 @@ function sankeyEdges(ndoes) {
             source: fatherNode.name,
             target: sonNode.name
         }
-        var matches = [];
-        _.each(sonArr, function(son) {
-            for (var i = fatherArr.length - 1; i >= 0; i--) {
-                var father = fatherArr[i];
-                var fatherPattern=father.pattern.join(',');
-                if (isParent(father, son)) {
-                    matches.push({
-                        father: fatherPattern,
-                        son: son.pattern.join(',')
-                    })
-                    break;
-                }
-            }
-        })
+        var source = [],
+            target = [];
+        var intersection = _.intersection(fatherNode.people, sonNode.people)
 
-        print(matches.length)
-        edge.sourceVal = _.uniq(_.map(matches, m=>m.father));
-        edge.targetVal = matches;
-        edge.sourcePart = edge.sourceVal.length / fatherArr.length;
-        edge.targetPart = edge.targetVal.length / sonArr.length;
+        print(intersection.length)
+        edge.sourceVal = intersection;
+        edge.targetVal = intersection;
+        edge.sourcePart = edge.sourceVal.length / fatherNode.people.length;
+        edge.targetPart = edge.targetVal.length / sonNode.people.length;
 
-        if (!matches.length) return null;
+        if (!intersection.length) return null;
         return edge;
     }
 
