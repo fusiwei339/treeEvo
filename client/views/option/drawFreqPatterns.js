@@ -12,34 +12,40 @@ d3.drawFreqPatterns = class {
         this._width = val;
         return this;
     }
-    depth(val) {
-        this._depth = val;
-        return this;
-    }
 
     draw() {
         var data = this.data;
         var svg = this.svg;
         var width = this._width;
         var height = this._height;
-        var depth = this._depth;
-        var conf = Template.structureItem.configure;
+        var conf = Template.option.configure;
+        var animationDur=800;
         var dataProcessor = Template.matrix.dataProcessor;
 
 
-        var pattern = { width: width / 5, height: 50 + 10 * (depth - 1) };
-        var top = data.slice(0, 15);
+        var pattern = { width: 50, height: height };
+        var nPatterns = Math.floor(width / pattern.width);
+        if (nPatterns <= 0) return;
+        if (data.depth === 1) nPatterns = 5;
+        var top = data.trees
+            .sort((a, b) => {
+                if (a.count === b.count) {
+                    return a.pattern.length - b.pattern.length;
+                }
+                return b.count - a.count
+            })
+            .slice(0, nPatterns);
 
         var xScale = d3.scale.ordinal()
-            .domain([0, 1, 2, 3, 4])
-            .rangeBands([conf.pattern.margin, width - conf.pattern.margin])
+            .domain(_.range(nPatterns))
+            .rangeBands([conf.freqPatterns.margin, width - conf.freqPatterns.margin])
 
-        svg.selectAll('.structureG').data(top)
-            .enter().append('g')
+        var selection=svg.selectAll('.structureG').data(top)
+
+        selection.enter().append('g')
             .attr('class', 'structureG')
             .attr('transform', (d, i) => {
-                let y = Math.floor(i / 5) * pattern.height + conf.pattern.margin;
-                return d3.translate(xScale(i % 5), y)
+                return d3.translate(xScale(i % nPatterns), 0)
             })
             .each(function(d, i) {
                 let canvas = d3.select(this);
@@ -47,8 +53,8 @@ d3.drawFreqPatterns = class {
 
                 canvas.append('rect')
                     .attr('width', pattern.width)
-                    .attr('height', pattern.height)
-                    .attr('y', -conf.pattern.margin / 2)
+                    .attr('height', pattern.height - conf.freqPatterns.padding * 2)
+                    .attr('y', conf.freqPatterns.padding)
                     .attr('fill', '#fff')
                 new d3.drawTree(canvas, tree)
                     .height(pattern.height)
@@ -66,6 +72,30 @@ d3.drawFreqPatterns = class {
                     .attr('fill', '#fff')
             })
 
+        selection.transition().duration(animationDur)
+            .attr('transform', (d, i) => {
+                return d3.translate(xScale(i % nPatterns), 0)
+            })
+            .each(function(d, i) {
+                let canvas = d3.select(this);
+                let tree = dataProcessor.seq2tree(d.pattern);
+
+                canvas.select('rect')
+                    .attr('width', pattern.width)
+                    .attr('height', pattern.height - conf.freqPatterns.padding * 2)
+                    .attr('y', conf.freqPatterns.padding)
+                    .attr('fill', '#fff')
+                new d3.drawTree(canvas, tree)
+                    .height(pattern.height)
+                    .width(pattern.width)
+                    .padding(5)
+                    .draw()
+            })
+
+        selection.exit()
+            .transition()
+            .duration(animationDur)
+            .remove()
 
     }
 

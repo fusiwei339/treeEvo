@@ -41,9 +41,7 @@ Template.option.rendered = function() {
             .links(graph.edges)
             .layout();
 
-        var sankeyDiagram = new d3.drawSankey(flowCanvas, graph)
-            .xOffset(0)
-            .draw()
+        var sankeyDiagram = new d3.drawSankey(flowCanvas, graph).draw()
         console.log(graph)
 
     })

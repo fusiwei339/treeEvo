@@ -8,12 +8,13 @@
 }
 
 .sankeyLink:hover {
-  opacity: .5;
+  opacity: 1;
 }
 
 .sankeyLink{
-  fill:#eee;
+  fill:#3f75a2;
   stroke-width:0;
+  opacity: .7;
 }
 
 .featureRect{

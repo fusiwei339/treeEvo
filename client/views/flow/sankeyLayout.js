@@ -123,9 +123,14 @@ d3.sankey = function() {
             .domain(_.map(nodes, d => d.depth))
             .rangeBands([0, size[0]])
 
+        function sumFromZero(n) {
+            return n * (n - 1) / 2;
+        }
+
         nodes.forEach(function(node, i) {
-            node.dx = nodeWidth+(node.depth-1)*10;
-            node.x = xScale(node.depth);
+            node.dx = nodeWidth + (node.depth - 1) * 10;
+            var offset = node.depth > 1 ? (sumFromZero(node.depth) - 1) * 10 : 0
+            node.x = xScale(node.depth) + offset;
         });
     }
 

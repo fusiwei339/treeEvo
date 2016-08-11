@@ -21,6 +21,11 @@
     background-color: #eee;
 }
 
+.backgroundRect{
+    stroke:steelblue;
+    stroke-width:2px;
+    fill:none;
+}
 .attrOption{
     float: right !important; 
     padding: 0px 5px 0px 5px;

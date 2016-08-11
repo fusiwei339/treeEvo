@@ -39,9 +39,14 @@ Template.option.configure = {
     clusterShadeColors: ['#33a02c', '#1f78b4', '#b15928', '#ff7f00', '#6a3d9a', '#e31a1c', '#8e0152'],
     sankey:{
         nodeWidth:40,
-        padding:5,
+        padding:10,
         margin:5,
+    },
+    freqPatterns:{
+        margin:5,
+        padding:2,
     }
+
 }
 
 Template.optionItem.configure = {
