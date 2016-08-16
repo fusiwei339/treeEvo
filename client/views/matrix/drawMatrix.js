@@ -22,7 +22,9 @@ d3.drawMatrix = class {
         var totalHeight = ($(svg[0]).height() - conf.labelPart) / 2;
 
         var rectCanvas = svg.select('#rectCanvas')
+        rectCanvas.selectAll('*').remove();
         var patternCanvas = svg.select('#patternCanvas')
+        patternCanvas.selectAll('*').remove();
 
         //draw rect
         var xScale = d3.scale.ordinal()
@@ -55,6 +57,7 @@ d3.drawMatrix = class {
             .attr('transform', d => d3.translate(xScale(d.attr), 0))
             .each(function(d, i) {
                 var canvas = d3.select(this);
+
                 new d3.drawLine(canvas, d)
                     .width(xScale.rangeBand() - conf.margin)
                     .height(yScale.rangeBand() * 5)
@@ -62,6 +65,21 @@ d3.drawMatrix = class {
                     .lineColor(groupColor)
                     .draw();
             })
+
+        // rectSelection.transition()
+        //     .duration(animationDur)
+        //     .select('g')
+        //     .attr('transform', d => d3.translate(xScale(d.attr), 0))
+        //     .each(function(d, i) {
+        //         var canvas = d3.select(this);
+
+        //         new d3.drawLine(canvas, d)
+        //             .width(xScale.rangeBand() - conf.margin)
+        //             .height(yScale.rangeBand() * 5)
+        //             .standardize(true)
+        //             .lineColor(groupColor)
+        //             .draw();
+        //     })
 
         //draw x scale
         var labelSelection = rectCanvas.selectAll('.xLabel')
@@ -89,10 +107,10 @@ d3.drawMatrix = class {
         //draw trees
         var treeMap = {};
         _.each(data[0].marginY, pattern => {
-            if (pattern.path.includes(';')) {
-                let paths = pattern.path.split(';');
-                let pathArr = _.map(paths, path => dataProcessor.seq2tree(path.split(',')));
-                treeMap[pattern.path] = pathArr
+            if (Array.isArray(pattern.path)) {
+                let paths = pattern.path;
+                let pathArr = _.map(paths, path => dataProcessor.seq2tree(path)).slice(0, 6);
+                treeMap[pattern.path.join(',')] = pathArr
             } else {
                 treeMap[pattern.path] = dataProcessor.seq2tree(pattern.path.split(','));
             }
@@ -122,7 +140,7 @@ d3.drawMatrix = class {
                             height: yScale.rangeBand(),
                             stroke: groupColor(d),
                         })
-                    // var g=canvas.append('g').attr('transform', d3.translate(0, conf.treePadding))
+                        // var g=canvas.append('g').attr('transform', d3.translate(0, conf.treePadding))
                     new d3.drawTree(canvas, tree)
                         .height(yScale.rangeBand())
                         .width(patternPart)

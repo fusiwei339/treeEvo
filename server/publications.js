@@ -6,12 +6,12 @@ Meteor.publish('test', function() {
     return Coll.test.find();
 })
 
-Meteor.publish('freqPatterns', function() {
-    return Coll.freqPatterns.find();
+Meteor.publish('clusters', function() {
+    return Coll.clusters.find();
 })
 
-Meteor.publish('rPretty', function() {
-    return Coll.rPretty.find();
+Meteor.publish('r', function() {
+    return Coll.r.find();
 })
 
 Meteor.publish('patternsDepth', function(depth) {
@@ -39,8 +39,8 @@ Meteor.methods({
     'gspan' () {
         exec('python /Users/siweifu/project/lineage/tests/pygspan/freqPaths.py', Meteor.bindEnvironment(function(err, stdout, stderr) {}))
     },
-    'test' () {
-        exec('cd /../web.browser/app/ && ls -al', Meteor.bindEnvironment(function(err, stdout, stderr) {
+    'regression' () {
+        exec('cd /Users/siweifu/project/lineage/tests/treeCal/ && ./run.sh', Meteor.bindEnvironment(function(err, stdout, stderr) {
         	console.log(stdout)
         	console.log(stderr)
         }))

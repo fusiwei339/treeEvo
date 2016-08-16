@@ -45,14 +45,16 @@ Template.matrix.rendered = function() {
     //draw regression diagram
     Tracker.autorun(() => {
         Session.get('malePeopleObj_ready', new Date());
-        if (!conf_flow.malePeopleObj_toUse) return;
+        if (!conf_flow.malePeopleObj_toUse || ! conf_flow.sankeyData) return;
 
-        var handler = Meteor.subscribe('rPretty')
+        var handler = Meteor.subscribe('r')
         if (handler.ready()) {
 
-            var patterns = Coll.rPretty.find().fetch();
+            var patterns = Coll.r.find().fetch();
+            var patterns_format=dataProcessor_matrix.reformatR(patterns);
 
-            new d3.drawMatrix(svg, patterns)
+            if(_.isEmpty(patterns_format)) return;
+            new d3.drawMatrix(svg, patterns_format)
                 .patternPart(conf.patternPart)
                 .draw();
 
@@ -87,15 +89,35 @@ Template.matrix.rendered = function() {
             else return false;
         })
 
-        var involvedTrees=[]
-        _.each(involvedNodes, node=>involvedTrees.push(...node.trees))
+        conf_flow.targetGroups=involvedNodes;
+        Session.set('targetGroupsReady', new Date());
 
+        var targetConf={
+            width:$('#targetGroup').width(),
+            height:$('#targetGroup').height() * .9
+        }
         var targetCanvas = d3.select('#targetSvg')
-            .attr('width', $('#targetGroup').width())
-            .attr('height', $('#targetGroup').height() * .9)
+            .attr('width', targetConf.width)
+            .attr('height', targetConf.height)
 
-        // new d3.
+        new d3.drawBars(targetCanvas, involvedNodes)
+            .width(targetConf.width)
+            .height(targetConf.height)
+            .draw()
 
+
+    })
+
+    Tracker.autorun(()=>{
+        Session.get('targetGroupsReady');
+        if(! conf_flow.targetGroups || ! conf_flow.malePeopleObj_toUse) return;
+
+        var peoples=dataProcessor_matrix.formatRegressionData(conf_flow.targetGroups);
+        console.log(peoples)
+        Meteor.call('insertClusters', peoples, ()=>{
+            console.log('insertdone')
+            Meteor.call('regression')
+        })
 
     })
 

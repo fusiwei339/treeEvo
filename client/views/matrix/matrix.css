@@ -13,8 +13,8 @@
 
 #groupPanel {
     width: 100%;
-    border: 1px solid #ccc;
     height: 40%;
+    border: 1px solid #ccc;
 }
 
 .title {
@@ -25,7 +25,6 @@
 }
 
 #sourceGroup {
-    border: 1px solid #ccc;
     height: 100%;
     padding: 0px;
 }
@@ -36,9 +35,9 @@
 }
 
 #targetGroup {
-    border: 1px solid #ccc;
     height: 100%;
     padding: 0px;
+    border-left: 1px solid #ccc;
 }
 
 #analysisPanel {

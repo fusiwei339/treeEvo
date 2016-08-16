@@ -37,14 +37,14 @@ Template.option.configure = {
     clusters: [{ description: 'all', order: 0 }],
     clusterColors: ['#b2df8a', '#a6cee3', '#ffff99', '#fdbf6f', '#cab2d6', '#fb9a99', '#fde0ef'],
     clusterShadeColors: ['#33a02c', '#1f78b4', '#b15928', '#ff7f00', '#6a3d9a', '#e31a1c', '#8e0152'],
-    sankey:{
-        nodeWidth:40,
-        padding:10,
-        margin:5,
+    sankey: {
+        nodeWidth: 40,
+        padding: 10,
+        margin: 5,
     },
-    freqPatterns:{
-        margin:5,
-        padding:2,
+    freqPatterns: {
+        margin: 5,
+        padding: 2,
     }
 
 }
@@ -99,17 +99,23 @@ Template.matrix.configure = {
             range: [1675, 1909]
         },
     },
-    plotMargin:{
-        top:5,
-        left:40,
-        right:5,
-        bottom:5,
+    plotMargin: {
+        top: 5,
+        left: 40,
+        right: 5,
+        bottom: 5,
     },
-    groupMargin:{
-        top:5,
-        left:5,
-        right:5,
-        bottom:5,
+    groupMargin: {
+        top: 5,
+        left: 5,
+        right: 5,
+        bottom: 5,
+    },
+    targetMargin: {
+        top: 5,
+        left: 5,
+        right: 5,
+        bottom: 5,
     },
     attrs: ['lastage', 'f_bir_age', 'l_bir_age', 'birthyear'],
 }

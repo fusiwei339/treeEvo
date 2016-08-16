@@ -33,6 +33,57 @@ Template.matrix.dataProcessor = function() {
         return ret;
     }
 
+    ret.reformatR = function(attrs) {
+        var ret = []
+        _.each(attrs, function(attr) {
+            var oneAttr = {};
+            oneAttr.attr = attr.attr[0];
+            oneAttr.x = _.map(attr.x, function(x) {
+                if (x[oneAttr.attr] <= 70) {
+                    return x[oneAttr.attr];
+                }
+            })
+            oneAttr.marginY = [];
+            _.each(attr.ylevel, function(ylevel, idx) {
+                var temp = {}
+                var trees=conf_flow.sankeyData.nodes.filter(node=>node.name===ylevel)[0].trees;
+                temp.group = ylevel;
+                temp.path = _.map(trees, tree=>tree.pattern.sort());
+                temp.data = []
+                _.each(attr.margin[idx], function(d, i) {
+                    var x = oneAttr.x[i];
+                    if (x < 70) {
+                        temp.data.push({
+                            x: x,
+                            y: d
+                        })
+                    }
+                })
+                oneAttr.marginY.push(temp);
+            })
+            ret.push(oneAttr);
+        })
+
+        return ret;
+    }
+
+    ret.formatRegressionData = function(groups) {
+        var ret = [];
+        _.each(groups, group => {
+            _.each(group.people, man => {
+                var ori= conf_flow.malePeopleObj_toUse[man]
+                var temp={}
+                temp.group = group.name;
+                temp.lastage=ori.lastage;
+                temp.f_bir_age=ori.f_bir_age;
+                temp.birthyear=ori.birthyear;
+                temp.l_bir_age=ori.l_bir_age;
+                ret.push(temp);
+            })
+        })
+        return ret;
+    }
+
     ret.calDistance = function(a, b) {
         var arrA = a.split(',')
         var arrB = b.split(',')
@@ -154,15 +205,15 @@ Template.matrix.dataProcessor = function() {
         }
     };
 
-    ret.getMatrixData_attr=function(attrs, trees){
-        var ret=[]
-        _.each(attrs, attr=>{
-            _.each(trees, tree=>{
+    ret.getMatrixData_attr = function(attrs, trees) {
+        var ret = []
+        _.each(attrs, attr => {
+            _.each(trees, tree => {
                 ret.push({
-                    tree:this.seq2tree(tree.pattern.split(',')),
-                    path:tree.pattern,
-                    attr:attr,
-                    freqArr:this.getFreq(tree.ids, attr)
+                    tree: this.seq2tree(tree.pattern.split(',')),
+                    path: tree.pattern,
+                    attr: attr,
+                    freqArr: this.getFreq(tree.ids, attr)
                 })
             })
         })
@@ -170,7 +221,7 @@ Template.matrix.dataProcessor = function() {
     }
 
     ret.getFreq = function(ids, attr) {
-        var arr=_.map(ids, id=>conf_flow.malePeopleObj_toUse[''+id][attr]);
+        var arr = _.map(ids, id => conf_flow.malePeopleObj_toUse['' + id][attr]);
 
         var range = conf.attrConf[attr].range;
         var temp = _.groupBy(arr, d => d);
