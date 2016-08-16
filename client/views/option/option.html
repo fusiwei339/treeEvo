@@ -1,23 +1,30 @@
 <template name="option">
-    <div id="optionPanel" class="col-md-12">
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="optionTabs"><a href="#attrListContainer" aria-controls="profile" role="tab" data-toggle="tab">Attribute List</a></li>
-            <li role="presentation" class="active optionTabs"><a href="#structureContainer" aria-controls="home" role="tab" data-toggle="tab">Structure List</a></li>
-        </ul>
-    </div>
-    <div class="tab-content">
-        <div id="attrListContainer" role="tabpanel" class="tab-pane">
-            {{>multipleSelect options=selectOptions settings=selectSettings }}
-            <ul class="list-group" style="margin-bottom: 10px; margin-top:10px">
-                {{#each attributeList}} {{>optionItem itemAttr=this}} {{/each}}
-            </ul>
+    <div id="structureContainer">
+        <div class="title">Structure Flow
+            <div style="float:right">
+                <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Change Scale:</span>
+                <div class="btn-group" data-toggle="buttons">
+                    <label id="scaleBySqrt" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <i class="fa-fw" title="Number of users">&#8730;</i>
+                        <span>Square Root</span>
+                    </label>
+                    <label id="scaleByUni" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <i class="fa fa-bars fa-fw" title="Number of posts"></i>
+                        <span>Uniform</span>
+                    </label>
+                    <label id="scaleByDefault" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <i class="fa fa-hashtag fa-fw" title="Default"></i>
+                        <span>Default</span>
+                    </label>
+                </div>
+            </div>
         </div>
-        <div id="structureContainer" role="tabpanel" class="tab-pane active">
-            <svg id="structureSvg"></svg>
-        </div>
+        <svg id="structureSvg"></svg>
     </div>
 </template>
-
 <template name="optionItem">
     <div class="list-group-item nopadding attrContainer">
         <p class="attrTitle col-md-6">
@@ -29,7 +36,6 @@
         <svg id={{itemAttr}} itemAttr={{itemAttr}} class="attrSvg"></svg>
     </div>
 </template>
-
 <!-- <template name="structureItem">
     <div class="list-group-item nopadding structureContainer">
         <p class="depthTitle col-md-6">

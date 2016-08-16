@@ -19,13 +19,12 @@ d3.drawFreqPatterns = class {
         var width = this._width;
         var height = this._height;
         var conf = Template.option.configure;
-        var animationDur=800;
+        var animationDur = 800;
         var dataProcessor = Template.matrix.dataProcessor;
 
 
         var pattern = { width: 50, height: height };
         var nPatterns = Math.floor(width / pattern.width);
-        if (nPatterns <= 0) return;
         if (data.depth === 1) nPatterns = 5;
         var top = data.trees.slice(0, nPatterns);
 
@@ -33,7 +32,16 @@ d3.drawFreqPatterns = class {
             .domain(_.range(nPatterns))
             .rangeBands([conf.freqPatterns.margin, width - conf.freqPatterns.margin])
 
-        var selection=svg.selectAll('.structureG').data(top, d=>d.id=d.pattern.join(','))
+        if (nPatterns <= 0) {
+            let selection = svg.selectAll('.structureG').data([])
+            selection.exit()
+                .transition()
+                .duration(animationDur)
+                .remove()
+            return;
+        }
+
+        var selection = svg.selectAll('.structureG').data(top, d => d.id = d.pattern.join(','))
 
         selection.enter().append('g')
             .attr('class', 'structureG')

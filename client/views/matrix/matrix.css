@@ -1,5 +1,6 @@
 #matrixPanel {
     height: 100%;
+    width: 100%;
 }
 
 #matrixView {
@@ -14,12 +15,11 @@
 #groupPanel {
     width: 100%;
     height: 40%;
-    border: 1px solid #ccc;
 }
 
 .title {
     width: 100%;
-    height: 10%;
+    height: 35px;
     background-color: #eee;
     font-weight: bold;
 }
@@ -42,7 +42,7 @@
 
 #analysisPanel {
     width: 100%;
-    border: 1px solid #ccc;
+    border-top: 1px solid #ccc;
     height: 60%;
 }
 

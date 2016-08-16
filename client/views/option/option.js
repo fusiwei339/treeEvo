@@ -9,29 +9,25 @@ Template.option.rendered = function() {
     $('select[multiple]').multipleSelect('setSelects', attrList);
     Session.set('showAttrs', attrList)
 
-    //init structure list
-    Session.set('showStructures', [1, 2, 3, 4, 5])
+
+    var svg = d3.select('#structureSvg');
+    var flowCanvas = svg.append('g')
+        .attr('transform', d3.translate(conf.sankey.margin, conf.sankey.margin))
+        .attr('id', 'flowCanvas')
 
     Deps.autorun(() => {
         Session.get('malePeopleObj_ready')
         if (!flowConf.sankeyData) return;
 
         var base = $('#attrListContainer')
-        $('#structureContainer').css('height', 900)
         $('#structureSvg').css('height', 900)
 
         var graph = flowConf.sankeyData;
 
-        var svg = d3.select('#structureSvg');
-        svg.selectAll('*').remove();
-        var flowCanvas = svg.append('g')
-            .attr('transform', d3.translate(conf.sankey.margin, conf.sankey.margin))
-            .attr('id', 'flowCanvas')
-
         conf.sankey.svgWidth = $('#structureSvg').width()
         conf.sankey.svgHeight = $('#structureSvg').height()
 
-        var scaleMethod = 'scaleByDefault';
+        var scaleMethod = Session.get('scaleBar');
 
         var sankeyLayout = d3.sankey()
             .nodeWidth(conf.sankey.nodeWidth)
@@ -49,8 +45,8 @@ Template.option.rendered = function() {
                 }
                 return b.count - a.count
             })
-            _.each(node.trees, tree=>{
-                tree.pattern=tree.pattern.sort();
+            _.each(node.trees, tree => {
+                tree.pattern = tree.pattern.sort();
             })
         })
         new d3.drawSankey(flowCanvas, graph)
@@ -147,6 +143,15 @@ Template.option.helpers({
 })
 
 Template.option.events({
+    'click #scaleBySqrt': function() {
+        Session.set('scaleBar', 'scaleBySqrt');
+    },
+    'click #scaleByUni': function() {
+        Session.set('scaleBar', 'scaleByUni');
+    },
+    'click #scaleByDefault': function() {
+        Session.set('scaleBar', 'scaleByDefault');
+    },
     'click #filterBtn': function() {
         var dataProcessor = Template.option.dataProcessor;
         var filter = Template.option.configure.filter;

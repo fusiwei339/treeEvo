@@ -1,5 +1,5 @@
 <template name="matrix">
-    <div class="col-md-12" id="matrixPanel">
+    <div id="matrixPanel">
         <div id="groupPanel">
             <div id="sourceGroup" class="col-md-3">
                 <div class="title">Source</div>
@@ -23,6 +23,26 @@
             </div>
         </div>
         <div id="analysisPanel">
+        <div class="title">Analysis Panel
+
+            <div style="float:right">
+                <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Select Attributes:</span>
+                <div class="btn-group" data-toggle="buttons">
+                    <label id="f_bir_age" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <span>f_bir_age</span>
+                    </label>
+                    <label id="l_bir_age" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <span>l_bir_age</span>
+                    </label>
+                    <label id="lastage" class="aggrRadio btn btn-default">
+                        <input type="radio" value="1" />
+                        <span>lastage</span>
+                    </label>
+                </div>
+            </div>
+            </div>
             <svg id="matrixView"></svg>
         </div>
     </div>

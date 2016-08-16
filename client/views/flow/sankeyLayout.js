@@ -93,6 +93,9 @@ d3.sankey = function() {
         var names = nodes.map(function(e) {
             return e.name;
         })
+        if(typeof links[0].source==='object' && (links[0].source !== null) )
+            return;
+        
         links.forEach(function(link) {
             link.source = names.indexOf(link.source);
             link.target = names.indexOf(link.target);
