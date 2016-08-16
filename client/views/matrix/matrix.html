@@ -1,5 +1,29 @@
 <template name="matrix">
     <div class="col-md-12" id="matrixPanel">
-        <svg id="matrixView"></svg>
+        <div id="groupPanel">
+            <div id="sourceGroup" class="col-md-3">
+                <div class="title">Source</div>
+                <canvas id="sourceCanvas"></canvas>
+            </div>
+            <div id="targetGroup" class="col-md-9">
+                <div class="title">Target
+                    <div class="right">
+                        Choose target depth:
+                        <select class="selectpicker" id="changeTargetDepth">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                        </select>
+                    </div>
+                </div>
+                <svg id="targetSvg"></svg>
+            </div>
+        </div>
+        <div id="analysisPanel">
+            <svg id="matrixView"></svg>
+        </div>
     </div>
 </template>

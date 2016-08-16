@@ -105,5 +105,11 @@ Template.matrix.configure = {
         right:5,
         bottom:5,
     },
+    groupMargin:{
+        top:5,
+        left:5,
+        right:5,
+        bottom:5,
+    },
     attrs: ['lastage', 'f_bir_age', 'l_bir_age', 'birthyear'],
 }

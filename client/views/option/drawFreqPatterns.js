@@ -27,20 +27,13 @@ d3.drawFreqPatterns = class {
         var nPatterns = Math.floor(width / pattern.width);
         if (nPatterns <= 0) return;
         if (data.depth === 1) nPatterns = 5;
-        var top = data.trees
-            .sort((a, b) => {
-                if (a.count === b.count) {
-                    return a.pattern.length - b.pattern.length;
-                }
-                return b.count - a.count
-            })
-            .slice(0, nPatterns);
+        var top = data.trees.slice(0, nPatterns);
 
         var xScale = d3.scale.ordinal()
             .domain(_.range(nPatterns))
             .rangeBands([conf.freqPatterns.margin, width - conf.freqPatterns.margin])
 
-        var selection=svg.selectAll('.structureG').data(top)
+        var selection=svg.selectAll('.structureG').data(top, d=>d.id=d.pattern.join(','))
 
         selection.enter().append('g')
             .attr('class', 'structureG')

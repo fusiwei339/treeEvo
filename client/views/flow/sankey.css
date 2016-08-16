@@ -7,11 +7,11 @@
   text-shadow: 0 1px 0 #fff;
 }
 
-.sankeyLink:hover {
+.sankeysankeyLink:hover {
   opacity: 1;
 }
 
-.sankeyLink{
+.sankeysankeyLink{
   fill:#3f75a2;
   stroke-width:0;
   opacity: .7;

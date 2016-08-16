@@ -1,23 +1,59 @@
 // db.patternsDepth.find().forEach(d=>{
-// 	d.pattern=d.pattern.sort();
-// 	db.patternsDepth.save(d);
+//  d.pattern=d.pattern.sort();
+//  db.patternsDepth.save(d);
 // })
 var patterns = db.patternsDepth.find().toArray()
-// var pattern_parent = _.groupBy(patterns, pattern => pattern.parent);
+    // var pattern_parent = _.groupBy(patterns, pattern => pattern.parent);
 
 var nodes = sankeyNodes(patterns);
-var edges = sankeyEdges(nodes);
-
 db.sankeyNodes.drop()
-db.sankeyEdges.drop()
 db.sankeyNodes.insert(nodes)
+
+var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+var ret = []
+_.each(depth, d => {
+
+    var ids = db.tree_complete.find({ depth: d }).toArray()
+    var trees=_.uniq(_.map(ids, id=>id.path))
+    var treeArr=_.map(trees, tree=>{
+        var personids=db.tree_complete.distinct('personid', {depth:d, path:tree});
+        return {
+            pattern:tree.split(','),
+            personids:personids,
+            count:personids.length,
+            depth:d+1,
+        }
+    })
+    assignParent(treeArr)
+
+    var node = {
+        depth: d+1,
+        cluster: 'cutoff',
+        trees: treeArr,
+        people: _.map(ids, id=>id.personid),
+        name: 'depth' + d + 'cluster' + 'cutoff',
+    }
+    ret.push(node)
+
+})
+
+db.sankeyNodes.insert(ret)
+
+
+var nodes=db.sankeyNodes.find().toArray();
+var edges = sankeyEdges(nodes);
+db.sankeyEdges.drop()
 db.sankeyEdges.insert(edges)
 
-db.sankeyData.drop()
+// db.sankeyData.drop()
+
 // db.sankeyData.insert({
-// 	nodes:nodes,
-// 	edges:edges,
+//  nodes:nodes,
+//  edges:edges,
 // })
+
+
+
 
 
 // var patterns_with_parent=assignParent(patterns);

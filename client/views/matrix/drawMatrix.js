@@ -19,7 +19,7 @@ d3.drawMatrix = class {
         var patternPart = this._patternPart;
         var circleR = conf.circleR;
         var totalWidth = $(svg[0]).width();
-        var totalHeight = ($(svg[0]).height() - conf.labelPart) / 3;
+        var totalHeight = ($(svg[0]).height() - conf.labelPart) / 2;
 
         var rectCanvas = svg.select('#rectCanvas')
         var patternCanvas = svg.select('#patternCanvas')

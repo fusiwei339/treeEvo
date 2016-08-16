@@ -22,9 +22,8 @@
 }
 
 .backgroundRect{
-    stroke:steelblue;
     stroke-width:2px;
-    fill:none;
+    fill:white;
 }
 .attrOption{
     float: right !important; 

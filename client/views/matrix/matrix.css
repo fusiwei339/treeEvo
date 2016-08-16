@@ -1,6 +1,5 @@
 #matrixPanel {
     height: 100%;
-    border: 1px solid #ccc;
 }
 
 #matrixView {
@@ -8,15 +7,52 @@
     width: 100%;
 }
 
-.patternTree{
+.patternTree {
     cursor: pointer;
 }
 
+#groupPanel {
+    width: 100%;
+    border: 1px solid #ccc;
+    height: 40%;
+}
+
+.title {
+    width: 100%;
+    height: 10%;
+    background-color: #eee;
+    font-weight: bold;
+}
+
+#sourceGroup {
+    border: 1px solid #ccc;
+    height: 100%;
+    padding: 0px;
+}
+
+#targetSvg {
+    width: 100%;
+    height: 90%;
+}
+
+#targetGroup {
+    border: 1px solid #ccc;
+    height: 100%;
+    padding: 0px;
+}
+
+#analysisPanel {
+    width: 100%;
+    border: 1px solid #ccc;
+    height: 60%;
+}
+
+;
 .overlay {
     background-color: #EEE;
 }
 
-.node circle{
+.node circle {
     fill: #fff;
     stroke: steelblue;
     stroke-width: 1.5px;
@@ -33,36 +69,40 @@
     stroke-width: 2;
 }
 
-.background{
-    fill:white;
-    stroke-width:2.5px;
+.right {
+    float: right;
 }
 
-.highlightRect{
-    stroke:#333;
-    stroke-width:2px;
+.background {
+    fill: white;
+    stroke-width: 2.5px;
 }
 
-.selectedRect{
-    stroke:red;
-    stroke-width:2px;
+.highlightRect {
+    stroke: #333;
+    stroke-width: 2px;
 }
 
-.xLabel{
+.selectedRect {
+    stroke: red;
+    stroke-width: 2px;
+}
+
+.xLabel {
     font-size: 18px
 }
 
 .marginLine {
-  fill: none;
-  stroke-width: 1.5px;
+    fill: none;
+    stroke-width: 1.5px;
 }
 
-.axis text{
-    stroke:black;
-    stroke-width:0.5px;
+.axis text {
+    stroke: black;
+    stroke-width: 0.5px;
     font-size: 12px;
 }
 
-.shadowLine{
-    stroke-width:0.5px;
+.shadowLine {
+    stroke-width: 0.5px;
 }

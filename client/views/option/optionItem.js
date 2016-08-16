@@ -20,12 +20,12 @@ Template.optionItem.rendered = function() {
 
         var option = dataProcessor.getOption(malePeople, svgStr);
 
-        attrStat = new d3.attrStat(svg, malePeople)
-            .width($(svgDom).width())
-            .height($(svgDom).height())
-            .option(option)
-            .drawSlice(true)
-            .draw()
+        // attrStat = new d3.attrStat(svg, malePeople)
+        //     .width($(svgDom).width())
+        //     .height($(svgDom).height())
+        //     .option(option)
+        //     .drawSlice(true)
+        //     .draw()
     })
 
     Deps.autorun(function() {

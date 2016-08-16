@@ -9,21 +9,21 @@ d3.drawSankey = class {
         this._clsssStr = val;
         return this;
     }
-    clickFunc(val) {
-        this._clickFunc = val;
+    depthLimit(val) {
+        this._depthLimit = val;
         return this;
     }
 
     draw() {
         var classStr = this._clsssStr || '';
-        var clickFunc = this._clickFunc || null;
+        var depthLimit = this._depthLimit || null;
 
         var conf = Template.flow.configure;
         var animationDur = 800;
         var path = d3.sankey().link();
 
         var nodeSelection = this.svg.selectAll("." + classStr + "node")
-            .data(this.graph.nodes, function(d) {
+            .data(this.graph.nodes.filter(d => d.depth <= depthLimit), function(d) {
                 return d.id = d.name;
             })
 
@@ -31,6 +31,15 @@ d3.drawSankey = class {
             .attr("class", classStr + "node")
             .attr("transform", function(d) {
                 return "translate(" + d.y + "," + d.x + ")";
+            })
+            .on('click', function(d) {
+                Session.set('targetDepth', null)
+                Session.set('sourceTrees', d.trees)
+
+                d3.selectAll(`.${classStr}node`).select('rect')
+                    .attr('stroke', 'steelblue')
+                d3.select(this).select('rect')
+                    .attr('stroke', '#ef8a62')
             })
             .each(function(d, i) {
                 var canvas = d3.select(this);
@@ -40,6 +49,7 @@ d3.drawSankey = class {
                         width: d.dy1,
                         height: d.dx,
                         class: 'backgroundRect',
+                        stroke: 'steelblue'
                     })
                 var shadowArr = [-10, -5, -2.5]
                 canvas.selectAll('.shadowLine')
@@ -63,8 +73,8 @@ d3.drawSankey = class {
             .attr("transform", function(d) {
                 return "translate(" + d.y + "," + d.x + ")";
             })
-            .each(function(d, i){
-                var canvas = d3.select(this);
+            .each(function(d, i) {
+                var canvas = d3.select(this)
 
                 canvas.select('rect')
                     .attr({
@@ -91,7 +101,7 @@ d3.drawSankey = class {
 
 
         var linkSelection = this.svg.selectAll("." + classStr + "sankeyLink")
-            .data(this.graph.edges, function(d) {
+            .data(this.graph.edges.filter(d => d.target.depth <= depthLimit), function(d) {
                 return d.id = d.source.name + d.target.name;
             })
 

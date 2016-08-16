@@ -1,3 +1,4 @@
 local
 dump
 .DS_Store
+node_modules
