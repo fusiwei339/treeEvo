@@ -61,7 +61,6 @@ d3.drawMatrix = class {
                 new d3.drawLine(canvas, d)
                     .width(xScale.rangeBand() - conf.margin)
                     .height(yScale.rangeBand() * 5)
-                    .standardize(true)
                     .lineColor(groupColor)
                     .draw();
             })

@@ -26,8 +26,7 @@ json_oneAttr<-function(str, ml){
 mongo <- mongoDbConnect("meteor","localhost", 3001)
 
 #modeling
-data <- dbGetQuery(mongo, 'clusters', '{"birthyear":{"$lt":1860}}', 0,0)
-#data$group<-relevel(as.factor(data$group), ref = "3")
+data <- dbGetQuery(mongo, 'clusters', '{"birthyear":{"$lt":1860}}', 0, 0)
 ml <- multinom(group ~ f_bir_age +l_bir_age+lastage, data = data)
 
 #post processing

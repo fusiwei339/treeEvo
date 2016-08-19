@@ -1,7 +1,7 @@
 Template.matrix.dataProcessor = function() {
     var ret = {
         version: 0.1,
-    }
+    };
 
     var conf_flow = Template.flow.configure;
     var conf = Template.matrix.configure;
@@ -33,6 +33,95 @@ Template.matrix.dataProcessor = function() {
         return ret;
     }
 
+    function divideGroup_byInc (node) {
+        var trees = node.trees;
+        var subgroup = {
+            g: [],
+            e: [],
+            l: [],
+        }
+        _.each(trees, tree => {
+            var obj = this.seq2tree(tree.pattern);
+            tree.lean = this.calLean(obj)
+            if (tree.lean > 0) subgroup.g.push(tree);
+            else if (tree.lean === 0) subgroup.e.push(tree);
+            else subgroup.l.push(tree);
+        })
+
+        var ret = [];
+        _.each(subgroup, (trees, key) => {
+            var name = key === 'g' ? 'greater than 0' : key === 'e' ? 'equal to 0' : 'less than 0';
+            var idx = key === 'g' ? 0 : key === 'e' ? 1 : 2;
+            var people = []
+            _.each(trees, tree => {
+                people.push(...tree.personids);
+            })
+
+            ret.push({
+                name,
+                people,
+                trees,
+                idx
+            })
+        })
+        ret=_.filter(ret, r=>r.people.length>0);
+
+        return ret;
+
+    }
+
+    function divideGroup_byFreq(node){
+        var trees=node.trees.sort((a, b)=>{
+            return b.personids.length-a.personids.length;
+        });
+
+        var sumPeople=node.people.length;
+        var subgroup=[], temp=[], tempSum=0, tempPeople=[];
+        _.each(trees, (tree, i)=>{
+            tempSum+=tree.personids.length;
+            temp.push(tree);
+            tempPeople.push(...tree.personids);
+
+            if(tempSum>sumPeople/3){
+                subgroup.push({
+                    people:tempPeople,
+                    trees:temp,
+                })
+                temp=[];
+                tempSum=0;
+                tempPeople=[];
+            }
+            if(i===trees.length-1){
+                subgroup.push({
+                    people:tempPeople,
+                    trees:temp,
+                })
+            }
+        })
+        _.each(subgroup, (group, i)=>{
+            group.name=`freq${i}`;
+            group.idx=i; 
+        })
+
+        console.log(subgroup)
+        return subgroup;
+    }
+
+    ret.divideGroup=function(node, groupMethod){
+        if(groupMethod==='inclination')
+            return divideGroup_byInc(node);
+        else if(groupMethod==='frequency')
+            return divideGroup_byFreq(node);
+
+    }
+
+    ret.getTreemapData = function(trees, rect) {
+        var arr = _.map(trees, tree => tree.personids.length).sort((a, b) => +a - (+b));
+        var small_rects = d3.treemap_algo(arr, rect)
+
+        return small_rects;
+    }
+
     ret.reformatR = function(attrs) {
         var ret = []
         _.each(attrs, function(attr) {
@@ -46,9 +135,9 @@ Template.matrix.dataProcessor = function() {
             oneAttr.marginY = [];
             _.each(attr.ylevel, function(ylevel, idx) {
                 var temp = {}
-                var trees=conf_flow.sankeyData.nodes.filter(node=>node.name===ylevel)[0].trees;
+                var trees = conf_flow.involvedNodes.filter(node => node.name === ylevel)[0].trees;
                 temp.group = ylevel;
-                temp.path = _.map(trees, tree=>tree.pattern.sort());
+                temp.path = _.map(trees, tree => tree.pattern.sort());
                 temp.data = []
                 _.each(attr.margin[idx], function(d, i) {
                     var x = oneAttr.x[i];
@@ -63,6 +152,7 @@ Template.matrix.dataProcessor = function() {
             })
             ret.push(oneAttr);
         })
+        console.log(ret)
 
         return ret;
     }
@@ -70,14 +160,16 @@ Template.matrix.dataProcessor = function() {
     ret.formatRegressionData = function(groups) {
         var ret = [];
         _.each(groups, group => {
+            if(group.draw==='no') return;
+
             _.each(group.people, man => {
-                var ori= conf_flow.malePeopleObj_toUse[man]
-                var temp={}
+                var ori = conf_flow.malePeopleObj_toUse[man]
+                var temp = {}
                 temp.group = group.name;
-                temp.lastage=ori.lastage;
-                temp.f_bir_age=ori.f_bir_age;
-                temp.birthyear=ori.birthyear;
-                temp.l_bir_age=ori.l_bir_age;
+                temp.lastage = ori.lastage;
+                temp.f_bir_age = ori.f_bir_age;
+                temp.birthyear = ori.birthyear;
+                temp.l_bir_age = ori.l_bir_age;
                 ret.push(temp);
             })
         })

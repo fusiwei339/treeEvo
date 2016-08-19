@@ -35,6 +35,7 @@ d3.drawSankey = class {
             .on('click', function(d) {
                 Session.set('targetDepth', null)
                 Session.set('sourceTrees', d.trees)
+                Session.set('editBar', null)
 
                 d3.selectAll(`.${classStr}node`).select('rect')
                     .attr('stroke', 'steelblue')

@@ -109,7 +109,7 @@ Template.matrix.configure = {
         top: 5,
         left: 5,
         right: 5,
-        bottom: 5,
+        bottom: 25,
     },
     targetMargin: {
         top: 5,

@@ -11,10 +11,6 @@ d3.drawLine = class {
         this._height = val;
         return this;
     }
-    standardize(val) {
-        this._standardize = val;
-        return this;
-    }
     lineColor(val) {
         this._lineColor= val;
         return this;
@@ -26,29 +22,15 @@ d3.drawLine = class {
         var width = this._width-conf.plotMargin.left-conf.plotMargin.right,
             height = this._height-conf.plotMargin.top-conf.plotMargin.bottom,
             lineColor= this._lineColor,
-            standardize = this._standardize,
             svg = this.svg,
             data = this.data;
 
         var canvas=svg.append('g')
             .attr('transform', d3.translate(conf.plotMargin.left, conf.plotMargin.top))
 
-        // if (standardize) {
-        //     _.each(data, (d, i) => {
-        //         var overall = conf.stat[this.data.attr][i].y
-        //         d.y = overall ? (d.y / overall) : d.y;
-        //     })
-        // }
 
-        var yDomain=[];
-        _.each(data.marginY, obj=>{
-            yDomain.push(...d3.extent(obj.data, function(d){
-                return d.y;
-            }));
-        })
         var y = d3.scale.linear()
             .domain([-0.1, .1])
-            // .domain(d3.extent(yDomain))
             .range([height, 0]);
 
         var x = d3.scale.linear()
