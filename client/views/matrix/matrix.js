@@ -49,7 +49,7 @@ Template.matrix.rendered = function() {
         if (handler.ready()) {
 
             var patterns = Coll.r.find().fetch();
-            if (! conf_flow.involvedNodes) return;
+            // if (! conf_flow.involvedNodes) return;
             var patterns_format = dataProcessor_matrix.reformatR(patterns);
 
             new d3.drawMatrix(svg, patterns_format)

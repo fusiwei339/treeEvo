@@ -19,7 +19,7 @@ d3.drawMatrix = class {
         var patternPart = this._patternPart;
         var circleR = conf.circleR;
         var totalWidth = $(svg[0]).width();
-        var totalHeight = ($(svg[0]).height() - conf.labelPart) / 2;
+        var totalHeight = ($(svg[0]).height() - conf.labelPart);
 
         var rectCanvas = svg.select('#rectCanvas')
         rectCanvas.selectAll('*').remove();
@@ -29,11 +29,11 @@ d3.drawMatrix = class {
         //draw rect
         var xScale = d3.scale.ordinal()
             .domain(_.map(data, d => d.attr))
-            .rangeBands([conf.margin, totalWidth])
+            .rangeBands([conf.margin, totalWidth - patternPart])
 
         var yScale = d3.scale.ordinal()
             .domain(_.map(data[0].marginY, d => d.path))
-            .rangeBands([0, totalHeight], .1, 0)
+            .rangeBands([0, totalHeight / 2], .1, 0)
 
         var groupColor = d3.scale.category10()
             .domain(_.map(data[0].marginY, d => d.path))
@@ -56,13 +56,25 @@ d3.drawMatrix = class {
             })
             .attr('transform', d => d3.translate(xScale(d.attr), 0))
             .each(function(d, i) {
-                var canvas = d3.select(this);
+                let canvas = d3.select(this);
 
-                new d3.drawLine(canvas, d)
-                    .width(xScale.rangeBand() - conf.margin)
-                    .height(yScale.rangeBand() * 5)
-                    .lineColor(groupColor)
-                    .draw();
+                var types = ['marginY', 'prob']
+                var types = [{ type: 'marginY', ydomain: [-.1, .1] }, { type: 'prob', ydomain: [0, 1] }]
+                canvas.selectAll('typeBars').data(types)
+                    .enter().append('g')
+                    .attr('class', 'typeBars')
+                    .attr('transform', (d, i) => d3.translate(0, i * totalHeight / 2))
+                    .each(function(e, j) {
+                        let subCanvas = d3.select(this);
+                        new d3.drawLine(subCanvas, d)
+                            .width(xScale.rangeBand() - conf.margin)
+                            .height((totalHeight - conf.labelPart) / 2-conf.margin*4)
+                            .type(e.type)
+                            .ydomain(e.ydomain)
+                            .lineColor(groupColor)
+                            .draw();
+                    })
+
             })
 
         // rectSelection.transition()

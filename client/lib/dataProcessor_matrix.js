@@ -33,7 +33,7 @@ Template.matrix.dataProcessor = function() {
         return ret;
     }
 
-    function divideGroup_byInc (node) {
+    function divideGroup_byInc(node) {
         var trees = node.trees;
         var subgroup = {
             g: [],
@@ -64,53 +64,56 @@ Template.matrix.dataProcessor = function() {
                 idx
             })
         })
-        ret=_.filter(ret, r=>r.people.length>0);
+        ret = _.filter(ret, r => r.people.length > 0);
 
         return ret;
 
     }
 
-    function divideGroup_byFreq(node){
-        var trees=node.trees.sort((a, b)=>{
-            return b.personids.length-a.personids.length;
+    function divideGroup_byFreq(node) {
+        var trees = node.trees.sort((a, b) => {
+            return b.personids.length - a.personids.length;
         });
 
-        var sumPeople=node.people.length;
-        var subgroup=[], temp=[], tempSum=0, tempPeople=[];
-        _.each(trees, (tree, i)=>{
-            tempSum+=tree.personids.length;
+        var sumPeople = node.people.length;
+        var subgroup = [],
+            temp = [],
+            tempSum = 0,
+            tempPeople = [];
+        _.each(trees, (tree, i) => {
+            tempSum += tree.personids.length;
             temp.push(tree);
             tempPeople.push(...tree.personids);
 
-            if(tempSum>sumPeople/3){
+            if (tempSum > sumPeople / 3) {
                 subgroup.push({
-                    people:tempPeople,
-                    trees:temp,
+                    people: tempPeople,
+                    trees: temp,
                 })
-                temp=[];
-                tempSum=0;
-                tempPeople=[];
+                temp = [];
+                tempSum = 0;
+                tempPeople = [];
             }
-            if(i===trees.length-1){
+            if (i === trees.length - 1) {
                 subgroup.push({
-                    people:tempPeople,
-                    trees:temp,
+                    people: tempPeople,
+                    trees: temp,
                 })
             }
         })
-        _.each(subgroup, (group, i)=>{
-            group.name=`freq${i}`;
-            group.idx=i; 
+        _.each(subgroup, (group, i) => {
+            group.name = `freq${i}`;
+            group.idx = i;
         })
 
         console.log(subgroup)
         return subgroup;
     }
 
-    ret.divideGroup=function(node, groupMethod){
-        if(groupMethod==='inclination')
+    ret.divideGroup = function(node, groupMethod) {
+        if (groupMethod === 'inclination')
             return divideGroup_byInc(node);
-        else if(groupMethod==='frequency')
+        else if (groupMethod === 'frequency')
             return divideGroup_byFreq(node);
 
     }
@@ -127,12 +130,10 @@ Template.matrix.dataProcessor = function() {
         _.each(attrs, function(attr) {
             var oneAttr = {};
             oneAttr.attr = attr.attr[0];
-            oneAttr.x = _.map(attr.x, function(x) {
-                if (x[oneAttr.attr] <= 70) {
-                    return x[oneAttr.attr];
-                }
-            })
+            oneAttr.x = _.filter(_.map(attr.x, x => x[oneAttr.attr]), d => d <= 70)
+
             oneAttr.marginY = [];
+            oneAttr.prob = [];
             _.each(attr.ylevel, function(ylevel, idx) {
                 var temp = {}
                 var trees = conf_flow.involvedNodes.filter(node => node.name === ylevel)[0].trees;
@@ -149,6 +150,18 @@ Template.matrix.dataProcessor = function() {
                     }
                 })
                 oneAttr.marginY.push(temp);
+
+                var probTemp = { data: [], path: temp.path };
+                _.each(attr.prob, (p, i) => {
+                    var x = oneAttr.x[i];
+                    if (x < 70) {
+                        probTemp.data.push({
+                            x: x,
+                            y: p[idx],
+                        })
+                    }
+                })
+                oneAttr.prob.push(probTemp);
             })
             ret.push(oneAttr);
         })
@@ -160,7 +173,7 @@ Template.matrix.dataProcessor = function() {
     ret.formatRegressionData = function(groups) {
         var ret = [];
         _.each(groups, group => {
-            if(group.draw==='no') return;
+            if (group.draw === 'no') return;
 
             _.each(group.people, man => {
                 var ori = conf_flow.malePeopleObj_toUse[man]

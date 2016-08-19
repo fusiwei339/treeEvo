@@ -15,6 +15,14 @@ d3.drawLine = class {
         this._lineColor= val;
         return this;
     }
+    type(val) {
+        this._type= val;
+        return this;
+    }
+    ydomain(val) {
+        this._ydomain= val;
+        return this;
+    }
 
     draw() {
         var conf = Template.matrix.configure;
@@ -22,6 +30,8 @@ d3.drawLine = class {
         var width = this._width-conf.plotMargin.left-conf.plotMargin.right,
             height = this._height-conf.plotMargin.top-conf.plotMargin.bottom,
             lineColor= this._lineColor,
+            type= this._type,
+            ydomain= this._ydomain,
             svg = this.svg,
             data = this.data;
 
@@ -30,7 +40,7 @@ d3.drawLine = class {
 
 
         var y = d3.scale.linear()
-            .domain([-0.1, .1])
+            .domain(ydomain)
             .range([height, 0]);
 
         var x = d3.scale.linear()
@@ -42,14 +52,14 @@ d3.drawLine = class {
             .x(d => x(d.x))
             .y(d => y(d.y))
 
-        canvas.selectAll('.lines')
-            .data(data.marginY).enter()
+        canvas.selectAll(`${type}.Lines`)
+            .data(data[type]).enter()
             .append('path')
             .datum(d=>d.data)
-            .attr("class", "marginLine")
+            .attr("class", type+"Line lines")
             .attr("d", line)
             .attr('stroke', (d, i, j)=>{
-                return lineColor(data.marginY[i].path);
+                return lineColor(data[type][i].path);
             })
 
         //append y axis

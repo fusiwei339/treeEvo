@@ -103,7 +103,7 @@ Template.matrix.configure = {
         top: 5,
         left: 40,
         right: 5,
-        bottom: 5,
+        bottom: 10,
     },
     groupMargin: {
         top: 5,
