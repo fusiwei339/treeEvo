@@ -37,10 +37,6 @@ d3.drawMatrix = class {
 
         var groupColor = d3.scale.category10()
             .domain(_.map(data[0].marginY, d => d.path))
-            // var colorDomain = _.map(data, d => d.freq / d.dbSize)
-            // var colorScale = d3.scale.linear()
-            //     .domain([0, d3.max(colorDomain)])
-            //     .range(['white', '#54278f'])
 
         var leanColor = d3.scale.linear()
             .domain([-1, 0, 1])
@@ -58,7 +54,6 @@ d3.drawMatrix = class {
             .each(function(d, i) {
                 let canvas = d3.select(this);
 
-                var types = ['marginY', 'prob']
                 var types = [{ type: 'marginY', ydomain: [-.3, .3] }, { type: 'prob', ydomain: [0, 1] }]
                 canvas.selectAll('typeBars').data(types)
                     .enter().append('g')
@@ -76,21 +71,6 @@ d3.drawMatrix = class {
                     })
 
             })
-
-        // rectSelection.transition()
-        //     .duration(animationDur)
-        //     .select('g')
-        //     .attr('transform', d => d3.translate(xScale(d.attr), 0))
-        //     .each(function(d, i) {
-        //         var canvas = d3.select(this);
-
-        //         new d3.drawLine(canvas, d)
-        //             .width(xScale.rangeBand() - conf.margin)
-        //             .height(yScale.rangeBand() * 5)
-        //             .standardize(true)
-        //             .lineColor(groupColor)
-        //             .draw();
-        //     })
 
         //draw x scale
         var labelSelection = rectCanvas.selectAll('.xLabel')

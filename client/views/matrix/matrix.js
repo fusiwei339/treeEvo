@@ -5,12 +5,10 @@ Template.matrix.rendered = function() {
     var conf_flow = Template.flow.configure;
     var conf = Template.matrix.configure;
     $('#changeTargetDepth').selectpicker({
-            width: 50,
-        })
-        // $('#changeTargetDepth').on(, {
-        //     width: 50,
-        // })
+        width: 50,
+    })
 
+    //initialize data
     Tracker.autorun(function() {
 
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
@@ -42,7 +40,7 @@ Template.matrix.rendered = function() {
         .attr('id', 'patternCanvas')
         .attr('transform', d3.translate(5, conf.labelPart))
 
-    //draw regression diagram
+    //draw regression diagram when r collection changes
     Tracker.autorun(() => {
 
         var handler = Meteor.subscribe('r')
@@ -60,19 +58,6 @@ Template.matrix.rendered = function() {
         }
     })
 
-    //draw group manipulation panel
-    // Tracker.autorun(() => {
-    //     var sourceTrees = Session.get('sourceTrees')
-    //     if (!sourceTrees) return;
-
-    //     var sourceCanvas = d3.select('#sourceSvg')
-    //         .attr('width', $('#sourceGroup').width())
-    //         .attr('height', $('#sourceGroup').height() * .9)
-    //     new d3.drawPixelMatrix(sourceCanvas, sourceTrees)
-    //         .width($('#sourceCanvas').width())
-    //         .height($('#sourceCanvas').height())
-    //         .draw();
-    // })
 
     //initialize slider
     Tracker.autorun(() => {
@@ -105,6 +90,7 @@ Template.matrix.rendered = function() {
         .attr('class', 'groupG')
         .attr('transform', d3.translate(conf.groupMargin.left, conf.groupMargin.top))
 
+    //draw treemap bars when click a sankey node
     Tracker.autorun(() => {
         Session.get('redraw')
         var sourceTrees = Session.get('sourceTrees')
@@ -139,19 +125,7 @@ Template.matrix.rendered = function() {
 
     })
 
-    // Tracker.autorun(() => {
-    //     // Session.get('targetGroupsReady');
-    //     if (!conf_flow.targetGroups || !conf_flow.malePeopleObj_toUse) return;
-
-    //     var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.targetGroups);
-    //     console.log(peoples)
-    //     Meteor.call('insertClusters', peoples, () => {
-    //         console.log('insertdone')
-    //         Meteor.call('regression')
-    //     })
-
-    // })
-
+    //when click a treemap bar
     Tracker.autorun(() => {
         var barName = Session.get('editBar')
         if (!conf_flow.involvedNodes || !barName) return;
@@ -166,15 +140,7 @@ Template.matrix.rendered = function() {
 
     })
 
-    // Tracker.autorun(() => {
-    //     var barName = Session.get('editBar')
-    //     if (!conf_flow.involvedNodes || !barName) return;
-    //     var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
-
-    //     var groupMethod = Session.get('groupMethod')
-
-    // })
-
+    //when click grouping method
     Tracker.autorun(() => {
         var groupMethod = Session.get('groupMethod')
         var barName = Session.get('editBar')
@@ -195,6 +161,7 @@ Template.matrix.rendered = function() {
 
     })
 
+    //add or remove attrs
     Tracker.autorun(() => {
         Session.get('changeAttrs')
         run();
