@@ -2,6 +2,7 @@ Template.matrix.dataProcessor = function() {
     var ret = {
         version: 0.1,
     };
+    var self = this;
 
     var conf_flow = Template.flow.configure;
     var conf = Template.matrix.configure;
@@ -41,8 +42,8 @@ Template.matrix.dataProcessor = function() {
             l: [],
         }
         _.each(trees, tree => {
-            var obj = this.seq2tree(tree.pattern);
-            tree.lean = this.calLean(obj)
+            var obj = seq2tree(tree.pattern);
+            tree.lean = calLean(obj)
             if (tree.lean > 0) subgroup.g.push(tree);
             else if (tree.lean === 0) subgroup.e.push(tree);
             else subgroup.l.push(tree);
@@ -170,7 +171,7 @@ Template.matrix.dataProcessor = function() {
         return ret;
     }
 
-    ret.formatRegressionData = function(groups) {
+    ret.formatRegressionData = function(groups, attrs) {
         var ret = [];
         _.each(groups, group => {
             if (group.draw === 'no') return;
@@ -179,10 +180,12 @@ Template.matrix.dataProcessor = function() {
                 var ori = conf_flow.malePeopleObj_toUse[man]
                 var temp = {}
                 temp.group = group.name;
-                temp.lastage = ori.lastage;
-                temp.f_bir_age = ori.f_bir_age;
                 temp.birthyear = ori.birthyear;
-                temp.l_bir_age = ori.l_bir_age;
+                _.each(attrs, attr => {
+                    if (attr === 'sonCountFix')
+                        temp[attr] = Math.min(ori[attr], 10)
+                    else temp[attr] = ori[attr]
+                })
                 ret.push(temp);
             })
         })
@@ -198,7 +201,7 @@ Template.matrix.dataProcessor = function() {
         else return 0;
     }
 
-    ret.calLean = function(tree) {
+    var calLean = function(tree) {
 
         function getDesCount(root) {
             var total = 0;
@@ -251,6 +254,7 @@ Template.matrix.dataProcessor = function() {
         if (left === right) return 0;
         return (left - right) / (left + right);
     }
+    ret.calLean = calLean;
 
     ret.generateFakeTree = function(nGen, children, length) {
         var ret = { children: [], label: '0', gen: 0 };
@@ -272,7 +276,7 @@ Template.matrix.dataProcessor = function() {
 
     };
 
-    ret.seq2tree = function(seq) {
+    var seq2tree = function(seq) {
         var ret = { label: '0', children: [] };
         seq = seq.sort();
         var flag = true;
@@ -309,6 +313,7 @@ Template.matrix.dataProcessor = function() {
             return false;
         }
     };
+    ret.seq2tree = seq2tree;
 
     ret.getMatrixData_attr = function(attrs, trees) {
         var ret = []

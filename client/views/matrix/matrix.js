@@ -49,8 +49,9 @@ Template.matrix.rendered = function() {
         if (handler.ready()) {
 
             var patterns = Coll.r.find().fetch();
-            // if (! conf_flow.involvedNodes) return;
+            if (!conf_flow.involvedNodes) return;
             var patterns_format = dataProcessor_matrix.reformatR(patterns);
+            if (_.isEmpty(patterns_format)) return;
 
             new d3.drawMatrix(svg, patterns_format)
                 .patternPart(conf.patternPart)
@@ -105,6 +106,7 @@ Template.matrix.rendered = function() {
         .attr('transform', d3.translate(conf.groupMargin.left, conf.groupMargin.top))
 
     Tracker.autorun(() => {
+        Session.get('redraw')
         var sourceTrees = Session.get('sourceTrees')
         if (!sourceTrees) return;
         var sourceCluster = sourceTrees[0].cluster;
@@ -174,11 +176,11 @@ Template.matrix.rendered = function() {
     // })
 
     Tracker.autorun(() => {
-        var groupMethod=Session.get('groupMethod')
+        var groupMethod = Session.get('groupMethod')
         var barName = Session.get('editBar')
         if (!conf_flow.involvedNodes || !barName) return;
         var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
-        node.draw='no';
+        node.draw = 'no';
 
         if (!node.button) return;
 
@@ -193,9 +195,26 @@ Template.matrix.rendered = function() {
 
     })
 
+    Tracker.autorun(() => {
+        Session.get('changeAttrs')
+        run();
+    })
+
 
 }
 
+function run() {
+    var conf_flow = Template.flow.configure;
+    var dataProcessor_matrix = Template.matrix.dataProcessor;
+    var attrs = conf_flow.attrs;
+    if (!conf_flow.involvedNodes || !conf_flow.malePeopleObj_toUse) return;
+
+    var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes, conf_flow.attrs);
+    Meteor.call('insertClusters', peoples, () => {
+        console.log('inserted')
+        Meteor.call('regression', attrs)
+    })
+}
 
 
 
@@ -214,6 +233,23 @@ function assignButton(name) {
     node.button = name;
 }
 
+function clickAttrButton(e) {
+    var conf_flow = Template.flow.configure;
+    var attrs = conf_flow.attrs;
+    var str = e.currentTarget.id;
+    if ($(e.currentTarget).hasClass('active')) {
+        attrs.remByVal(str);
+    } else {
+        if (attrs.indexOf('str') === -1)
+            attrs.push(str)
+    }
+
+    if (attrs.length > 1) {
+        conf_flow.attrs = attrs;
+        Session.set('changeAttrs', new Date())
+    }
+}
+
 Template.matrix.events({
     'click #groupByInc' (e) {
         Session.set('groupMethod', 'inclination');
@@ -227,16 +263,35 @@ Template.matrix.events({
         Session.set('groupMethod', 'volume');
         assignButton('groupByVol')
     },
-    'click #runGrouping' (e) {
+    'click #clearGroup' (e) {
+        var newArr = []
         var conf_flow = Template.flow.configure;
-        var dataProcessor_matrix = Template.matrix.dataProcessor;
-        if (!conf_flow.involvedNodes || !conf_flow.malePeopleObj_toUse) return;
-
-        var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes);
-        Meteor.call('insertClusters', peoples, () => {
-            console.log('inserted')
-            Meteor.call('regression')
+        _.each(conf_flow.sankeyData.nodes, node => {
+            if (node.cluster) {
+                node.draw = null;
+                node.button = null;
+                newArr.push(node)
+            }
         })
+        conf_flow.involvedNodes = newArr;
+        Session.set('groupMethod', null);
+        Session.set('editBar', null);
+        Session.set('redraw', new Date())
+    },
+    'click #runGrouping' (e) {
+        run();
+    },
+    'click #f_bir_age' (e) {
+        clickAttrButton(e);
+    },
+    'click #l_bir_age' (e) {
+        clickAttrButton(e);
+    },
+    'click #lastage' (e) {
+        clickAttrButton(e);
+    },
+    'click #sonCountFix' (e) {
+        clickAttrButton(e);
     },
 
 });

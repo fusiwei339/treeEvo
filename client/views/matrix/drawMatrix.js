@@ -59,7 +59,7 @@ d3.drawMatrix = class {
                 let canvas = d3.select(this);
 
                 var types = ['marginY', 'prob']
-                var types = [{ type: 'marginY', ydomain: [-.1, .1] }, { type: 'prob', ydomain: [0, 1] }]
+                var types = [{ type: 'marginY', ydomain: [-.3, .3] }, { type: 'prob', ydomain: [0, 1] }]
                 canvas.selectAll('typeBars').data(types)
                     .enter().append('g')
                     .attr('class', 'typeBars')
@@ -104,12 +104,12 @@ d3.drawMatrix = class {
         labelSelection.enter()
             .append('text')
             .attr('class', 'xLabel')
-            .attr('x', d => xScale(d))
+            .attr('x', d => xScale(d)+xScale.rangeBand()/2-20)
             .attr('y', -5)
             .text(d => d)
         labelSelection.transition()
             .duration(animationDur)
-            .attr('x', d => xScale(d))
+            .attr('x', d => xScale(d)+xScale.rangeBand()/2-20)
             .attr('y', -5)
             .text(d => d)
 

@@ -15,6 +15,7 @@ Template.flow.configure = {
     sankeyEdges: undefined,
     generations: undefined,
     clusters: undefined,
+    attrs:['f_bir_age', 'l_bir_age', 'lastage', 'sonCountFix', 'POSITION'],
 }
 
 Template.header.configure = {

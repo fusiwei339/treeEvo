@@ -27,10 +27,18 @@ mongo <- mongoDbConnect("meteor","localhost", 3001)
 
 #modeling
 data <- dbGetQuery(mongo, 'clusters', '{"birthyear":{"$lt":1860}}', 0, 0)
-ml <- multinom(group ~ f_bir_age +l_bir_age+lastage, data = data)
+
+args <- commandArgs(TRUE)
+i <- 1
+str=paste('group ~ ',args[1], sep = '')
+for (i in 2:length(args)) {
+  str=paste(str, args[i], sep = "+")
+}
+print(str)
+ml <- multinom(as.formula(str), data = data)
 
 #post processing
-attrs=c('f_bir_age', 'l_bir_age', 'lastage')
+attrs=args
 for (attr in attrs) {
   ret<-json_oneAttr(attr,ml);
   dbInsertDocument(mongo, "r",toString(ret))
@@ -38,3 +46,5 @@ for (attr in attrs) {
 
 #disconnect db
 dbDisconnect(mongo)
+
+
