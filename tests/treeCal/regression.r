@@ -10,7 +10,7 @@ json_oneAttr<-function(str, ml){
   effect_model_obj$prob=effect_model$prob
   effect_model_obj$x=effect_model$x
   effect_model_obj$probLower=effect_model$lower.prob
-  effect_model_obj$proHigherb=effect_model$upper.prob
+  effect_model_obj$probUpper=effect_model$upper.prob
   effect_model_obj$ylevel=effect_model$y.levels
   
   nLevel=length(ml$lev);

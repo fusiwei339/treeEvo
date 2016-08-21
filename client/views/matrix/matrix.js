@@ -260,6 +260,9 @@ Template.matrix.events({
     'click #sonCountFix' (e) {
         clickAttrButton(e);
     },
+    'click #POSITION' (e) {
+        clickAttrButton(e);
+    },
 
 });
 

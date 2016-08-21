@@ -53,8 +53,13 @@ d3.drawMatrix = class {
             .attr('transform', d => d3.translate(xScale(d.attr), 0))
             .each(function(d, i) {
                 let canvas = d3.select(this);
+                // new d3.drawPP(canvas, d)
+                //     .width(xScale.rangeBand() - conf.margin)
+                //     .height((totalHeight - conf.labelPart) / 2 - conf.margin * 4)
+                //     .lineColor(groupColor)
+                //     .draw()
 
-                var types = [{ type: 'marginY', ydomain: [-.3, .3] }, { type: 'prob', ydomain: [0, 1] }]
+                var types = [{ type: 'prob', ydomain: [0, 1] }, { type: 'marginY', ydomain: [-.3, .3] }]
                 canvas.selectAll('typeBars').data(types)
                     .enter().append('g')
                     .attr('class', 'typeBars')
@@ -66,6 +71,7 @@ d3.drawMatrix = class {
                             .height((totalHeight - conf.labelPart) / 2-conf.margin*4)
                             .type(e.type)
                             .ydomain(e.ydomain)
+                            .drawCI(e.type==='prob')
                             .lineColor(groupColor)
                             .draw();
                     })
@@ -84,12 +90,12 @@ d3.drawMatrix = class {
         labelSelection.enter()
             .append('text')
             .attr('class', 'xLabel')
-            .attr('x', d => xScale(d)+xScale.rangeBand()/2-20)
+            .attr('x', d => xScale(d) + xScale.rangeBand() / 2 - 20)
             .attr('y', -5)
             .text(d => d)
         labelSelection.transition()
             .duration(animationDur)
-            .attr('x', d => xScale(d)+xScale.rangeBand()/2-20)
+            .attr('x', d => xScale(d) + xScale.rangeBand() / 2 - 20)
             .attr('y', -5)
             .text(d => d)
 

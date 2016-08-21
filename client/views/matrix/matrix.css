@@ -97,3 +97,9 @@
 .shadowLine {
     stroke-width: 0.5px;
 }
+
+.marginDots{
+    stroke:#333;
+    stroke-width:1px;
+    fill:#333;
+}

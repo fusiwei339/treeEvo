@@ -1,4 +1,4 @@
-d3.drawLine = class {
+d3.drawPP = class {
     constructor(svg, data) {
         this.svg = svg;
         this.data = data;
@@ -15,18 +15,6 @@ d3.drawLine = class {
         this._lineColor = val;
         return this;
     }
-    type(val) {
-        this._type = val;
-        return this;
-    }
-    ydomain(val) {
-        this._ydomain = val;
-        return this;
-    }
-    drawCI(val) {
-        this._drawCI = val;
-        return this;
-    }
 
     draw() {
         var conf = Template.matrix.configure;
@@ -34,9 +22,6 @@ d3.drawLine = class {
         var width = this._width - conf.plotMargin.left - conf.plotMargin.right,
             height = this._height - conf.plotMargin.top - conf.plotMargin.bottom,
             lineColor = this._lineColor,
-            type = this._type,
-            drawCI = this._drawCI,
-            ydomain = this._ydomain,
             svg = this.svg,
             data = this.data;
 
@@ -45,7 +30,7 @@ d3.drawLine = class {
 
 
         var y = d3.scale.linear()
-            .domain(ydomain)
+            .domain([0, 1])
             .range([height, 0]);
 
         var x = d3.scale.linear()
@@ -57,28 +42,43 @@ d3.drawLine = class {
             .x(d => x(d.x))
             .y(d => y(d.y))
 
-        drawing('', null);
+        canvas.selectAll(`.ppLines`)
+            .data(data.prob).enter()
+            .append('path')
+            .datum(d => d.data)
+            .attr("class", "ppLine lines")
+            .attr("d", line)
+            .attr('stroke', (d, i, j) => {
+                return lineColor(data.prob[i].path);
+            })
 
-        if (drawCI) {
-            drawing('Lower', '5,5')
-            drawing('Upper', '5,5')
-        }
+        canvas.selectAll('g')
+            .data(data.marginY).enter()
+            .append('g')
+            .selectAll('.marginDots')
+            .data(d => {
+                return d.data.filter((e, i) => i % 10 === 0)
+            })
+            .enter()
+            .append('circle')
+            .attr("class", "marginDots")
+            .attr("cx", (d, i, j) => {
+                var arr = data.prob[j].data;
+                var xtemp = arr[i * 10].x;
+                return xtemp ? x(xtemp) : 0;
+            })
+            .attr("cy", (d, i, j) => {
+                var arr = data.prob[j].data;
+                var ytemp = arr[i * 10].y;
+                return ytemp ? y(ytemp) : 0;
+            })
+            .attr("r", 1)
 
-        function drawing(str, dashedArray) {
-            canvas.selectAll(`.${type}${str}Line`)
-                .data(data[`${type}${str}`]).enter()
-                .append('path')
-                .datum(d => d.data)
-                .attr("class", `${type}${str}Line lines`)
-                .attr("d", line)
-                .attr('stroke', (d, i, j) => {
-                    return lineColor(data[type][i].path);
-                })
-                .attr("stroke-dasharray", dashedArray)
+        // .attr('stroke', (d, i, j)=>{
+        //     '#ccc'
+        // })
 
-        }
-
-        //append y axis
+        //append axis
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient('left')

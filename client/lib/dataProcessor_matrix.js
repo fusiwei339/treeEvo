@@ -132,10 +132,14 @@ Template.matrix.dataProcessor = function() {
             var oneAttr = {};
             oneAttr.attr = attr.attr[0];
             oneAttr.x = _.filter(_.map(attr.x, x => x[oneAttr.attr]), d => d <= 70)
-
+            //initial marginY
             oneAttr.marginY = [];
-            oneAttr.prob = [];
+            //initial prob
+            var probs = ['prob', 'probLower', 'probUpper']
+            _.each(probs, prob=>oneAttr[prob]=[])
+
             _.each(attr.ylevel, function(ylevel, idx) {
+                //margin
                 var temp = {}
                 var trees = conf_flow.involvedNodes.filter(node => node.name === ylevel)[0].trees;
                 temp.group = ylevel;
@@ -152,23 +156,41 @@ Template.matrix.dataProcessor = function() {
                 })
                 oneAttr.marginY.push(temp);
 
-                var probTemp = { data: [], path: temp.path };
-                _.each(attr.prob, (p, i) => {
-                    var x = oneAttr.x[i];
-                    if (x < 70) {
-                        probTemp.data.push({
-                            x: x,
-                            y: p[idx],
-                        })
-                    }
+                //deal with prob
+                _.each(probs, prob => {
+                    var probTemp = { data: [], path: temp.path };
+                    _.each(attr[prob], (p, i) => {
+                        var x = oneAttr.x[i];
+                        if (x < 70) {
+                            probTemp.data.push({
+                                x: x,
+                                y: p[idx],
+                            })
+                        }
+                    })
+                    oneAttr[prob].push(probTemp);
                 })
-                oneAttr.prob.push(probTemp);
+
             })
             ret.push(oneAttr);
         })
         console.log(ret)
 
         return ret;
+    }
+
+    function formatProb(arr, path, oneAttr) {
+        var temp = { data: [], path: path };
+        _.each(arr, (p, i) => {
+            var x = oneAttr.x[i];
+            if (x < 70) {
+                temp.data.push({
+                    x: x,
+                    y: p[idx],
+                })
+            }
+        })
+        return temp;
     }
 
     ret.formatRegressionData = function(groups, attrs) {
