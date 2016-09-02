@@ -9,6 +9,7 @@ var nodes = sankeyNodes(patterns);
 db.sankeyNodes.drop()
 db.sankeyNodes.insert(nodes)
 
+//var get cut off node of sankey
 var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 var ret = []
 _.each(depth, d => {
