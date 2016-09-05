@@ -73,6 +73,7 @@ d3.drawTreemapBars = class {
             .on('brushend', ()=>{
                 var selectedRects=rects_svg.filter(d=>d.selected).data()
                 conf.selectedRects=selectedRects;
+                console.log(conf.selectedRects)
                 Session.set('selectedRects', new Date());
             })
 

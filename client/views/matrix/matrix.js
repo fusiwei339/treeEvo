@@ -121,11 +121,13 @@ Template.matrix.rendered = function() {
 
         var nRows=Math.ceil(conf.selectedRects.length/8);
         var rowHeight=conf_option.sankey.nodeWidth+(conf_flow.sourceDepth-1)*10;
+        structureCanvas.selectAll('*').remove();
 
         structureCanvas.attr('height', nRows*rowHeight);
-        new drawFreqPatterns(structureCanvas, conf.selectedRects)
+        new d3.drawBrushedPatterns(structureCanvas, conf.selectedRects)
             .width($('#structureDiv').width())
             .height(nRows*rowHeight)
+            .patternHeight(rowHeight)
             .draw()
     })
 
