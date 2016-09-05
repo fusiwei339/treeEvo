@@ -91,7 +91,7 @@ select.multiple-select {
 }
 .slice,
 .moving{
-    stroke:#CCC;
+    stroke:#666;
     stroke-width:1.5px;
 }
 .overlayRect{

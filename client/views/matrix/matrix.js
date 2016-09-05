@@ -133,21 +133,6 @@ Template.matrix.rendered = function() {
     })
 
 
-    // //when click a treemap bar
-    // Tracker.autorun(() => {
-    //     var barName = Session.get('editBar')
-    //     if (!conf_flow.involvedNodes || !barName) return;
-    //     var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
-    //     $('.groupRadio').addClass('disabled').removeClass('active')
-    //     if (node.button) {
-    //         $('.groupRadio').removeClass('disabled')
-    //         $(`#${node.button}`).addClass('active');
-    //     } else {
-    //         $('.groupRadio').removeClass('disabled')
-    //     }
-
-    // })
-
     //when click grouping method
     Tracker.autorun(() => {
         var groupMethod = Session.get('groupMethod')
@@ -252,9 +237,6 @@ Template.matrix.events({
         Session.set('groupMethod', null);
         Session.set('editBar', null);
         Session.set('redraw', new Date())
-    },
-    'click #runGrouping' (e) {
-        run();
     },
     'click #f_bir_age' (e) {
         clickAttrButton(e);

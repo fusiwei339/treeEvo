@@ -17,15 +17,15 @@ Template.option.rendered = function() {
 
     Deps.autorun(() => {
         Session.get('malePeopleObj_ready')
-        if (!flowConf.sankeyData ) return;
+        if (!flowConf.sankeyData) return;
 
         var base = $('#attrListContainer')
         $('#structureSvg').css('height', 900)
 
         var graph = flowConf.sankeyData;
-        var nodes=graph.nodes.filter(d=>d.show)
-        var edges=graph.edges
-        var trimedGraph={nodes, edges}
+        var nodes = graph.nodes.filter(d => d.show)
+        var edges = graph.edges
+        var trimedGraph = { nodes, edges }
 
         conf.sankey.svgWidth = $('#structureSvg').width()
         conf.sankey.svgHeight = $('#structureSvg').height()
@@ -124,8 +124,8 @@ Template.option.helpers({
         Session.get('clusterChanged');
         var clusters = Session.get('clusterMalePeople');
         var temp = clusters.sort(function(a, b) {
-                return +a.order - (+b.order);
-            })
+            return +a.order - (+b.order);
+        })
         return temp;
     },
     'clusterChanged': function() {
@@ -143,54 +143,53 @@ Template.option.helpers({
 })
 
 Template.option.events({
-    'click #scaleBySqrt': function() {
-        Session.set('scaleBar', 'scaleBySqrt');
-    },
     'click #scaleByUni': function() {
         Session.set('scaleBar', 'scaleByUni');
     },
     'click #scaleByDefault': function() {
         Session.set('scaleBar', 'scaleByDefault');
     },
-    'click #filterBtn': function() {
-        var dataProcessor = Template.option.dataProcessor;
-        var filter = Template.option.configure.filter;
-        var query = dataProcessor.processSelection(filter);
-        Template.option.configure.filter = {};
-        Session.set('filterMalePeople', query);
+
+    'click #runGrouping' (e) {
+        var conf_flow = Template.flow.configure;
+        var dataProcessor_matrix = Template.matrix.dataProcessor;
+        var attrs = conf_flow.attrs;
+        if (!conf_flow.involvedNodes || !conf_flow.malePeopleObj_toUse) return;
+
+        var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes, conf_flow.attrs);
+        Meteor.call('insertClusters', peoples, () => {
+            console.log('inserted')
+            Meteor.call('regression', attrs)
+        })
     },
-    'click #clearBtn': function() {
-        var conf = Template.option.configure;
-        conf.filter = {};
-        conf.clusters = [{ description: 'all', order: 0 }];
-        Session.set('filterMalePeople', {});
-        Session.set('nodeSelected', null);
-        Session.set('clusterMalePeople', [{ description: 'all', order: 0 }]);
-        Session.set('clearBtn', new Date());
+
+    'click #clear_moving': function() {
+        d3.selectAll('.slice').remove();
     },
-    'click #clusterBtn': function() {
-        var dataProcessor = Template.clusterWindow.dataProcessor;
-        // var filter = Template.option.configure.filter;
-        // var cluster = dataProcessor.processSelection(filter);
+    'click #sortByInc': function() {},
+    'click #sortByFreq': function() {},
+    'click #sortByPop': function() {},
 
-        // var clusters = Template.option.configure.clusters;
-        // clusters.push({
-        //     order: clusters.length,
-        //     description: cluster,
-        // });
-        // clusters[0].description = 'others';
-        // Template.option.configure.filter = {};
-        // Session.set('clusterMalePeople', clusters);
+    'click #mergebtn': function() {},
+    'click #splitAttrBtn': function() {},
+    'click #splitContBtn': function() {},
+    'click #splitContBtn': function() {},
 
-        var items = dataProcessor.getClusters(Template.optionItem.configure.clusterRange);
-        var clusters = dataProcessor.getClusterData(items);
-        Template.option.configure.clusters = clusters;
-        Meteor.call('insertClusters', clusters)
-        Meteor.call('gspan')
-
-        // $('#clusterModal').modal('show');
-
-        Session.set('clusterBtn', new Date());
-    },
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

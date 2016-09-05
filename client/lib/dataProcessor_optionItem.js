@@ -96,6 +96,34 @@ Template.option.dataProcessor = function() {
 
     };
 
+    ret.getGraidentData = function(trees) {
+        var attr = 'lean';
+        var data_temp = _.map(trees, t => {
+            var ret = { count: t.count }
+            if (attr === 'population') {
+                ret.key = t.pattern.length;
+            } else {
+                ret.key = t[attr];
+            }
+            return ret;
+        })
+
+        data_temp.sort((a, b) => b.key - a.key)
+
+        var graidentData = [];
+        _.each(data_temp, t => {
+            for (let i = 0; i < t.count; i++, graidentData.push(t.key));
+        })
+        var samplePoints = _.range(0, 1, .01);
+        var ret = _.map(samplePoints, p => {
+            return {
+                offset: p,
+                value: graidentData[Math.floor(p * graidentData.length)]
+            }
+        })
+        return ret;
+    }
+
     ret.sankeyEdges = function(nodes) {
         var nodesByDepth = _.groupBy(nodes, function(node) {
             return node.depth;
