@@ -26,7 +26,6 @@ Template.option.rendered = function() {
         var nodes=graph.nodes.filter(d=>d.show)
         var edges=graph.edges
         var trimedGraph={nodes, edges}
-        console.log(trimedGraph)
 
         conf.sankey.svgWidth = $('#structureSvg').width()
         conf.sankey.svgHeight = $('#structureSvg').height()
@@ -57,7 +56,6 @@ Template.option.rendered = function() {
             .depthLimit(7)
             .classStr('sankey')
             .draw()
-        console.log(graph)
 
     })
 
@@ -73,7 +71,6 @@ Template.option.rendered = function() {
             if (edge.source.name === currentNodeName) {
                 var target = edge.target;
                 var parentPattern = selectedPattern.pattern.join(',');
-                console.log(parentPattern)
                 target.trees.sort((a, b) => {
                     if (a.parent.join(',') === parentPattern && b.parent.join(',') !== parentPattern) {
                         return -1;
@@ -129,7 +126,6 @@ Template.option.helpers({
         var temp = clusters.sort(function(a, b) {
                 return +a.order - (+b.order);
             })
-            // console.log(temp)
         return temp;
     },
     'clusterChanged': function() {

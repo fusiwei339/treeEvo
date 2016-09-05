@@ -109,7 +109,10 @@
     overflow-x: hidden;
 }
 
+#structureSvg{
+    border-left: 1px solid #ccc;
+}
 .selected{
     stroke-width:1px;
-    stroke:#b2182b;
+    stroke:#666;
 }

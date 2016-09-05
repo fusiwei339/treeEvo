@@ -96,6 +96,7 @@ Template.matrix.rendered = function() {
         .select('#structureSvg')
         .attr('class', 'groupG')
         .attr('width', '100%')
+        .attr('height', '100%')
 
     //draw treemap bars when click a sankey node
     Tracker.autorun(() => {
@@ -123,7 +124,7 @@ Template.matrix.rendered = function() {
         var rowHeight=conf_option.sankey.nodeWidth+(conf_flow.sourceDepth-1)*10;
         structureCanvas.selectAll('*').remove();
 
-        structureCanvas.attr('height', nRows*rowHeight);
+        structureCanvas.attr('height', Math.max(nRows*rowHeight, $('#structureSvg').height()));
         new d3.drawBrushedPatterns(structureCanvas, conf.selectedRects)
             .width($('#structureDiv').width())
             .height(nRows*rowHeight)

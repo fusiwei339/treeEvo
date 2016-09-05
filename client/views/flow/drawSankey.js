@@ -45,15 +45,13 @@ d3.drawSankey = class {
             _.each(data_temp, t => {
                 for (let i = 0; i < t.count; i++, graidentData.push(t.key));
             })
-            var samplePoints = _.range(0, 1, .05);
+            var samplePoints = _.range(0, 1, .01);
             var ret = _.map(samplePoints, p => {
                 return {
                     offset: p,
                     value: graidentData[Math.floor(p * graidentData.length)]
                 }
             })
-            console.log(ret)
-            console.log(graidentData)
             return ret;
         }
 
@@ -67,13 +65,12 @@ d3.drawSankey = class {
                 return "translate(" + d.y + "," + d.x + ")";
             })
             .on('click', function(d) {
-                console.log
                 Session.set('selectedNode', d.name)
 
                 d3.selectAll(`.${classStr}node`).select('rect')
-                    .attr('stroke', 'steelblue')
+                    .attr('stroke', '#ccc')
                 d3.select(this).select('rect')
-                    .attr('stroke', '#ef8a62')
+                    .attr('stroke', '#666')
             })
             .each(function(d, i) {
                 var canvas = d3.select(this);
@@ -100,6 +97,7 @@ d3.drawSankey = class {
                         height: d.dx,
                         class: 'backgroundRect',
                         fill: `url(#${d.name}graident)`,
+                        stroke:'#ccc'
                     })
 
             })
@@ -133,6 +131,7 @@ d3.drawSankey = class {
                         height: d.dx,
                         class: 'backgroundRect',
                         fill: `url(#${d.name}graident)`,
+                        stroke:'#ccc'
                     })
 
             })
