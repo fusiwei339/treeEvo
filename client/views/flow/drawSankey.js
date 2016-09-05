@@ -33,7 +33,8 @@ d3.drawSankey = class {
                 return "translate(" + d.y + "," + d.x + ")";
             })
             .on('click', function(d) {
-                Session.set('sourceTrees', d.trees)
+                console.log
+                Session.set('selectedNode', d.name)
 
                 d3.selectAll(`.${classStr}node`).select('rect')
                     .attr('stroke', 'steelblue')
@@ -52,11 +53,6 @@ d3.drawSankey = class {
                         stroke: 'steelblue'
                     })
 
-                // new d3.drawDistribution(canvas, d)
-                //     .width(d.dy1)
-                //     .height(d.dx)
-                //     .attr(attr)
-                //     .draw()
 
             })
 
@@ -75,12 +71,6 @@ d3.drawSankey = class {
                         height: d.dx,
                         class: 'backgroundRect',
                     })
-
-                // new d3.drawDistribution(canvas, d)
-                //     .width(d.dy1)
-                //     .height(d.dx)
-                //     .attr(attr)
-                //     .draw()
 
             })
         nodeSelection.exit()

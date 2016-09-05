@@ -59,7 +59,7 @@
 }
 
 .brush .extent {
-    stroke: #fff;
+    stroke: none;
     fill-opacity: .125;
     shape-rendering: crispEdges;
 }

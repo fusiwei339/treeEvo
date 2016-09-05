@@ -103,3 +103,13 @@
     stroke-width:1px;
     fill:#333;
 }
+
+#structureDiv{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.selected{
+    stroke-width:1px;
+    stroke:#b2182b;
+}

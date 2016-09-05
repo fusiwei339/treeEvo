@@ -124,6 +124,7 @@ Template.matrix.dataProcessor = function() {
                 freq: tree.count,
                 lean: tree.lean,
                 pop: tree.personids.length,
+                pattern:tree.pattern
             }
         }).sort((a, b) => {
             if(a[attr]===b[attr])

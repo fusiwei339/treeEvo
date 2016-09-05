@@ -4,6 +4,7 @@ Template.matrix.rendered = function() {
     var dataProcessor_matrix = Template.matrix.dataProcessor;
     var conf_flow = Template.flow.configure;
     var conf = Template.matrix.configure;
+    var conf_option = Template.option.configure;
     $('#changeTargetDepth').selectpicker({
         width: 50,
     })
@@ -81,51 +82,68 @@ Template.matrix.rendered = function() {
 
     var sourceConf = {
         width: $('#sourceGroup').width(),
-        height: $('#sourceGroup').height() - 35,
+        height: $('#sourceGroup').height() - 40,
     }
-    var sourceCanvas = d3.select('#sourceSvg')
-        .attr('width', sourceConf.width)
-        .attr('height', sourceConf.height)
-        .append('g')
+    var detailPanel = d3.select('#detailPanel')
+        .style('width', sourceConf.width+'px')
+        .style('height', sourceConf.height+'px')
+
+    var treemapCanvas = d3.select('#treemapSvg')
+        .attr('height', '100%')
+
+    var structureCanvas = d3.select('#structureDiv')
+        .style('height', '100%')
+        .select('#structureSvg')
         .attr('class', 'groupG')
-        .attr('transform', d3.translate(conf.groupMargin.left, conf.groupMargin.top))
+        .attr('width', '100%')
 
     //draw treemap bars when click a sankey node
     Tracker.autorun(() => {
-        Session.get('redraw')
-        var sourceTrees = Session.get('sourceTrees')
-        if (!sourceTrees || ! conf_flow.sankeyData) return;
-        var sourceCluster = sourceTrees[0].cluster;
-        var sourceDepth = sourceTrees[0].depth;
+        var selectedNodeName= Session.get('selectedNode')
+        if (!selectedNodeName|| !conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name===selectedNodeName)
 
-        var involvedNodes = conf_flow.sankeyData.nodes.filter(d => {
-            return d.name==`d${sourceDepth}c${sourceCluster}`;
-        })
-        conf_flow.involvedNodes = involvedNodes;
-        console.log(involvedNodes)
+        conf_flow.sourceCluster = selectedNode[0].cluster;
+        conf_flow.sourceDepth = selectedNode[0].depth;
 
-        sourceCanvas.selectAll('*').remove();
-        new d3.drawTreemapBars(sourceCanvas, involvedNodes[0])
-            .width(sourceConf.width)
+        treemapCanvas.selectAll('*').remove();
+        new d3.drawTreemapBars(treemapCanvas, selectedNode[0])
+            .width(sourceConf.width / 2)
             .height(sourceConf.height)
             .draw()
 
     })
 
-    //when click a treemap bar
-    Tracker.autorun(() => {
-        var barName = Session.get('editBar')
-        if (!conf_flow.involvedNodes || !barName) return;
-        var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
-        $('.groupRadio').addClass('disabled').removeClass('active')
-        if (node.button) {
-            $('.groupRadio').removeClass('disabled')
-            $(`#${node.button}`).addClass('active');
-        } else {
-            $('.groupRadio').removeClass('disabled')
-        }
+    //when brush on the treemap bar
+    Tracker.autorun(()=>{
+        Session.get('selectedRects')
+        if(! conf.selectedRects) return;
 
+        var nRows=Math.ceil(conf.selectedRects.length/8);
+        var rowHeight=conf_option.sankey.nodeWidth+(conf_flow.sourceDepth-1)*10;
+
+        structureCanvas.attr('height', nRows*rowHeight);
+        new drawFreqPatterns(structureCanvas, conf.selectedRects)
+            .width($('#structureDiv').width())
+            .height(nRows*rowHeight)
+            .draw()
     })
+
+
+    // //when click a treemap bar
+    // Tracker.autorun(() => {
+    //     var barName = Session.get('editBar')
+    //     if (!conf_flow.involvedNodes || !barName) return;
+    //     var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
+    //     $('.groupRadio').addClass('disabled').removeClass('active')
+    //     if (node.button) {
+    //         $('.groupRadio').removeClass('disabled')
+    //         $(`#${node.button}`).addClass('active');
+    //     } else {
+    //         $('.groupRadio').removeClass('disabled')
+    //     }
+
+    // })
 
     //when click grouping method
     Tracker.autorun(() => {

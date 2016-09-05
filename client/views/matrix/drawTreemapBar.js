@@ -22,149 +22,71 @@ d3.drawTreemapBars = class {
 
         var duration = 800;
         var dataProcessor = Template.matrix.dataProcessor;
-        drawPixel(svg, data, width, height)
 
-        // var xScale = d3.scale.ordinal()
-        //     .rangeBands([0, width], .05, .05)
-        //     .domain(_.map(data, (d, i) => d.name))
+        var attr = 'lean'
 
-        // var yScale = d3.scale.linear()
-        //     .range([height, 0])
-        //     .domain([0, d3.max(data, (d, i) => d.people.length)])
+        var rects = dataProcessor.getTreemapData(data.trees, {
+            top: 0,
+            left: 0,
+            width: width,
+            height: height,
+        }, attr)
 
-        // var selection = svg.selectAll('.groupingBarG')
-        //     .data(data, d => d.id = d.name)
+        var extent = d3.extent(rects, e => e.obj[attr])
+        var colorScale = d3.scale.linear()
+            .domain([extent[0], 0, extent[1]])
+            .range(['#b35806', '#fff', '#542788'])
 
-        // selection.enter().append('g')
-        //     .attr('class', 'groupingBarG')
-        //     .attr('transform', (d, i) => d3.translate(xScale(d.name), yScale(d.people.length)))
-        //     .on('click', function(d, i) {
-        //         Session.set('editBar', d.name);
-        //         d3.selectAll('.borderRect')
-        //             .attr('stroke', '#fff')
-        //         d3.select(this).selectAll('.borderRect')
-        //             .attr('stroke', '#ef8a62')
-        //     })
-        //     .each(function(d, i) {
-        //         var canvas = d3.select(this);
+        var rects_svg = svg.selectAll('.sRect').data(rects)
+            .enter().append('rect')
+            .attr('class', 'sRect')
+            .attr('y', e => e.rect.top)
+            .attr('x', e => e.rect.left)
+            .attr('width', e => e.rect.width)
+            .attr('height', e => e.rect.height)
+            .attr('fill', e => colorScale(e.obj[attr]))
 
-        //         var w = xScale.rangeBand()
-        //         var h = height - yScale(d.people.length)
+        var x = d3.scale.identity().domain([0, width]),
+            y = d3.scale.identity().domain([0, height]);
 
-        //         canvas.append('rect')
-        //             .attr({
-        //                 width: w,
-        //                 height: h,
-        //                 stroke: '#fff',
-        //                 'stroke-width': '2px',
-        //                 fill: 'white',
-        //                 class: 'borderRect'
-        //             })
+        var quadtree = d3.geom.quadtree()
+            .extent([
+                [-1, -1],
+                [width + 1, height + 1]
+            ])
+            .x(d => d.rect.left)
+            .y(d => d.rect.top)
+            (rects)
 
-        //         drawPixel(canvas, d, w, h);
-        //         // if (d.subGroup) {
-        //         //     var subGroup = d.subGroup.sort((a, b) => a.idx - b.idx);
-        //         //     var x2 = d3.scale.ordinal()
-        //         //         .rangeBands([0, w], 0, 0)
-        //         //         .domain(_.map(subGroup, e => e.groupName))
+        var brush = d3.svg.brush()
+            .x(x)
+            .y(y)
+            .on("brush", () => {
+                var extent = brush.extent();
 
-        //         //     canvas.selectAll('.subGroupBarG')
-        //         //         .data(d.subGroup).enter()
-        //         //         .append('g')
-        //         //         .attr('transform', e => d3.translate(x2(e.groupName), yScale(e.people.length)))
-        //         //         .each(function(e) {
-        //         //             var subcanvas = d3.select(this);
-        //         //             var w2 = x2.rangeBand()
-        //         //             var h2 = height - yScale(d.people.length)
+                rects_svg.each(function(d) { d.selected = false; });
+                search(quadtree, extent[0][0], extent[0][1], extent[1][0], extent[1][1]);
+                rects_svg.classed("selected", function(d) {
+                    return d.selected;
+                });
+            })
+            .on('brushend', ()=>{
+                var selectedRects=rects_svg.filter(d=>d.selected).data()
+                conf.selectedRects=selectedRects;
+                Session.set('selectedRects', new Date());
+            })
 
-        //         //             drawPixel(subcanvas, subGroup, w2, h2);
-        //         //         })
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush)
 
-        //         // } else {
-        //         // }
-
-        //     })
-
-        function drawPixel(canvas, d, w, h) {
-
-            var attr='lean'
-
-            var rects = dataProcessor.getTreemapData(d.trees, {
-                top: 0,
-                left: 0,
-                width: w,
-                height: h,
-            }, attr)
-
-            var extent=d3.extent(rects, e => e.obj[attr])
-            var colorScale = d3.scale.linear()
-                .domain([extent[0], 0, extent[1]])
-                .range(['#b35806', '#fff','#542788'])
-
-            canvas.selectAll('.sRect').data(rects)
-                .enter().append('rect')
-                .attr('class', 'sRect')
-                .attr('y', e => e.rect.top)
-                .attr('x', e => e.rect.left)
-                .attr('width', e => e.rect.width)
-                .attr('height', e => e.rect.height)
-                .attr('fill', e => colorScale(e.obj[attr]))
-
+        function search(quadtree, x0, y0, x3, y3) {
+            quadtree.visit(function(node, x1, y1, x2, y2) {
+                var p = node.point;
+                if (p) p.selected = (p.rect.left >= x0) && (p.rect.left < x3) && (p.rect.top >= y0) && (p.rect.top < y3);
+                return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+            });
         }
-
-        // selection.transition()
-        //     .duration(duration)
-        //     .attr('transform', (d, i) => d3.translate(xScale(i), yScale(d.people.length)))
-        //     .each(function(d, i) {
-        //         var canvas = d3.select(this);
-
-        //         var w = xScale.rangeBand()
-        //         var h = height - yScale(d.people.length)
-
-        //         // canvas.append('rect')
-        //         //     .attr({
-        //         //         width: w,
-        //         //         height: h,
-        //         //         stroke: '#666',
-        //         //         'stroke-width': '1.5px',
-        //         //         fill: 'none'
-        //         //     })
-
-        //         var rects=dataProcessor.getTreemapData(d.trees, {
-        //             top:0,
-        //             left:0,
-        //             width:w,
-        //             height:h,
-        //         })
-
-        //         var colorScale=d3.scale.linear()
-        //             .domain(d3.extent(rects, d=>+d.text))
-        //             .range(['#fff', '#4682b4'])
-
-        //         canvas.selectAll('.sRect').data(rects)
-        //             .transition().duration(800)
-        //             .attr('y', d=>d.rect.top)
-        //             .attr('x', d=>d.rect.left)
-        //             .attr('width', d=>d.rect.width)
-        //             .attr('height', d=>d.rect.height)
-        //             .attr('fill', d=>colorScale(+d.text))
-
-        //     })
-
-        // selection.exit()
-        //     .transition()
-        //     .duration(duration)
-        //     .remove()
-
-        // var xAxis = d3.svg.axis()
-        //     .scale(xScale)
-        //     .orient("bottom")
-
-        // svg.append("g")
-        //     .attr("class", "x axis")
-        //     .attr("transform", d3.translate(0, height))
-        //     .call(xAxis);
-
 
 
     }
