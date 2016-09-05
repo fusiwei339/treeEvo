@@ -16,6 +16,7 @@ Template.option.rendered = function() {
         .attr('id', 'flowCanvas')
 
     Deps.autorun(() => {
+        Session.get('redraw')
         Session.get('malePeopleObj_ready')
         if (!flowConf.sankeyData) return;
 
@@ -23,8 +24,10 @@ Template.option.rendered = function() {
         $('#structureSvg').css('height', 900)
 
         var graph = flowConf.sankeyData;
-        var nodes = graph.nodes.filter(d => d.show)
-        var edges = graph.edges
+        var nodes = graph.nodes.filter(d => d.show).sort((a, b)=>a.depth-b.depth)
+        // var edges = graph.edges
+        var edges=flowConf.sankeyEdges || dataProcessor_option.sankeyEdges(nodes);
+        console.log(edges)
         var trimedGraph = { nodes, edges }
 
         conf.sankey.svgWidth = $('#structureSvg').width()
@@ -163,33 +166,31 @@ Template.option.events({
         })
     },
 
-    'click #clear_moving': function() {
-        d3.selectAll('.slice').remove();
-    },
     'click #sortByInc': function() {},
     'click #sortByFreq': function() {},
     'click #sortByPop': function() {},
 
     'click #mergebtn': function() {},
     'click #splitAttrBtn': function() {},
-    'click #splitContBtn': function() {},
-    'click #splitContBtn': function() {},
+    'click #splitContBtn': function() {
+        var selectedNodeName = Session.get('selectedNode')
+        var conf_flow = Template.flow.configure;
+        if (!selectedNodeName || !conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
 
+        var sourceDepth = selectedNode[0].depth;
+        _.each(conf_flow.sankeyData.nodes, node=>{
+            if(node.depth===sourceDepth){
+                if(node.cluster==='cutoff' || node.cluster==='continue')
+                    node.show=true;
+                else node.show=false;
+            }
+        })
+        Session.set('redraw', new Date());
+    },
+
+    'click #clear_moving': function() {
+        d3.selectAll('.slice').remove();
+    },
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

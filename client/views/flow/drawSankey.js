@@ -22,7 +22,7 @@ d3.drawSankey = class {
         var conf = Template.flow.configure;
         var animationDur = 800;
         var path = d3.sankey().link();
-        var sliceOffset=4;
+        var sliceOffset = 4;
 
         var nodeSelection = this.svg.selectAll("." + classStr + "node")
             .data(this.graph.nodes.filter(d => d.depth <= depthLimit), function(d) {
@@ -41,6 +41,19 @@ d3.drawSankey = class {
             .on('click', function(d) {
                 if (d3.event.shiftKey) {
                     console.log(d.name)
+                } else if (d3.event.altKey) {
+                    //draw line
+                    var coord = d3.mouse(this);
+                    var g=d3.select(this);
+                    g.append('path')
+                        .attr('class', 'slice')
+                        .attr('d', function() {
+                            return geom.path.begin()
+                                .move_to(coord[0] - sliceOffset, 0)
+                                .line_to(coord[0] - sliceOffset, d.dx)
+                                .end()
+                        })
+
                 } else {
                     Session.set('selectedNode', d.name)
                     var g = d3.select(this);
@@ -50,20 +63,9 @@ d3.drawSankey = class {
                         .attr('stroke', '#666')
                 }
 
-                var coord = d3.mouse(this);
-                //draw line
-                g.append('path')
-                    .attr('class', 'slice')
-                    .attr('d', function() {
-                        return geom.path.begin()
-                            .move_to(coord[0] - sliceOffset, 0)
-                            .line_to(coord[0] - sliceOffset, d.dx)
-                            .end()
-                    })
             })
             .on('mouseenter', function(e) {
                 var g = d3.select(this);
-                var coord = d3.mouse(this);
                 g.append('path')
                     .attr('class', 'moving')
 

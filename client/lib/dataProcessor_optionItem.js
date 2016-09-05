@@ -97,6 +97,7 @@ Template.option.dataProcessor = function() {
     };
 
     ret.getGraidentData = function(trees) {
+        console.log(trees)
         var attr = 'lean';
         var data_temp = _.map(trees, t => {
             var ret = { count: t.count }
@@ -132,6 +133,22 @@ Template.option.dataProcessor = function() {
             return +a - (+b);
         })
 
+        function intersect_safe(a, b) {
+            var ai = 0,
+                bi = 0;
+            var result = [];
+
+            while (ai < a.length && bi < b.length) {
+                if (a[ai] < b[bi]) { ai++; } else if (a[ai] > b[bi]) { bi++; } else /* they're equal */ {
+                    result.push(a[ai]);
+                    ai++;
+                    bi++;
+                }
+            }
+
+            return result;
+        }
+
         var getEdge = function(fatherNode, sonNode) {
             var fatherArr = fatherNode.trees;
             var sonArr = sonNode.trees;
@@ -141,7 +158,9 @@ Template.option.dataProcessor = function() {
             }
             var source = [],
                 target = [];
-            var intersection = _.intersection(fatherNode.people, sonNode.people)
+            fatherNode.people.sort((a, b) => a - b)
+            sonNode.people.sort((a, b) => a - b)
+            var intersection = intersect_safe(fatherNode.people, sonNode.people)
 
             edge.sourceVal = intersection;
             edge.targetVal = intersection;
@@ -157,6 +176,8 @@ Template.option.dataProcessor = function() {
             var fatherNodes = nodesByDepth[depths[i - 1]];
             var sonNodes = nodesByDepth[depths[i]];
             _.each(fatherNodes, function(fatherNode) {
+                if (fatherNode.cluster === 'cutoff')
+                    return;
                 _.each(sonNodes, function(sonNode) {
                     var edge = getEdge(fatherNode, sonNode);
                     if (edge) edges.push(edge);

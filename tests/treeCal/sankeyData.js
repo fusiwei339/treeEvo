@@ -5,76 +5,78 @@
 var patterns = db.patternsDepth.find().toArray()
     // var pattern_parent = _.groupBy(patterns, pattern => pattern.parent);
 
-// var nodes = sankeyNodes(patterns);
-// db.sankeyNodes.drop()
-// db.sankeyNodes.insert(nodes)
-var nodes=db.sankeyNodes.find({show:true}).toArray();
-var edges = sankeyEdges(nodes);
-db.sankeyEdges.drop()
-db.sankeyEdges.insert(edges)
+var nodes = sankeyNodes(patterns);
+db.sankeyNodes.drop()
+db.sankeyNodes.insert(nodes)
+// var nodes=db.sankeyNodes.find({show:true}).toArray();
+// var edges = sankeyEdges(nodes);
+// db.sankeyEdges.drop()
+// db.sankeyEdges.insert(edges)
 
 //var get cut off node of sankey
-// var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-// var ret = []
-// _.each(depth, d => {
+var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+var ret = []
+_.each(depth, d => {
 
-//     print('start first part')
-//     var ids = db.tree_complete.find({ depth: d }).toArray()
-//     var trees = _.uniq(_.map(ids, id => id.path))
-//     var treeArr = _.map(trees, tree => {
-//         var personids = db.tree_complete.distinct('personid', { depth: d, path: tree });
-//         return {
-//             pattern: tree.split(','),
-//             personids: personids,
-//             count: personids.length,
-//             depth: d,
-//         }
-//     })
-//     assignParent(treeArr)
+    print('start first part')
+    var ids = db.tree_complete.find({ depth: d }).toArray()
+    var trees = _.uniq(_.map(ids, id => id.path))
+    var treeArr = _.map(trees, tree => {
+        var personids = db.tree_complete.distinct('personid', { depth: d, path: tree });
+        return {
+            pattern: tree.split(','),
+            personids: personids,
+            count: personids.length,
+            depth: d,
+            lean:calLean(seq2tree(tree.split(','))),
+        }
+    })
+    assignParent(treeArr)
 
-//     var node = {
-//         depth: d,
-//         cluster: 'cutoff',
-//         trees: treeArr,
-//         people: _.map(ids, id => id.personid),
-//         name: 'd' + d + 'c' + 'cutoff',
-//     }
-//     ret.push(node)
+    var node = {
+        depth: d,
+        cluster: 'cutoff',
+        trees: treeArr,
+        people: _.map(ids, id => id.personid),
+        name: 'd' + d + 'c' + 'cutoff',
+    }
+    ret.push(node)
 
-// })
+})
 
 // //var get continue node of sankey
-// _.each(depth, d => {
+_.each(depth, d => {
 
-//     print('start second part')
-//     var ids = db.tree_complete.find({ depth: { $gt: d } }).toArray()
-//     var trees = _.uniq(_.map(ids, id => id['depth' + d].join(',')))
+    print('start second part')
+    var ids = db.tree_complete.find({ depth: { $gt: d } }).toArray()
+    var trees = _.uniq(_.map(ids, id => id['depth' + d].join(',')))
 
-//     var treeArr = _.map(trees, tree => {
-//         var obj={depth:{$gt:d}};
-//         obj['depth'+d]=tree.split(',');
-//         var personids = db.tree_complete.distinct('personid', obj);
-//         return {
-//             pattern: tree,
-//             personids: personids,
-//             count: personids.length,
-//             depth: d,
-//         }
-//     })
-//     assignParent(treeArr)
+    var treeArr = _.map(trees, tree => {
+        var obj={depth:{$gt:d}};
+        obj['depth'+d]=tree.split(',');
+        var personids = db.tree_complete.distinct('personid', obj);
+        return {
+            pattern: tree.split(','),
+            personids: personids,
+            count: personids.length,
+            depth: d,
+            lean:calLean(seq2tree(tree.split(','))),
+        }
+    })
+    assignParent(treeArr)
 
-//     var node = {
-//         depth: d,
-//         cluster: 'continue',
-//         trees: treeArr,
-//         people: _.map(ids, id => id.personid),
-//         name: 'd' + d + 'c' + 'continue',
-//     }
-//     ret.push(node)
+    var node = {
+        depth: d,
+        cluster: 'continue',
+        trees: treeArr,
+        people: _.map(ids, id => id.personid),
+        name: 'd' + d + 'c' + 'continue',
+    }
+    ret.push(node)
 
-// })
+})
 
-// db.sankeyNodes.insert(ret)
+db.sankeyNodes.insert(ret)
 
 
 
