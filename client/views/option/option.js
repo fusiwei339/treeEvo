@@ -17,12 +17,16 @@ Template.option.rendered = function() {
 
     Deps.autorun(() => {
         Session.get('malePeopleObj_ready')
-        if (!flowConf.sankeyData) return;
+        if (!flowConf.sankeyData ) return;
 
         var base = $('#attrListContainer')
         $('#structureSvg').css('height', 900)
 
         var graph = flowConf.sankeyData;
+        var nodes=graph.nodes.filter(d=>d.show)
+        var edges=graph.edges
+        var trimedGraph={nodes, edges}
+        console.log(trimedGraph)
 
         conf.sankey.svgWidth = $('#structureSvg').width()
         conf.sankey.svgHeight = $('#structureSvg').height()
@@ -34,8 +38,8 @@ Template.option.rendered = function() {
             .scaleFunc(dataProcessor_flow.getScaleFunc(scaleMethod))
             .nodePadding(conf.sankey.padding)
             .size([conf.sankey.svgHeight - conf.sankey.margin * 2, conf.sankey.svgWidth - conf.sankey.margin * 2])
-            .nodes(graph.nodes)
-            .links(graph.edges)
+            .nodes(nodes)
+            .links(edges)
             .layout();
 
         _.each(graph.nodes, node => {
@@ -49,7 +53,7 @@ Template.option.rendered = function() {
                 tree.pattern = tree.pattern.sort();
             })
         })
-        new d3.drawSankey(flowCanvas, graph)
+        new d3.drawSankey(flowCanvas, trimedGraph)
             .depthLimit(7)
             .classStr('sankey')
             .draw()

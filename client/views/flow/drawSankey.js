@@ -33,9 +33,7 @@ d3.drawSankey = class {
                 return "translate(" + d.y + "," + d.x + ")";
             })
             .on('click', function(d) {
-                Session.set('targetDepth', null)
                 Session.set('sourceTrees', d.trees)
-                Session.set('editBar', null)
 
                 d3.selectAll(`.${classStr}node`).select('rect')
                     .attr('stroke', 'steelblue')
@@ -44,6 +42,7 @@ d3.drawSankey = class {
             })
             .each(function(d, i) {
                 var canvas = d3.select(this);
+                var attr = Session.get('distributionName') || 'lean'
 
                 canvas.append('rect')
                     .attr({
@@ -52,21 +51,13 @@ d3.drawSankey = class {
                         class: 'backgroundRect',
                         stroke: 'steelblue'
                     })
-                var shadowArr = [-10, -5, -2.5]
-                canvas.selectAll('.shadowLine')
-                    .data(shadowArr).enter()
-                    .append('path')
-                    .attr('d', e => geom.path.begin()
-                        .move_to(d.dy1 + e, 0)
-                        .vertical_to(d.dx)
-                        .end())
-                    .attr('class', 'shadowLine')
-                    .attr('stroke', 'steelblue')
 
-                new d3.drawFreqPatterns(canvas, d)
-                    .height(d.dx)
-                    .width(d.dy1 - 10)
-                    .draw()
+                // new d3.drawDistribution(canvas, d)
+                //     .width(d.dy1)
+                //     .height(d.dx)
+                //     .attr(attr)
+                //     .draw()
+
             })
 
         var nodeTransition = nodeSelection.transition()
@@ -76,6 +67,7 @@ d3.drawSankey = class {
             })
             .each(function(d, i) {
                 var canvas = d3.select(this)
+                var attr = Session.get('distributionName') || 'lean'
 
                 canvas.select('rect')
                     .attr({
@@ -83,16 +75,12 @@ d3.drawSankey = class {
                         height: d.dx,
                         class: 'backgroundRect',
                     })
-                canvas.selectAll('.shadowLine')
-                    .attr('d', e => geom.path.begin()
-                        .move_to(d.dy1 + e, 0)
-                        .vertical_to(d.dx)
-                        .end())
 
-                new d3.drawFreqPatterns(canvas, d)
-                    .height(d.dx)
-                    .width(d.dy1 - 10)
-                    .draw()
+                // new d3.drawDistribution(canvas, d)
+                //     .width(d.dy1)
+                //     .height(d.dx)
+                //     .attr(attr)
+                //     .draw()
 
             })
         nodeSelection.exit()

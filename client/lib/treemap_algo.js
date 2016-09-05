@@ -1,21 +1,37 @@
 d3.treemap_algo = function(arr_input, rect_input) {
 
     var result = [];
+    var sum = function(arr) {
+        var ret = 0;
+        var i = arr.length;
+        while (i--) ret += arr[i].freq;
+        return ret;
+
+    }
 
     var bisect = function(arr) {
+        if (arr.length == 2)
+            return {
+                a: [arr[0]],
+                b: [arr[1]]
+            };
+
         var a = [],
             b = [];
-        arr.sort(function(a, b) {
-            return +b - (+a);
-        })
-        while (arr.length > 0) {
-            var elem = arr.shift();
-            if (d3.sum(a) >= d3.sum(b)) {
-                b.push(elem)
-            } else {
+
+        var halfSum = sum(arr) / 2;
+        var idx = -1;
+        var accu = 0;
+        for (let i = 0, len = arr.length; i < len - 1; i++) {
+            if (accu < halfSum) {
+                var elem = arr[i];
                 a.push(elem)
+                accu += elem.freq;
+                idx = i;
             }
         }
+        b = arr.slice(idx+1);
+
         return {
             a: a,
             b: b
@@ -26,7 +42,7 @@ d3.treemap_algo = function(arr_input, rect_input) {
         else return 'verti';
     }
     var getRatio = function(arr1, arr2) {
-        return d3.sum(arr1) / (d3.sum(arr1) + d3.sum(arr2));
+        return sum(arr1) / (sum(arr1) + sum(arr2));
     }
 
     var divideArea = function(rect, twoArr, direct) {
@@ -66,11 +82,13 @@ d3.treemap_algo = function(arr_input, rect_input) {
         }
     }
     var slice = function(rect, arr) {
+        if (arr.length < 1) return;
         if (arr.length == 1) {
             var ret = {};
-            ret.text = arr[0];
+            ret.obj= arr[0];
             ret.rect = rect;
             result.push(ret);
+            return;
         } else {
             var direct = getDirection(rect.height, rect.width);
             var twoArr = bisect(arr);

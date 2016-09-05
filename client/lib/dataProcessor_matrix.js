@@ -116,11 +116,21 @@ Template.matrix.dataProcessor = function() {
             return divideGroup_byInc(node);
         else if (groupMethod === 'frequency')
             return divideGroup_byFreq(node);
-
     }
 
-    ret.getTreemapData = function(trees, rect) {
-        var arr = _.map(trees, tree => tree.personids.length).sort((a, b) => +a - (+b));
+    ret.getTreemapData = function(trees, rect, attr) {
+        var arr = _.map(trees, tree => {
+            return {
+                freq: tree.count,
+                lean: tree.lean,
+                pop: tree.personids.length,
+            }
+        }).sort((a, b) => {
+            if(a[attr]===b[attr])
+                return b.freq-a.freq;
+            return b[attr] - a[attr];
+        });
+
         var small_rects = d3.treemap_algo(arr, rect)
 
         return small_rects;
@@ -132,11 +142,11 @@ Template.matrix.dataProcessor = function() {
             var oneAttr = {};
             oneAttr.attr = attr.attr[0];
             oneAttr.x = _.filter(_.map(attr.x, x => x[oneAttr.attr]), d => d <= 70)
-            //initial marginY
+                //initial marginY
             oneAttr.marginY = [];
             //initial prob
             var probs = ['prob', 'probLower', 'probUpper']
-            _.each(probs, prob=>oneAttr[prob]=[])
+            _.each(probs, prob => oneAttr[prob] = [])
 
             _.each(attr.ylevel, function(ylevel, idx) {
                 //margin

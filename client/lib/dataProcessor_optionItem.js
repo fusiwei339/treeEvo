@@ -96,6 +96,49 @@ Template.option.dataProcessor = function() {
 
     };
 
+    ret.sankeyEdges = function(nodes) {
+        var nodesByDepth = _.groupBy(nodes, function(node) {
+            return node.depth;
+        })
+        var depths = _.keys(nodesByDepth).sort(function(a, b) {
+            return +a - (+b);
+        })
+
+        var getEdge = function(fatherNode, sonNode) {
+            var fatherArr = fatherNode.trees;
+            var sonArr = sonNode.trees;
+            var edge = {
+                source: fatherNode.name,
+                target: sonNode.name
+            }
+            var source = [],
+                target = [];
+            var intersection = _.intersection(fatherNode.people, sonNode.people)
+
+            edge.sourceVal = intersection;
+            edge.targetVal = intersection;
+            edge.sourcePart = edge.sourceVal.length / fatherNode.people.length;
+            edge.targetPart = edge.targetVal.length / sonNode.people.length;
+
+            if (!intersection.length) return null;
+            return edge;
+        }
+
+        var edges = []
+        for (var i = 1; i < depths.length; i++) {
+            var fatherNodes = nodesByDepth[depths[i - 1]];
+            var sonNodes = nodesByDepth[depths[i]];
+            _.each(fatherNodes, function(fatherNode) {
+                _.each(sonNodes, function(sonNode) {
+                    var edge = getEdge(fatherNode, sonNode);
+                    if (edge) edges.push(edge);
+                })
+            })
+        }
+
+        return edges;
+    }
+
     ret.processSelection = function(selectionObj) {
         var query = {};
         _.each(selectionObj, function(val, key) {
@@ -158,7 +201,7 @@ Template.clusterWindow.dataProcessor = function() {
         return Math.abs(a - b);
     }
 
-    ret.getClusters= function(obj) {
+    ret.getClusters = function(obj) {
         var ret = [];
         _.each(obj, function(vals, key) {
             if (vals.length < 3) return;
@@ -179,17 +222,17 @@ Template.clusterWindow.dataProcessor = function() {
         return ret[0];
     };
 
-    ret.getClusterData=function(clusters){
-        var ret=[]
-        var malePeople=Template.flow.configure.malePeople;
+    ret.getClusterData = function(clusters) {
+        var ret = []
+        var malePeople = Template.flow.configure.malePeople;
 
-        _.each(clusters.value, range=>{
-            var filteredMale=_.filter(malePeople, male=>{
-                return male[clusters.name]>=range[0] && male[clusters.name]<range[1] && male.depth>1;
+        _.each(clusters.value, range => {
+            var filteredMale = _.filter(malePeople, male => {
+                return male[clusters.name] >= range[0] && male[clusters.name] < range[1] && male.depth > 1;
             })
-            var ids=_.map(filteredMale, male=>male.personid);
+            var ids = _.map(filteredMale, male => male.personid);
             ret.push({
-                name:clusters.name,
+                name: clusters.name,
                 range,
                 ids,
             })
@@ -226,21 +269,21 @@ Template.clusterWindow.dataProcessor = function() {
 
     }
 
-    ret.formatClusters=function(permutationResult){
-        var ret=[{order:-1, description:'others'}];
-        if(permutationResult.length==0){
-            ret[0].description='all';
+    ret.formatClusters = function(permutationResult) {
+        var ret = [{ order: -1, description: 'others' }];
+        if (permutationResult.length == 0) {
+            ret[0].description = 'all';
             return ret;
         }
-        _.each(permutationResult, function(r){
-            var temp={order:0, description:{}};
-            _.each(r, function(c){
-                temp.description[c.name]=c.range;
+        _.each(permutationResult, function(r) {
+            var temp = { order: 0, description: {} };
+            _.each(r, function(c) {
+                temp.description[c.name] = c.range;
             })
             ret.push(temp);
         })
-        _.each(ret, function(c, i){
-            c.order=i;
+        _.each(ret, function(c, i) {
+            c.order = i;
         })
         return ret;
     }

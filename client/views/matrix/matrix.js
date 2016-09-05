@@ -94,31 +94,18 @@ Template.matrix.rendered = function() {
     Tracker.autorun(() => {
         Session.get('redraw')
         var sourceTrees = Session.get('sourceTrees')
-        if (!sourceTrees) return;
+        if (!sourceTrees || ! conf_flow.sankeyData) return;
         var sourceCluster = sourceTrees[0].cluster;
         var sourceDepth = sourceTrees[0].depth;
 
-        var targetDepth;
-        var temp = Session.get('targetDepth')
-        if (!temp || temp < sourceDepth + 1) {
-            targetDepth = sourceDepth + 1;
-            Session.set('targetDepth', targetDepth);
-        } else {
-            targetDepth = temp;
-        }
-
-        if (!targetDepth || !conf_flow.sankeyData) return;
-        if (sourceCluster !== 0) return;
-
         var involvedNodes = conf_flow.sankeyData.nodes.filter(d => {
-            if (d.depth === targetDepth) return true;
-            else if (d.depth > sourceDepth && d.depth < targetDepth && d.cluster === 'cutoff') return true;
-            else return false;
+            return d.name==`d${sourceDepth}c${sourceCluster}`;
         })
         conf_flow.involvedNodes = involvedNodes;
+        console.log(involvedNodes)
 
         sourceCanvas.selectAll('*').remove();
-        new d3.drawTreemapBars(sourceCanvas, involvedNodes)
+        new d3.drawTreemapBars(sourceCanvas, involvedNodes[0])
             .width(sourceConf.width)
             .height(sourceConf.height)
             .draw()

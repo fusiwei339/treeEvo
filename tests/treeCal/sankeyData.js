@@ -5,46 +5,78 @@
 var patterns = db.patternsDepth.find().toArray()
     // var pattern_parent = _.groupBy(patterns, pattern => pattern.parent);
 
-var nodes = sankeyNodes(patterns);
-db.sankeyNodes.drop()
-db.sankeyNodes.insert(nodes)
-
-//var get cut off node of sankey
-var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-var ret = []
-_.each(depth, d => {
-
-    var ids = db.tree_complete.find({ depth: d }).toArray()
-    var trees=_.uniq(_.map(ids, id=>id.path))
-    var treeArr=_.map(trees, tree=>{
-        var personids=db.tree_complete.distinct('personid', {depth:d, path:tree});
-        return {
-            pattern:tree.split(','),
-            personids:personids,
-            count:personids.length,
-            depth:d+1,
-        }
-    })
-    assignParent(treeArr)
-
-    var node = {
-        depth: d+1,
-        cluster: 'cutoff',
-        trees: treeArr,
-        people: _.map(ids, id=>id.personid),
-        name: 'depth' + d + 'cluster' + 'cutoff',
-    }
-    ret.push(node)
-
-})
-
-db.sankeyNodes.insert(ret)
-
-
-var nodes=db.sankeyNodes.find().toArray();
+// var nodes = sankeyNodes(patterns);
+// db.sankeyNodes.drop()
+// db.sankeyNodes.insert(nodes)
+var nodes=db.sankeyNodes.find({show:true}).toArray();
 var edges = sankeyEdges(nodes);
 db.sankeyEdges.drop()
 db.sankeyEdges.insert(edges)
+
+//var get cut off node of sankey
+// var depth = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+// var ret = []
+// _.each(depth, d => {
+
+//     print('start first part')
+//     var ids = db.tree_complete.find({ depth: d }).toArray()
+//     var trees = _.uniq(_.map(ids, id => id.path))
+//     var treeArr = _.map(trees, tree => {
+//         var personids = db.tree_complete.distinct('personid', { depth: d, path: tree });
+//         return {
+//             pattern: tree.split(','),
+//             personids: personids,
+//             count: personids.length,
+//             depth: d,
+//         }
+//     })
+//     assignParent(treeArr)
+
+//     var node = {
+//         depth: d,
+//         cluster: 'cutoff',
+//         trees: treeArr,
+//         people: _.map(ids, id => id.personid),
+//         name: 'd' + d + 'c' + 'cutoff',
+//     }
+//     ret.push(node)
+
+// })
+
+// //var get continue node of sankey
+// _.each(depth, d => {
+
+//     print('start second part')
+//     var ids = db.tree_complete.find({ depth: { $gt: d } }).toArray()
+//     var trees = _.uniq(_.map(ids, id => id['depth' + d].join(',')))
+
+//     var treeArr = _.map(trees, tree => {
+//         var obj={depth:{$gt:d}};
+//         obj['depth'+d]=tree.split(',');
+//         var personids = db.tree_complete.distinct('personid', obj);
+//         return {
+//             pattern: tree,
+//             personids: personids,
+//             count: personids.length,
+//             depth: d,
+//         }
+//     })
+//     assignParent(treeArr)
+
+//     var node = {
+//         depth: d,
+//         cluster: 'continue',
+//         trees: treeArr,
+//         people: _.map(ids, id => id.personid),
+//         name: 'd' + d + 'c' + 'continue',
+//     }
+//     ret.push(node)
+
+// })
+
+// db.sankeyNodes.insert(ret)
+
+
 
 // db.sankeyData.drop()
 
@@ -105,6 +137,7 @@ function assignParent(patterns) {
 }
 
 function sankeyNodes(patterns) {
+    print('start complete part')
     var nodes = []
     var groupByDepth = d3.nest()
         .key(function(d) {
@@ -112,25 +145,17 @@ function sankeyNodes(patterns) {
         })
         .entries(patterns);
 
+    //get complete nodes
     _.each(groupByDepth, oneDepth => {
         var patterns = oneDepth.values;
-        var clusters = d3.nest()
-            .key(function(d) {
-                return d.cluster;
-            })
-            .entries(patterns);
+        var node = { trees: [], people: [], depth: +oneDepth.key, cluster: '0', name: 'd' + oneDepth.key + 'c0' }
 
-        _.each(clusters, function(cluster) {
-            var people = [];
-            _.each(cluster.values, tree => people.push(...tree.personids))
-            nodes.push({
-                depth: +oneDepth.key,
-                cluster: cluster.key,
-                trees: cluster.values,
-                people: people,
-                name: 'depth' + oneDepth.key + 'cluster' + cluster.key,
-            })
+        _.each(patterns, function(pattern) {
+            node.people.push(...pattern.personids)
+            pattern.lean = calLean(seq2tree(pattern.pattern))
+            node.trees.push(pattern)
         })
+        nodes.push(node)
     })
     return nodes;
 }
