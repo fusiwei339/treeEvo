@@ -28,7 +28,7 @@ d3.treemap_algo = function(arr_input, rect_input) {
                 a.push(elem)
                 accu += elem.freq;
                 idx = i;
-            }
+            }else break;
         }
         b = arr.slice(idx+1);
 
