@@ -4,12 +4,6 @@ Template.option.rendered = function() {
     var dataProcessor_option = Template.option.dataProcessor;
     var dataProcessor_flow = Template.flow.dataProcessor;
 
-    //init attr list
-    // var attrList = Template.option.configure.attributeList;
-    // $('select[multiple]').multipleSelect('setSelects', attrList);
-    // Session.set('showAttrs', attrList)
-
-
     var svg = d3.select('#structureSvg');
     var flowCanvas = svg.append('g')
         .attr('transform', d3.translate(conf.sankey.margin, conf.sankey.margin))
@@ -88,70 +82,24 @@ Template.option.rendered = function() {
     })
 
     //when press split button
-    Deps.autorun(()=>{
+    Deps.autorun(() => {
         Session.get('startSplit')
-        console.log('startSplit')
 
         var selectedNodeName = Session.get('selectedNode')
+        var sortBy=Session.get('distributionName');
         var conf_flow = Template.flow.configure;
-        if (!selectedNodeName || !conf_flow.sankeyData) return;
+        var percentArr = conf_flow.percentArr;
+        if (_.isEmpty(percentArr) || !selectedNodeName || !conf_flow.sankeyData) return;
+
         var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+
     })
 
 }
 
 
 Template.option.helpers({
-    // 'attributeList': function() {
-    //     return Session.get('showAttrs');
-    // },
-    // 'structureList': function() {
-    //     return Session.get('showStructures');
-    // },
-    // 'selectSettings': function() {
-    //     return {
-    //         placeholder: "Select attributes of interest",
-    //         filter: true,
-    //         multiple: false,
-    //         keepOpen: false,
-    //         onClose: function() {
-    //             var attrs = $('select[multiple]').multipleSelect('getSelects');
-    //             Session.set('showAttrs', attrs);
-    //         },
-    //     };
-    // },
-    // 'selectOptions': function() {
-    //     var list = Template.option.configure.attributeList;
-    //     return _.map(list, function(d) {
-    //         return {
-    //             label: d,
-    //             value: d,
-    //         }
-    //     })
-    // },
-    // 'filter': function() {
-    //     var obj = Session.get('filterMalePeople');
-    //     return JSON.stringify(obj);
-    // },
-    // 'clusters': function() {
-    //     Session.get('clusterChanged');
-    //     var clusters = Session.get('clusterMalePeople');
-    //     var temp = clusters.sort(function(a, b) {
-    //         return +a.order - (+b.order);
-    //     })
-    //     return temp;
-    // },
-    // 'clusterChanged': function() {
-    //     Session.get('clusterChanged');
-    //     return true;
-    // },
-    // 'stringify': function(obj) {
-    //     return JSON.stringify(obj);
-    // },
-    // 'getColor': function(order) {
-    //     var colorArr = Template.option.configure.clusterColors;
-    //     return colorArr[order];
-    // },
+
 
 })
 
@@ -167,9 +115,9 @@ Template.option.events({
         var conf_flow = Template.flow.configure;
         var dataProcessor_matrix = Template.matrix.dataProcessor;
         var attrs = conf_flow.attrs;
-        if (!conf_flow.involvedNodes || !conf_flow.malePeopleObj_toUse) return;
+        if (_.isEmpty(conf_flow.involvedNodes) || !conf_flow.malePeopleObj_toUse) return;
 
-        var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes, conf_flow.attrs);
+        var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes, attrs);
         Meteor.call('insertClusters', peoples, () => {
             console.log('inserted')
             Meteor.call('regression', attrs)
@@ -178,15 +126,12 @@ Template.option.events({
 
     'click #sortByInc': function() {
         Session.set('distributionName', 'lean')
-        Session.set('redraw', new Date())
     },
     'click #sortByFreq': function() {
         Session.set('distributionName', 'count')
-        Session.set('redraw', new Date())
     },
     'click #sortByPop': function() {
         Session.set('distributionName', 'population')
-        Session.set('redraw', new Date())
     },
 
     'click #mergebtn': function() {},

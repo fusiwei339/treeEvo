@@ -45,8 +45,8 @@ Template.flow.dataProcessor = function() {
                 };
             case 'scaleByUni':
                 return function(node) {
-                    node.value1 = 1;
-                    node.value2 = 1;
+                    node.value1 = node.people.length/node.totalPeople;
+                    node.value2 = node.people.length/node.totalPeople;
                 };
             case 'scaleByDefault':
                 return function(node) {

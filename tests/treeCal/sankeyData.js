@@ -42,6 +42,7 @@ _.each(depth, d => {
         name: 'd' + d + 'c' + 'cutoff',
         show: false,
         idx: 1,
+        totalPeople:db.sankeyNodes.findOne({depth:d, cluster:'0'}).people.length,
     }
     ret.push(node)
 
@@ -76,6 +77,7 @@ _.each(depth, d => {
         name: 'd' + d + 'c' + 'continue',
         show: false,
         idx: 0,
+        totalPeople:db.sankeyNodes.findOne({depth:d, cluster:'0'}).people.length,
     }
     ret.push(node)
 

@@ -65,9 +65,12 @@ d3.drawSankey = class {
                     flow_conf.percentArr = _.map(elemArr[0], elem => {
                         return +d3.select(elem).attr('offset')
                     }).sort((a, b) => a - b);
-                    console.log(flow_conf.percentArr)
 
                 } else {
+                    d3.selectAll(`.${classStr}node`)
+                        .selectAll('.slice')
+                        .remove();
+                        
                     Session.set('selectedNode', d.name)
                     var g = d3.select(this);
                     d3.selectAll(`.${classStr}node`).select('rect')

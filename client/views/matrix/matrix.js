@@ -48,7 +48,7 @@ Template.matrix.rendered = function() {
         if (handler.ready()) {
 
             var patterns = Coll.r.find().fetch();
-            if (!conf_flow.involvedNodes) return;
+            if (_.isEmpty(conf_flow.involvedNodes)) return;
             var patterns_format = dataProcessor_matrix.reformatR(patterns);
             if (_.isEmpty(patterns_format)) return;
 
@@ -137,7 +137,7 @@ Template.matrix.rendered = function() {
     Tracker.autorun(() => {
         var groupMethod = Session.get('groupMethod')
         var barName = Session.get('editBar')
-        if (!conf_flow.involvedNodes || !barName) return;
+        if (_.isEmpty(conf_flow.involvedNodes) || !barName) return;
         var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
         node.draw = 'no';
 
@@ -167,7 +167,7 @@ function run() {
     var conf_flow = Template.flow.configure;
     var dataProcessor_matrix = Template.matrix.dataProcessor;
     var attrs = conf_flow.attrs;
-    if (!conf_flow.involvedNodes || !conf_flow.malePeopleObj_toUse) return;
+    if (_.isEmpty(conf_flow.involvedNodes) || !conf_flow.malePeopleObj_toUse) return;
 
     var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes, conf_flow.attrs);
     Meteor.call('insertClusters', peoples, () => {
