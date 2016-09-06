@@ -14,13 +14,12 @@ Template.option.rendered = function() {
         Session.get('malePeopleObj_ready')
         if (!flowConf.sankeyData) return;
 
-        var base = $('#attrListContainer')
         $('#structureSvg').css('height', 900)
 
         var graph = flowConf.sankeyData;
         var nodes = graph.nodes.filter(d => d.show).sort((a, b) => a.depth - b.depth)
-            // var edges = graph.edges
         var edges = dataProcessor_option.sankeyEdges(nodes);
+        
         var trimedGraph = { nodes, edges }
 
         conf.sankey.svgWidth = $('#structureSvg').width()
@@ -37,17 +36,6 @@ Template.option.rendered = function() {
             .links(edges)
             .layout();
 
-        _.each(graph.nodes, node => {
-            node.trees.sort((a, b) => {
-                if (a.count === b.count) {
-                    return a.pattern.length - b.pattern.length;
-                }
-                return b.count - a.count
-            })
-            _.each(node.trees, tree => {
-                tree.pattern = tree.pattern.sort();
-            })
-        })
         new d3.drawSankey(flowCanvas, trimedGraph)
             .depthLimit(7)
             .classStr('sankey')
@@ -86,12 +74,79 @@ Template.option.rendered = function() {
         Session.get('startSplit')
 
         var selectedNodeName = Session.get('selectedNode')
-        var sortBy=Session.get('distributionName');
+        var sortBy = Session.get('distributionName');
         var conf_flow = Template.flow.configure;
         var percentArr = conf_flow.percentArr;
         if (_.isEmpty(percentArr) || !selectedNodeName || !conf_flow.sankeyData) return;
 
-        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+        //generate partitions
+        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)[0];
+        selectedNode.trees.sort((a, b) => {
+            if (sortBy === 'population')
+                return a.pattern.length - b.pattern.length;
+            else if (sortBy === 'lean')
+                return b.lean - a.lean;
+            else return a.count - b.count;
+        })
+        percentArr.unshift(0);
+        percentArr.push(1);
+        var accum = 0,
+            idx = 0;
+        var partitions = [],
+            temp = [];
+
+        function summaryPersonids(trees) {
+            var ret = []
+            _.each(trees, tree => ret.push(...tree.personids))
+            return ret;
+        }
+        for (var i = 0, len = selectedNode.trees.length; i < len; i++) {
+            var tree = selectedNode.trees[i];
+            accum += tree.personids.length / selectedNode.people.length;
+            if (i === selectedNode.trees.length - 1) {
+                temp.push(tree);
+                partitions.push({
+                    trees: temp,
+                    depth: temp[0].depth,
+                    cluster: '' + accum,
+                    idx: selectedNode.idx + accum,
+                    show: true,
+                    people: summaryPersonids(temp),
+                    name: 'd' + temp[0].depth + 'c' + accum,
+                    totalPeople: selectedNode.totalPeople,
+                });
+                temp = [];
+                continue;
+            }
+            if (accum < percentArr[idx + 1]) {
+                temp.push(tree);
+            } else {
+                if (_.isEmpty(temp)) continue;
+
+                partitions.push({
+                    trees: temp,
+                    depth: temp[0].depth,
+                    cluster: '' + accum,
+                    idx: selectedNode.idx + accum,
+                    show: true,
+                    people: summaryPersonids(temp),
+                    name: 'd' + temp[0].depth + 'c' + accum,
+                    totalPeople: selectedNode.totalPeople,
+                });
+                temp = [];
+                idx++;
+                temp.push(tree);
+            }
+        }
+        conf_flow.percentArr = [];
+
+        //deal with sankeydata
+        _.each(conf_flow.sankeyData.nodes, node => {
+            if (node.name === selectedNode.name)
+                node.show = false;
+        })
+        conf_flow.sankeyData.nodes.push(...partitions);
+        Session.set('redraw', new Date());
 
     })
 
@@ -136,6 +191,7 @@ Template.option.events({
 
     'click #mergebtn': function() {},
     'click #splitAttrBtn': function() {
+        d3.selectAll('.slice').remove();
         Session.set('startSplit', new Date())
     },
     'click #splitContBtn': function() {
@@ -157,6 +213,7 @@ Template.option.events({
 
     'click #clear_moving': function() {
         d3.selectAll('.slice').remove();
+        conf_flow.percentArr = [];
     },
 
 });

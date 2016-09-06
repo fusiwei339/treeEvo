@@ -12,9 +12,9 @@
 }
 
 .sankeysankeyLink{
-  fill:#ddd;
+  fill:#888;
   stroke-width:0;
-  opacity: .7;
+  opacity: .3;
 }
 
 .featureRect{
