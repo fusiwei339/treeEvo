@@ -121,15 +121,15 @@ Template.matrix.dataProcessor = function() {
     ret.getTreemapData = function(trees, rect, attr) {
         var arr = _.map(trees, tree => {
             return {
-                freq: tree.count,
+                count: tree.count,
                 lean: tree.lean,
-                pop: tree.personids.length,
+                population: tree.pattern.length,
                 pattern:tree.pattern
             }
         }).sort((a, b) => {
             if(a[attr]===b[attr])
                 return b.freq-a.freq;
-            return b[attr] - a[attr];
+            return a[attr] - b[attr];
         });
 
         var small_rects = d3.treemap_algo(arr, rect)

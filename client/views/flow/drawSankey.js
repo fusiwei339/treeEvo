@@ -19,19 +19,21 @@ d3.drawSankey = class {
         var depthLimit = this._depthLimit || null;
         var dataProcessor = Template.option.dataProcessor;
 
-        var conf = Template.flow.configure;
+        var flow_conf = Template.flow.configure;
+        var conf = Template.option.configure;
         var animationDur = 800;
         var path = d3.sankey().link();
         var sliceOffset = 4;
+        var attr = Session.get('distributionName') || 'lean'
 
         var nodeSelection = this.svg.selectAll("." + classStr + "node")
             .data(this.graph.nodes.filter(d => d.depth <= depthLimit), function(d) {
                 return d.id = d.name;
             })
 
-        var colorScale = d3.scale.linear()
-            .domain([-.5, 0, .5])
-            .range(['#b35806', '#fff', '#542788'])
+        var colorScale = conf.graidentColorScale[attr]
+            .domain(conf.graidentColorDomain[attr])
+            .range(conf.graidentColorRange[attr])
 
         nodeSelection.enter().append("g")
             .attr("class", classStr + "node")
@@ -44,15 +46,26 @@ d3.drawSankey = class {
                 } else if (d3.event.altKey) {
                     //draw line
                     var coord = d3.mouse(this);
-                    var g=d3.select(this);
+                    var g = d3.select(this);
                     g.append('path')
                         .attr('class', 'slice')
+                        .attr('offset', coord[0] / d.dy1)
                         .attr('d', function() {
                             return geom.path.begin()
                                 .move_to(coord[0] - sliceOffset, 0)
                                 .line_to(coord[0] - sliceOffset, d.dx)
                                 .end()
                         })
+
+                    d3.selectAll(`.${classStr}node`).filter(e => e.name !== d.name)
+                        .selectAll('.slice')
+                        .remove();
+
+                    var elemArr = g.selectAll('.slice').map(d => d)
+                    flow_conf.percentArr = _.map(elemArr[0], elem => {
+                        return +d3.select(elem).attr('offset')
+                    }).sort((a, b) => a - b);
+                    console.log(flow_conf.percentArr)
 
                 } else {
                     Session.set('selectedNode', d.name)
@@ -91,7 +104,6 @@ d3.drawSankey = class {
             })
             .each(function(d, i) {
                 var canvas = d3.select(this);
-                var attr = Session.get('distributionName') || 'lean'
 
                 canvas.append('defs')
                     .append('linearGradient')
@@ -102,7 +114,7 @@ d3.drawSankey = class {
                         x2: "100%",
                         y2: "0%",
                     })
-                    .selectAll('stop').data(dataProcessor.getGraidentData(d.trees))
+                    .selectAll('stop').data(dataProcessor.getGraidentData(d.trees, attr))
                     .enter().append('stop')
                     .attr('offset', d => d.offset)
                     .style('stop-color', d => colorScale(d.value))
@@ -123,6 +135,23 @@ d3.drawSankey = class {
             .duration(animationDur)
             .attr("transform", function(d) {
                 return "translate(" + d.y + "," + d.x + ")";
+            })
+            .each(function(d, i){
+                var canvas = d3.select(this);
+
+                canvas.select('defs')
+                    .select('linearGradient')
+                    .attr('id', d.name + 'graident')
+                    .attr({
+                        x1: "0%",
+                        y1: "0%",
+                        x2: "100%",
+                        y2: "0%",
+                    })
+                    .selectAll('stop').data(dataProcessor.getGraidentData(d.trees, attr))
+                    .attr('offset', d => d.offset)
+                    .style('stop-color', d => colorScale(d.value))
+                    .style('stop-opacity', 1)
             })
             .select('rect')
             .attr('width', d => d.dy1)

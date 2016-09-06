@@ -8,6 +8,7 @@ var patterns = db.patternsDepth.find().toArray()
 var nodes = sankeyNodes(patterns);
 db.sankeyNodes.drop()
 db.sankeyNodes.insert(nodes)
+
 // var nodes=db.sankeyNodes.find({show:true}).toArray();
 // var edges = sankeyEdges(nodes);
 // db.sankeyEdges.drop()
@@ -28,7 +29,7 @@ _.each(depth, d => {
             personids: personids,
             count: personids.length,
             depth: d,
-            lean:calLean(seq2tree(tree.split(','))),
+            lean: calLean(seq2tree(tree.split(','))),
         }
     })
     assignParent(treeArr)
@@ -39,6 +40,8 @@ _.each(depth, d => {
         trees: treeArr,
         people: _.map(ids, id => id.personid),
         name: 'd' + d + 'c' + 'cutoff',
+        show: false,
+        idx: 1,
     }
     ret.push(node)
 
@@ -52,15 +55,15 @@ _.each(depth, d => {
     var trees = _.uniq(_.map(ids, id => id['depth' + d].join(',')))
 
     var treeArr = _.map(trees, tree => {
-        var obj={depth:{$gt:d}};
-        obj['depth'+d]=tree.split(',');
+        var obj = { depth: { $gt: d } };
+        obj['depth' + d] = tree.split(',');
         var personids = db.tree_complete.distinct('personid', obj);
         return {
             pattern: tree.split(','),
             personids: personids,
             count: personids.length,
             depth: d,
-            lean:calLean(seq2tree(tree.split(','))),
+            lean: calLean(seq2tree(tree.split(','))),
         }
     })
     assignParent(treeArr)
@@ -71,6 +74,8 @@ _.each(depth, d => {
         trees: treeArr,
         people: _.map(ids, id => id.personid),
         name: 'd' + d + 'c' + 'continue',
+        show: false,
+        idx: 0,
     }
     ret.push(node)
 
@@ -150,7 +155,15 @@ function sankeyNodes(patterns) {
     //get complete nodes
     _.each(groupByDepth, oneDepth => {
         var patterns = oneDepth.values;
-        var node = { trees: [], people: [], depth: +oneDepth.key, cluster: '0', name: 'd' + oneDepth.key + 'c0' }
+        var node = {
+            trees: [],
+            people: [],
+            depth: +oneDepth.key,
+            cluster: '0',
+            name: 'd' + oneDepth.key + 'c0',
+            show: true,
+            idx: 1,
+        }
 
         _.each(patterns, function(pattern) {
             node.people.push(...pattern.personids)

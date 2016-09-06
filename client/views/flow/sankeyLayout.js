@@ -151,7 +151,7 @@ d3.sankey = function() {
         initializeNodeDepth();
 
         function sortVerti(a, b) {
-            return a.cluster - b.cluster;
+            return a.idx- b.idx;
         }
 
         _.each(nodesByBreadth, function(nodes, breadth) {

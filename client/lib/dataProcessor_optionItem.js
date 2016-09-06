@@ -96,9 +96,7 @@ Template.option.dataProcessor = function() {
 
     };
 
-    ret.getGraidentData = function(trees) {
-        console.log(trees)
-        var attr = 'lean';
+    ret.getGraidentData = function(trees, attr) {
         var data_temp = _.map(trees, t => {
             var ret = { count: t.count }
             if (attr === 'population') {
@@ -109,7 +107,7 @@ Template.option.dataProcessor = function() {
             return ret;
         })
 
-        data_temp.sort((a, b) => b.key - a.key)
+        data_temp.sort((a, b) => a.key - b.key)
 
         var graidentData = [];
         _.each(data_temp, t => {

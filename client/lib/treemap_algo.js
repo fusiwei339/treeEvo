@@ -4,7 +4,7 @@ d3.treemap_algo = function(arr_input, rect_input) {
     var sum = function(arr) {
         var ret = 0;
         var i = arr.length;
-        while (i--) ret += arr[i].freq;
+        while (i--) ret += arr[i].count;
         return ret;
 
     }
@@ -26,7 +26,7 @@ d3.treemap_algo = function(arr_input, rect_input) {
             if (accu < halfSum) {
                 var elem = arr[i];
                 a.push(elem)
-                accu += elem.freq;
+                accu += elem.count;
                 idx = i;
             }else break;
         }

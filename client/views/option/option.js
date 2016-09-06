@@ -5,9 +5,9 @@ Template.option.rendered = function() {
     var dataProcessor_flow = Template.flow.dataProcessor;
 
     //init attr list
-    var attrList = Template.option.configure.attributeList;
-    $('select[multiple]').multipleSelect('setSelects', attrList);
-    Session.set('showAttrs', attrList)
+    // var attrList = Template.option.configure.attributeList;
+    // $('select[multiple]').multipleSelect('setSelects', attrList);
+    // Session.set('showAttrs', attrList)
 
 
     var svg = d3.select('#structureSvg');
@@ -24,10 +24,9 @@ Template.option.rendered = function() {
         $('#structureSvg').css('height', 900)
 
         var graph = flowConf.sankeyData;
-        var nodes = graph.nodes.filter(d => d.show).sort((a, b)=>a.depth-b.depth)
-        // var edges = graph.edges
-        var edges=flowConf.sankeyEdges || dataProcessor_option.sankeyEdges(nodes);
-        console.log(edges)
+        var nodes = graph.nodes.filter(d => d.show).sort((a, b) => a.depth - b.depth)
+            // var edges = graph.edges
+        var edges = dataProcessor_option.sankeyEdges(nodes);
         var trimedGraph = { nodes, edges }
 
         conf.sankey.svgWidth = $('#structureSvg').width()
@@ -88,60 +87,71 @@ Template.option.rendered = function() {
 
     })
 
+    //when press split button
+    Deps.autorun(()=>{
+        Session.get('startSplit')
+        console.log('startSplit')
+
+        var selectedNodeName = Session.get('selectedNode')
+        var conf_flow = Template.flow.configure;
+        if (!selectedNodeName || !conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+    })
+
 }
 
 
 Template.option.helpers({
-    'attributeList': function() {
-        return Session.get('showAttrs');
-    },
-    'structureList': function() {
-        return Session.get('showStructures');
-    },
-    'selectSettings': function() {
-        return {
-            placeholder: "Select attributes of interest",
-            filter: true,
-            multiple: false,
-            keepOpen: false,
-            onClose: function() {
-                var attrs = $('select[multiple]').multipleSelect('getSelects');
-                Session.set('showAttrs', attrs);
-            },
-        };
-    },
-    'selectOptions': function() {
-        var list = Template.option.configure.attributeList;
-        return _.map(list, function(d) {
-            return {
-                label: d,
-                value: d,
-            }
-        })
-    },
-    'filter': function() {
-        var obj = Session.get('filterMalePeople');
-        return JSON.stringify(obj);
-    },
-    'clusters': function() {
-        Session.get('clusterChanged');
-        var clusters = Session.get('clusterMalePeople');
-        var temp = clusters.sort(function(a, b) {
-            return +a.order - (+b.order);
-        })
-        return temp;
-    },
-    'clusterChanged': function() {
-        Session.get('clusterChanged');
-        return true;
-    },
-    'stringify': function(obj) {
-        return JSON.stringify(obj);
-    },
-    'getColor': function(order) {
-        var colorArr = Template.option.configure.clusterColors;
-        return colorArr[order];
-    },
+    // 'attributeList': function() {
+    //     return Session.get('showAttrs');
+    // },
+    // 'structureList': function() {
+    //     return Session.get('showStructures');
+    // },
+    // 'selectSettings': function() {
+    //     return {
+    //         placeholder: "Select attributes of interest",
+    //         filter: true,
+    //         multiple: false,
+    //         keepOpen: false,
+    //         onClose: function() {
+    //             var attrs = $('select[multiple]').multipleSelect('getSelects');
+    //             Session.set('showAttrs', attrs);
+    //         },
+    //     };
+    // },
+    // 'selectOptions': function() {
+    //     var list = Template.option.configure.attributeList;
+    //     return _.map(list, function(d) {
+    //         return {
+    //             label: d,
+    //             value: d,
+    //         }
+    //     })
+    // },
+    // 'filter': function() {
+    //     var obj = Session.get('filterMalePeople');
+    //     return JSON.stringify(obj);
+    // },
+    // 'clusters': function() {
+    //     Session.get('clusterChanged');
+    //     var clusters = Session.get('clusterMalePeople');
+    //     var temp = clusters.sort(function(a, b) {
+    //         return +a.order - (+b.order);
+    //     })
+    //     return temp;
+    // },
+    // 'clusterChanged': function() {
+    //     Session.get('clusterChanged');
+    //     return true;
+    // },
+    // 'stringify': function(obj) {
+    //     return JSON.stringify(obj);
+    // },
+    // 'getColor': function(order) {
+    //     var colorArr = Template.option.configure.clusterColors;
+    //     return colorArr[order];
+    // },
 
 })
 
@@ -166,12 +176,23 @@ Template.option.events({
         })
     },
 
-    'click #sortByInc': function() {},
-    'click #sortByFreq': function() {},
-    'click #sortByPop': function() {},
+    'click #sortByInc': function() {
+        Session.set('distributionName', 'lean')
+        Session.set('redraw', new Date())
+    },
+    'click #sortByFreq': function() {
+        Session.set('distributionName', 'count')
+        Session.set('redraw', new Date())
+    },
+    'click #sortByPop': function() {
+        Session.set('distributionName', 'population')
+        Session.set('redraw', new Date())
+    },
 
     'click #mergebtn': function() {},
-    'click #splitAttrBtn': function() {},
+    'click #splitAttrBtn': function() {
+        Session.set('startSplit', new Date())
+    },
     'click #splitContBtn': function() {
         var selectedNodeName = Session.get('selectedNode')
         var conf_flow = Template.flow.configure;
@@ -179,11 +200,11 @@ Template.option.events({
         var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
 
         var sourceDepth = selectedNode[0].depth;
-        _.each(conf_flow.sankeyData.nodes, node=>{
-            if(node.depth===sourceDepth){
-                if(node.cluster==='cutoff' || node.cluster==='continue')
-                    node.show=true;
-                else node.show=false;
+        _.each(conf_flow.sankeyData.nodes, node => {
+            if (node.depth === sourceDepth) {
+                if (node.cluster === 'cutoff' || node.cluster === 'continue')
+                    node.show = true;
+                else node.show = false;
             }
         })
         Session.set('redraw', new Date());

@@ -85,8 +85,8 @@ Template.matrix.rendered = function() {
         height: $('#sourceGroup').height() - 40,
     }
     var detailPanel = d3.select('#detailPanel')
-        .style('width', sourceConf.width+'px')
-        .style('height', sourceConf.height+'px')
+        .style('width', sourceConf.width + 'px')
+        .style('height', sourceConf.height + 'px')
 
     var treemapCanvas = d3.select('#treemapSvg')
         .attr('height', '100%')
@@ -100,9 +100,9 @@ Template.matrix.rendered = function() {
 
     //draw treemap bars when click a sankey node
     Tracker.autorun(() => {
-        var selectedNodeName= Session.get('selectedNode')
-        if (!selectedNodeName|| !conf_flow.sankeyData) return;
-        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name===selectedNodeName)
+        var selectedNodeName = Session.get('selectedNode')
+        if (!selectedNodeName || !conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
 
         conf_flow.sourceCluster = selectedNode[0].cluster;
         conf_flow.sourceDepth = selectedNode[0].depth;
@@ -116,18 +116,18 @@ Template.matrix.rendered = function() {
     })
 
     //when brush on the treemap bar
-    Tracker.autorun(()=>{
+    Tracker.autorun(() => {
         Session.get('selectedRects')
-        if(! conf.selectedRects) return;
+        if (!conf.selectedRects) return;
 
-        var nRows=Math.ceil(conf.selectedRects.length/8);
-        var rowHeight=conf_option.sankey.nodeWidth+(conf_flow.sourceDepth-1)*10;
+        var nRows = Math.ceil(conf.selectedRects.length / 8);
+        var rowHeight = conf_option.sankey.nodeWidth + (conf_flow.sourceDepth - 1) * 10;
         structureCanvas.selectAll('*').remove();
 
-        structureCanvas.attr('height', Math.max(nRows*rowHeight, $('#structureSvg').height()));
+        structureCanvas.attr('height', Math.max(nRows * rowHeight, $('#structureSvg').height()));
         new d3.drawBrushedPatterns(structureCanvas, conf.selectedRects)
             .width($('#structureDiv').width())
-            .height(nRows*rowHeight)
+            .height(nRows * rowHeight)
             .patternHeight(rowHeight)
             .draw()
     })
@@ -182,7 +182,6 @@ Template.matrix.helpers({
     'targetDepth' () {
         return Math.floor(Session.get('targetDepth'));
     }
-
 })
 
 function assignButton(name) {
@@ -255,9 +254,3 @@ Template.matrix.events({
     },
 
 });
-
-Meteor.startup(() => {
-    Session.setDefault('targetDepth', 1)
-    Session.setDefault('editBar', null)
-    Session.setDefault('groupMethod', null)
-})

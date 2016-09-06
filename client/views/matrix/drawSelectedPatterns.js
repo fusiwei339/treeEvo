@@ -27,7 +27,7 @@ d3.drawBrushedPatterns = class {
         var animationDur = 800;
         var dataProcessor = Template.matrix.dataProcessor;
         var nPatterns=8;
-        data.sort((a, b)=>b.obj.freq-a.obj.freq)
+        data.sort((a, b)=>b.obj.count-a.obj.count)
 
         var xScale = d3.scale.ordinal()
             .domain(_.range(nPatterns))

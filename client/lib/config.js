@@ -15,7 +15,7 @@ Template.flow.configure = {
     sankeyEdges: undefined,
     generations: undefined,
     clusters: undefined,
-    attrs:['f_bir_age', 'l_bir_age', 'lastage', 'sonCountFix', 'POSITION'],
+    attrs: ['f_bir_age', 'l_bir_age', 'lastage', 'sonCountFix', 'POSITION'],
 }
 
 Template.header.configure = {
@@ -46,6 +46,21 @@ Template.option.configure = {
     freqPatterns: {
         margin: 5,
         padding: 2,
+    },
+    graidentColorDomain: { 
+        "lean": [-0.8333333333333334, 0, 0.8333333333333334], 
+        "count": [1, 25610], 
+        "population": [2, 328], 
+    },
+    graidentColorRange: { 
+        "lean": ['#b35806', '#ffffff', '#542788'], 
+        "count": ['#fff7f3', '#49006a'], 
+        "population": ['#fff7f3', '#49006a'], 
+    },
+    graidentColorScale: { 
+        "lean": d3.scale.linear(), 
+        "count": d3.scale.log(), 
+        "population": d3.scale.sqrt(),
     }
 
 }

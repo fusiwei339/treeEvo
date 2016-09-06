@@ -14,6 +14,7 @@ d3.drawTreemapBars = class {
 
     draw() {
         var conf = Template.matrix.configure;
+        var conf_option = Template.option.configure;
 
         var width = this._width,
             height = this._height,
@@ -23,7 +24,7 @@ d3.drawTreemapBars = class {
         var duration = 800;
         var dataProcessor = Template.matrix.dataProcessor;
 
-        var attr = 'lean'
+        var attr = Session.get('distributionName') || 'lean'
 
         var rects = dataProcessor.getTreemapData(data.trees, {
             top: 0,
@@ -32,10 +33,9 @@ d3.drawTreemapBars = class {
             height: height,
         }, attr)
 
-        var extent = d3.extent(rects, e => e.obj[attr])
-        var colorScale = d3.scale.linear()
-            .domain([extent[0], 0, extent[1]])
-            .range(['#b35806', '#fff', '#542788'])
+        var colorScale=conf_option.graidentColorScale[attr]
+            .domain(conf_option.graidentColorDomain[attr])
+            .range(conf_option.graidentColorRange[attr])
 
         var rects_svg = svg.selectAll('.sRect').data(rects)
             .enter().append('rect')
@@ -73,7 +73,6 @@ d3.drawTreemapBars = class {
             .on('brushend', ()=>{
                 var selectedRects=rects_svg.filter(d=>d.selected).data()
                 conf.selectedRects=selectedRects;
-                console.log(conf.selectedRects)
                 Session.set('selectedRects', new Date());
             })
 
