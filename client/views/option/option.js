@@ -19,7 +19,7 @@ Template.option.rendered = function() {
         var graph = flowConf.sankeyData;
         var nodes = graph.nodes.filter(d => d.show).sort((a, b) => a.depth - b.depth)
         var edges = dataProcessor_option.sankeyEdges(nodes);
-        
+
         var trimedGraph = { nodes, edges }
 
         conf.sankey.svgWidth = $('#structureSvg').width()
@@ -208,6 +208,7 @@ Template.option.events({
                 else node.show = false;
             }
         })
+        Session.set('selectedNode', null);
         Session.set('redraw', new Date());
     },
 
