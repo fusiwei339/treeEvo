@@ -124,11 +124,13 @@ Template.matrix.dataProcessor = function() {
                 count: tree.count,
                 lean: tree.lean,
                 population: tree.pattern.length,
-                pattern:tree.pattern
+                pattern: tree.pattern
             }
         }).sort((a, b) => {
-            if(a[attr]===b[attr])
-                return b.freq-a.freq;
+            if (a[attr] === b[attr])
+                return b.count - a.count;
+            if (attr === 'lean')
+                return b[attr] - a[attr];
             return a[attr] - b[attr];
         });
 

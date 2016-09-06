@@ -16,7 +16,7 @@
             <div style="float:right; margin-right:10px">
                 <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Scale:</span>
                 <div class="btn-group" data-toggle="buttons">
-                    <label id="scaleByUni" class="aggrRadio btn btn-default">
+                    <label id="scaleByUni" class="aggrRadio btn btn-default active">
                         <input type="radio" value="1" />
                         <i class="fa fa-bars fa-fw" title="Number of posts"></i>
                         <span>Percentage</span>
@@ -29,11 +29,15 @@
                 </div>
             </div>
             <div style="float:right; margin-right:10px">
-                <button type="button" id="toolForTree" class="btn btn-default collapsed" aria-label="Left Align" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <label id="scaleByUni" class="aggrRadio btn btn-default" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-cog fa-fw" title="More Options"></i>
+                    <span>More Options</span>
+                </label>
+<!--                 <button type="button" id="toolForTree" class="btn btn-default collapsed" aria-label="Left Align" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true">More Options</span>
                 </button>
-            </div>
-            <div class="collapse col-md-12" id="collapseExample" style="height:40px" aria-expanded="false">
+ -->            </div>
+            <div class="collapse col-md-12" id="collapseExample" style="height:40px; background-color:#eee" aria-expanded="false">
                 <div style="float:left; margin-right:10px; margin-top:5px">
                     <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Sort By:</span>
                     <div class="btn-group" data-toggle="buttons">

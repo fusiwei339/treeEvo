@@ -107,7 +107,11 @@ Template.option.dataProcessor = function() {
             return ret;
         })
 
-        data_temp.sort((a, b) => a.key - b.key)
+        data_temp.sort((a, b) => {
+            if (attr === 'lean')
+                return b.key - a.key
+            return a.key - b.key
+        })
 
         var graidentData = [];
         _.each(data_temp, t => {

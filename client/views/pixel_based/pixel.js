@@ -1,5 +1,5 @@
 Meteor.startup(function() {
-    Session.setDefault('scaleBar', 'scaleByDefault');
+    Session.setDefault('scaleBar', 'scaleByUni');
     // Session.set('sankeyGraph_toDraw', null);
     // Session.set('filterMalePeople', {});
     // Session.set('clusterMalePeople', [{ description: 'all', order: 0 }]);
