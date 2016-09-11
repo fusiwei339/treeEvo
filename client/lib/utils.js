@@ -13,6 +13,15 @@ Array.prototype.remByVal = function(val) {
     return this;
 }
 
+Array.prototype.remObjByKey = function(key, val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i][key] === val) {
+            this.splice(i, 1);
+            i--;
+        }
+    }
+    return this;
+}
 Array.prototype.aggregate = function(num) {
     var length = this.length;
     var newArray = [];
@@ -132,6 +141,9 @@ d3.removeSpaces = function(str) {
     return str.replace(/\s+/g, '');
 }
 
+d3.googleColor= d3.scale.category20()
+    // .range(["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"])
+
 d3.parsePath = function(path) {
     var list = path.pathSegList;
     var res = [];
@@ -209,7 +221,7 @@ d3.lineDistance = function(point1, point2) {
     return Math.sqrt(xs + ys);
 };
 d3.deepCopyArr = function(arr) {
-    var ret=_.map(arr, function(obj) {
+    var ret = _.map(arr, function(obj) {
         return $.extend(true, {}, obj);
     })
     return ret;

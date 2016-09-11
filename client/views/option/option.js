@@ -9,6 +9,7 @@ Template.option.rendered = function() {
         .attr('transform', d3.translate(conf.sankey.margin, conf.sankey.margin))
         .attr('id', 'flowCanvas')
 
+    //init draw sankey
     Deps.autorun(() => {
         Session.get('redraw')
         Session.get('malePeopleObj_ready')
@@ -43,31 +44,11 @@ Template.option.rendered = function() {
 
     })
 
-    Deps.autorun(() => {
-        Session.get('malePeopleObj_ready')
-        var selectedPattern = Session.get('selectedPattern');
-        if (!flowConf.sankeyData || !selectedPattern) return;
-
-        var flowCanvas = d3.select('#flowCanvas')
-
-        var currentNodeName = `depth${selectedPattern.depth}cluster${selectedPattern.cluster}`
-        _.each(flowConf.sankeyData.edges, edge => {
-            if (edge.source.name === currentNodeName) {
-                var target = edge.target;
-                var parentPattern = selectedPattern.pattern.join(',');
-                target.trees.sort((a, b) => {
-                    if (a.parent.join(',') === parentPattern && b.parent.join(',') !== parentPattern) {
-                        return -1;
-                    } else if (a.parent.join(',') !== parentPattern && b.parent.join(',') === parentPattern) {
-                        return 1;
-                    } else return b.count - a.count;
-                })
-            }
-        });
-
-        new d3.drawSankey(flowCanvas, flowConf.sankeyData).draw()
-
+    //multi select sankey nodes
+    Deps.autorun(()=>{
+        Session.get('multipleNodes')
     })
+
 
     //when press split button
     Deps.autorun(() => {
@@ -174,7 +155,7 @@ Template.option.events({
 
         var peoples = dataProcessor_matrix.formatRegressionData(conf_flow.involvedNodes, attrs);
         Meteor.call('insertClusters', peoples, () => {
-            console.log('inserted')
+            console.log(peoples)
             Meteor.call('regression', attrs)
         })
     },
@@ -189,7 +170,23 @@ Template.option.events({
         Session.set('distributionName', 'population')
     },
 
-    'click #mergebtn': function() {},
+    'click #mergebtn': function() {
+        var selectedNodeName = Session.get('selectedNode')
+        var conf_flow = Template.flow.configure;
+        if (!selectedNodeName || !conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+
+        var sourceDepth = selectedNode[0].depth;
+        _.each(conf_flow.sankeyData.nodes, node => {
+            if (node.depth === sourceDepth) {
+                if (node.cluster === '0')
+                    node.show = true;
+                else node.show = false;
+            }
+        })
+        Session.set('selectedNode', null);
+        Session.set('redraw', new Date());
+    },
     'click #splitAttrBtn': function() {
         d3.selectAll('.slice').remove();
         Session.set('startSplit', new Date())

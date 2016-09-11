@@ -4,8 +4,12 @@
 }
 
 #matrixView {
-    height: 100%;
     width: 100%;
+}
+
+#matrixDiv{
+    width:100%;
+    overflow-y: hidden;
 }
 
 .patternTree {
@@ -115,4 +119,13 @@
 .selected{
     stroke-width:1px;
     stroke:#666;
+}
+
+.confArea{
+    opacity: .3;
+}
+
+.probTitle{
+    stroke: black;
+    stroke-width: 0.5px;
 }

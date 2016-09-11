@@ -59,10 +59,10 @@ d3.drawLine = class {
 
         drawing('', null);
 
-        if (drawCI) {
-            drawing('Lower', '5,5')
-            drawing('Upper', '5,5')
-        }
+        // if (drawCI) {
+        //     drawing('Lower', '5,5')
+        //     drawing('Upper', '5,5')
+        // }
 
         function drawing(str, dashedArray) {
             canvas.selectAll(`.${type}${str}Line`)
@@ -72,7 +72,7 @@ d3.drawLine = class {
                 .attr("class", `${type}${str}Line lines`)
                 .attr("d", line)
                 .attr('stroke', (d, i, j) => {
-                    return lineColor(data[type][i].path);
+                    return lineColor(data[type][i].group);
                 })
                 .attr("stroke-dasharray", dashedArray)
 

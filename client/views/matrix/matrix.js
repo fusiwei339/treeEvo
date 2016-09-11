@@ -31,15 +31,13 @@ Template.matrix.rendered = function() {
         });
     });
 
-    var svg = d3.select('#matrixView');
+    var svg = d3.select('#matrixDiv')
+        .style('height', ($('#analysisPanel').height()-35)+'px')
+        .select('#matrixView')
     svg.append('g')
         .attr('class', 'rectCanvas')
         .attr('id', 'rectCanvas')
-        .attr('transform', d3.translate(conf.patternPart, conf.labelPart))
-    svg.append('g')
-        .attr('class', 'patternCanvas')
-        .attr('id', 'patternCanvas')
-        .attr('transform', d3.translate(5, conf.labelPart))
+        .attr('transform', d3.translate(conf.outerMargin, conf.labelPart))
 
     //draw regression diagram when r collection changes
     Tracker.autorun(() => {
@@ -48,37 +46,17 @@ Template.matrix.rendered = function() {
         if (handler.ready()) {
 
             var patterns = Coll.r.find().fetch();
-            if (_.isEmpty(conf_flow.involvedNodes)) return;
+            // if (_.isEmpty(conf_flow.involvedNodes)) return;
             var patterns_format = dataProcessor_matrix.reformatR(patterns);
             if (_.isEmpty(patterns_format)) return;
 
             new d3.drawMatrix(svg, patterns_format)
-                .patternPart(conf.patternPart)
                 .draw();
 
         }
     })
 
 
-    //initialize slider
-    Tracker.autorun(() => {
-        var targetDepthRange = [1, 7]
-        var targetDepth = Session.get('targetDepth')
-        if (!targetDepth) return;
-
-        $('#targetDepthSlider')
-            .noUiSlider({
-                start: targetDepth,
-                range: {
-                    'min': targetDepthRange[0],
-                    'max': targetDepthRange[1],
-                },
-                step: 1,
-            }, true)
-            .on('change', function(ev, val) {
-                Session.set('targetDepth', Math.floor(val))
-            })
-    })
 
     var sourceConf = {
         width: $('#sourceGroup').width(),
@@ -132,27 +110,6 @@ Template.matrix.rendered = function() {
             .draw()
     })
 
-
-    //when click grouping method
-    Tracker.autorun(() => {
-        var groupMethod = Session.get('groupMethod')
-        var barName = Session.get('editBar')
-        if (_.isEmpty(conf_flow.involvedNodes) || !barName) return;
-        var node = _.filter(conf_flow.involvedNodes, node => node.name === barName)[0];
-        node.draw = 'no';
-
-        if (!node.button) return;
-
-        var subgroups = dataProcessor_matrix.divideGroup(node, groupMethod);
-        conf_flow.involvedNodes.push(...subgroups)
-
-        sourceCanvas.selectAll('*').remove();
-        new d3.drawTreemapBars(sourceCanvas, conf_flow.involvedNodes)
-            .width(sourceConf.width)
-            .height(sourceConf.height)
-            .draw()
-
-    })
 
     //add or remove attrs
     Tracker.autorun(() => {
@@ -210,33 +167,7 @@ function clickAttrButton(e) {
 }
 
 Template.matrix.events({
-    'click #groupByInc' (e) {
-        Session.set('groupMethod', 'inclination');
-        assignButton('groupByInc')
-    },
-    'click #groupByFreq' (e) {
-        Session.set('groupMethod', 'frequency');
-        assignButton('groupByFreq')
-    },
-    'click #groupByVol' (e) {
-        Session.set('groupMethod', 'volume');
-        assignButton('groupByVol')
-    },
-    'click #clearGroup' (e) {
-        var newArr = []
-        var conf_flow = Template.flow.configure;
-        _.each(conf_flow.sankeyData.nodes, node => {
-            if (node.cluster) {
-                node.draw = null;
-                node.button = null;
-                newArr.push(node)
-            }
-        })
-        conf_flow.involvedNodes = newArr;
-        Session.set('groupMethod', null);
-        Session.set('editBar', null);
-        Session.set('redraw', new Date())
-    },
+
     'click #f_bir_age' (e) {
         clickAttrButton(e);
     },

@@ -15,6 +15,10 @@ d3.drawPP = class {
         this._lineColor = val;
         return this;
     }
+    discrete(val) {
+        this._discrete= val;
+        return this;
+    }
 
     draw() {
         var conf = Template.matrix.configure;
@@ -22,6 +26,7 @@ d3.drawPP = class {
         var width = this._width - conf.plotMargin.left - conf.plotMargin.right,
             height = this._height - conf.plotMargin.top - conf.plotMargin.bottom,
             lineColor = this._lineColor,
+            discrete= this._discrete,
             svg = this.svg,
             data = this.data;
 
@@ -42,41 +47,42 @@ d3.drawPP = class {
             .x(d => x(d.x))
             .y(d => y(d.y))
 
-        canvas.selectAll(`.ppLines`)
+        var confidenceArea = d3.svg.area()
+            .x(function(d) {
+                return x(d["x"]);
+            })
+            .y0(function(d) {
+                return y(d["yl"]);
+            })
+            .y1(function(d) {
+                return y(d["yu"]);
+            });
+
+        canvas.selectAll('.confArea')
             .data(data.prob).enter()
             .append('path')
             .datum(d => d.data)
-            .attr("class", "ppLine lines")
+            .attr("class", 'confArea')
+            .attr("d", confidenceArea)
+            .attr('fill', (d, i, j) => {
+                return lineColor(data.prob[i].group);
+            })
+
+        canvas.selectAll('.probLine')
+            .data(data.prob).enter()
+            .append('path')
+            .datum(d => d.data)
+            .attr("class", 'probLine lines')
             .attr("d", line)
             .attr('stroke', (d, i, j) => {
-                return lineColor(data.prob[i].path);
+                return lineColor(data.prob[i].group);
             })
 
-        canvas.selectAll('g')
-            .data(data.marginY).enter()
-            .append('g')
-            .selectAll('.marginDots')
-            .data(d => {
-                return d.data.filter((e, i) => i % 10 === 0)
-            })
-            .enter()
-            .append('circle')
-            .attr("class", "marginDots")
-            .attr("cx", (d, i, j) => {
-                var arr = data.prob[j].data;
-                var xtemp = arr[i * 10].x;
-                return xtemp ? x(xtemp) : 0;
-            })
-            .attr("cy", (d, i, j) => {
-                var arr = data.prob[j].data;
-                var ytemp = arr[i * 10].y;
-                return ytemp ? y(ytemp) : 0;
-            })
-            .attr("r", 1)
+        canvas.append('text')
+            .text(data.attr)
+            .attr("class", 'probTitle')
+            .attr('x', width/2-30)
 
-        // .attr('stroke', (d, i, j)=>{
-        //     '#ccc'
-        // })
 
         //append axis
         var yAxis = d3.svg.axis()
@@ -94,6 +100,21 @@ d3.drawPP = class {
             .attr("class", "x axis")
             .attr("transform", d3.translate(0, height))
             .call(xAxis);
+
+        //draw marginal effect
+        // canvas.append('rect')
+        //     .attr({
+        //         width:width,
+        //     })
+        // canvas.selectAll('.probLine')
+        //     .data(data.prob).enter()
+        //     .append('path')
+        //     .datum(d => d.data)
+        //     .attr("class", 'probLine lines')
+        //     .attr("d", line)
+        //     .attr('stroke', (d, i, j) => {
+        //         return lineColor(data[type][i].group);
+        //     })
 
     }
 

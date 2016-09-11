@@ -9,4 +9,5 @@ Meteor.startup(function() {
     Session.setDefault('selectedNode', null)
     Session.setDefault('groupMethod', null)
     Session.setDefault('distributionName', 'lean')
+
 })

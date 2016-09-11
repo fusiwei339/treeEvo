@@ -42,7 +42,17 @@ d3.drawSankey = class {
             })
             .on('click', function(d) {
                 if (d3.event.shiftKey) {
-                    console.log(d.name)
+                    var foundElem = flow_conf.involvedNodes.find(e => e.name === d.name)
+                    if (foundElem) {
+                        flow_conf.involvedNodes.remObjByKey('name', d.name);
+                        d3.select(this).select('.backgroundRect')
+                            .attr('stroke', '#ccc')
+                    } else {
+                        flow_conf.involvedNodes.push(d);
+                        d3.select(this).select('.backgroundRect')
+                            .attr('stroke', d3.googleColor(d.name))
+                    }
+
                 } else if (d3.event.altKey) {
                     //draw line
                     var coord = d3.mouse(this);
@@ -70,7 +80,8 @@ d3.drawSankey = class {
                     d3.selectAll(`.${classStr}node`)
                         .selectAll('.slice')
                         .remove();
-                        
+                    flow_conf.involvedNodes=[];
+
                     Session.set('selectedNode', d.name)
                     var g = d3.select(this);
                     d3.selectAll(`.${classStr}node`).select('rect')
@@ -129,7 +140,7 @@ d3.drawSankey = class {
                         height: d.dx,
                         class: 'backgroundRect',
                         fill: `url(#${d.name}graident)`,
-                        stroke: '#ccc'
+                        stroke: '#ccc',
                     })
 
             })
@@ -139,7 +150,7 @@ d3.drawSankey = class {
             .attr("transform", function(d) {
                 return "translate(" + d.y + "," + d.x + ")";
             })
-            .each(function(d, i){
+            .each(function(d, i) {
                 var canvas = d3.select(this);
 
                 canvas.select('defs')
@@ -162,7 +173,7 @@ d3.drawSankey = class {
             .attr('fill', d => `url(#${d.name}graident)`)
             .attr({
                 class: 'backgroundRect',
-                stroke: '#ccc'
+                stroke: '#ccc',
             })
 
 

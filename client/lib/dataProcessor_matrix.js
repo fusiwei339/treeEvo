@@ -145,18 +145,15 @@ Template.matrix.dataProcessor = function() {
             var oneAttr = {};
             oneAttr.attr = attr.attr[0];
             oneAttr.x = _.filter(_.map(attr.x, x => x[oneAttr.attr]), d => d <= 70)
-                //initial marginY
+
+            //initial marginY and prob
             oneAttr.marginY = [];
-            //initial prob
-            var probs = ['prob', 'probLower', 'probUpper']
-            _.each(probs, prob => oneAttr[prob] = [])
+            oneAttr.prob = []
 
             _.each(attr.ylevel, function(ylevel, idx) {
                 //margin
                 var temp = {}
-                var trees = conf_flow.involvedNodes.filter(node => node.name === ylevel)[0].trees;
                 temp.group = ylevel;
-                temp.path = _.map(trees, tree => tree.pattern.sort());
                 temp.data = []
                 _.each(attr.margin[idx], function(d, i) {
                     var x = oneAttr.x[i];
@@ -170,19 +167,19 @@ Template.matrix.dataProcessor = function() {
                 oneAttr.marginY.push(temp);
 
                 //deal with prob
-                _.each(probs, prob => {
-                    var probTemp = { data: [], path: temp.path };
-                    _.each(attr[prob], (p, i) => {
-                        var x = oneAttr.x[i];
-                        if (x < 70) {
-                            probTemp.data.push({
-                                x: x,
-                                y: p[idx],
-                            })
-                        }
-                    })
-                    oneAttr[prob].push(probTemp);
+                var probTemp = { data: [], group: ylevel };
+                _.each(attr.prob, (p, i) => {
+                    var x = oneAttr.x[i];
+                    if (x < 70) {
+                        probTemp.data.push({
+                            x: x,
+                            y: p[idx],
+                            yl: attr.probLower[i][idx],
+                            yu: attr.probUpper[i][idx],
+                        })
+                    }
                 })
+                oneAttr.prob.push(probTemp);
 
             })
             ret.push(oneAttr);
@@ -190,28 +187,17 @@ Template.matrix.dataProcessor = function() {
         console.log(ret)
 
         return ret;
-    }
+    };
 
-    function formatProb(arr, path, oneAttr) {
-        var temp = { data: [], path: path };
-        _.each(arr, (p, i) => {
-            var x = oneAttr.x[i];
-            if (x < 70) {
-                temp.data.push({
-                    x: x,
-                    y: p[idx],
-                })
-            }
-        })
-        return temp;
-    }
 
     ret.formatRegressionData = function(groups, attrs) {
         var ret = [];
-        _.each(groups, group => {
-            if (group.draw === 'no') return;
+        for (var i = 0, len = groups.length; i < len; i++) {
+            var group = groups[i];
 
-            _.each(group.people, man => {
+            for (var j = 0, len2 = group.people.length; j < len2; j++) {
+                var man = group.people[j];
+
                 var ori = conf_flow.malePeopleObj_toUse[man]
                 var temp = {}
                 temp.group = group.name;
@@ -222,8 +208,8 @@ Template.matrix.dataProcessor = function() {
                     else temp[attr] = ori[attr]
                 })
                 ret.push(temp);
-            })
-        })
+            }
+        }
         return ret;
     }
 

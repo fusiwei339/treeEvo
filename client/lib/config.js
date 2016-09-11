@@ -99,7 +99,7 @@ Template.matrix.configure = {
     circleR: 2,
     duration: 500,
     treePadding: 5,
-    patternPart: 60,
+    outerMargin: 5,
     margin: 10,
     labelPart: 25,
     attrConf: {
@@ -119,8 +119,8 @@ Template.matrix.configure = {
     plotMargin: {
         top: 5,
         left: 40,
-        right: 5,
-        bottom: 10,
+        right: 40,
+        bottom: 50,
     },
     groupMargin: {
         top: 5,
