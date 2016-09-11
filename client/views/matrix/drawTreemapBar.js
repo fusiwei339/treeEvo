@@ -46,48 +46,5 @@ d3.drawTreemapBars = class {
             .attr('height', e => e.rect.height)
             .attr('fill', e => colorScale(e.obj[attr]))
 
-        var x = d3.scale.identity().domain([0, width]),
-            y = d3.scale.identity().domain([0, height]);
-
-        var quadtree = d3.geom.quadtree()
-            .extent([
-                [-1, -1],
-                [width + 1, height + 1]
-            ])
-            .x(d => d.rect.left)
-            .y(d => d.rect.top)
-            (rects)
-
-        var brush = d3.svg.brush()
-            .x(x)
-            .y(y)
-            .on("brush", () => {
-                var extent = brush.extent();
-
-                rects_svg.each(function(d) { d.selected = false; });
-                search(quadtree, extent[0][0], extent[0][1], extent[1][0], extent[1][1]);
-                rects_svg.classed("selected", function(d) {
-                    return d.selected;
-                });
-            })
-            .on('brushend', ()=>{
-                var selectedRects=rects_svg.filter(d=>d.selected).data()
-                conf.selectedRects=selectedRects;
-                Session.set('selectedRects', new Date());
-            })
-
-        svg.append("g")
-            .attr("class", "brush")
-            .call(brush)
-
-        function search(quadtree, x0, y0, x3, y3) {
-            quadtree.visit(function(node, x1, y1, x2, y2) {
-                var p = node.point;
-                if (p) p.selected = (p.rect.left >= x0) && (p.rect.left < x3) && (p.rect.top >= y0) && (p.rect.top < y3);
-                return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
-            });
-        }
-
-
     }
 }

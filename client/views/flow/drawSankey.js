@@ -52,6 +52,7 @@ d3.drawSankey = class {
                         d3.select(this).select('.backgroundRect')
                             .attr('stroke', d3.googleColor(d.name))
                     }
+                    Session.set('changeInvolvedNodes', new Date());
 
                 } else if (d3.event.altKey) {
                     //draw line

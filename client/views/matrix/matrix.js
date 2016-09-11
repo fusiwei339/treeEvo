@@ -57,59 +57,57 @@ Template.matrix.rendered = function() {
     })
 
 
-
-    var sourceConf = {
-        width: $('#sourceGroup').width(),
-        height: $('#sourceGroup').height() - 40,
-    }
     var detailPanel = d3.select('#detailPanel')
-        .style('width', sourceConf.width + 'px')
-        .style('height', sourceConf.height + 'px')
+        .style('height', ($('#sourceGroup').height()-35) + 'px')
 
     var treemapCanvas = d3.select('#treemapSvg')
         .attr('height', '100%')
-
-    var structureCanvas = d3.select('#structureDiv')
-        .style('height', '100%')
-        .select('#structureSvg')
-        .attr('class', 'groupG')
         .attr('width', '100%')
-        .attr('height', '100%')
+    var sourceConf = {
+        width: $('#treemapSvg').width(),
+        height: $('#treemapSvg').height(),
+    }
 
     //draw treemap bars when click a sankey node
     Tracker.autorun(() => {
         var selectedNodeName = Session.get('selectedNode')
-        if (!selectedNodeName || !conf_flow.sankeyData) return;
-        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+        Session.get('changeInvolvedNodes');
+        if (!selectedNodeName && _.isEmpty(conf_flow.involvedNodes)) return;
+        if (!conf_flow.sankeyData) return;
+
+        var selectedNode = _.isEmpty(conf_flow.involvedNodes) ?
+            conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName) :
+            conf_flow.involvedNodes;
 
         conf_flow.sourceCluster = selectedNode[0].cluster;
         conf_flow.sourceDepth = selectedNode[0].depth;
 
+        var x = d3.scale.ordinal()
+            .domain(_.map(selectedNode, (d, i) => i))
+            .rangeBands([0, sourceConf.width], .05, 0)
+
         treemapCanvas.selectAll('*').remove();
-        new d3.drawTreemapBars(treemapCanvas, selectedNode[0])
-            .width(sourceConf.width / 2)
-            .height(sourceConf.height)
-            .draw()
+        treemapCanvas.selectAll('.treemapCanvas')
+            .data(selectedNode).enter()
+            .append('g')
+            .attr('class', 'treemapCanvas')
+            .attr('transform', (d, i)=>d3.translate(x(i), 0))
+            .each(function(d, i) {
+                var subCanvas = d3.select(this);
+                subCanvas.append('rect')
+                    .attr('width', x.rangeBand())
+                    .attr('height', sourceConf.height)
+                    .attr('stroke', d3.googleColor(d.name))
+                    .attr('stroke-width', '2px')
+
+                new d3.drawTreemapBars(subCanvas, d)
+                    .width(x.rangeBand())
+                    .height(sourceConf.height)
+                    .draw()
+
+            })
 
     })
-
-    //when brush on the treemap bar
-    Tracker.autorun(() => {
-        Session.get('selectedRects')
-        if (!conf.selectedRects) return;
-
-        var nRows = Math.ceil(conf.selectedRects.length / 8);
-        var rowHeight = conf_option.sankey.nodeWidth + (conf_flow.sourceDepth - 1) * 10;
-        structureCanvas.selectAll('*').remove();
-
-        structureCanvas.attr('height', Math.max(nRows * rowHeight, $('#structureSvg').height()));
-        new d3.drawBrushedPatterns(structureCanvas, conf.selectedRects)
-            .width($('#structureDiv').width())
-            .height(nRows * rowHeight)
-            .patternHeight(rowHeight)
-            .draw()
-    })
-
 
     //add or remove attrs
     Tracker.autorun(() => {
@@ -184,12 +182,12 @@ Template.matrix.events({
         clickAttrButton(e);
     },
     'click #showhideME' (e) {
-        var conf_matrix= Template.matrix.configure;
-        conf_matrix.showME=! conf_matrix.showME;
-        if(conf_matrix.showME){
+        var conf_matrix = Template.matrix.configure;
+        conf_matrix.showME = !conf_matrix.showME;
+        if (conf_matrix.showME) {
             d3.selectAll('.marginal').style('visibility', 'visible')
             d3.selectAll('.nonMarginal').style('visibility', 'hidden')
-        }else{
+        } else {
             d3.selectAll('.nonMarginal').style('visibility', 'visible')
             d3.selectAll('.marginal').style('visibility', 'hidden')
         }
