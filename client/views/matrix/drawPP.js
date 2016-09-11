@@ -15,10 +15,6 @@ d3.drawPP = class {
         this._lineColor = val;
         return this;
     }
-    discrete(val) {
-        this._discrete= val;
-        return this;
-    }
 
     draw() {
         var conf = Template.matrix.configure;
@@ -26,7 +22,6 @@ d3.drawPP = class {
         var width = this._width - conf.plotMargin.left - conf.plotMargin.right,
             height = this._height - conf.plotMargin.top - conf.plotMargin.bottom,
             lineColor = this._lineColor,
-            discrete= this._discrete,
             svg = this.svg,
             data = this.data;
 
@@ -46,6 +41,14 @@ d3.drawPP = class {
         var line = d3.svg.line()
             .x(d => x(d.x))
             .y(d => y(d.y))
+
+        var yMargin = d3.scale.linear()
+            .domain([-.2, .2])
+            .range([height, 0]);
+
+        var lineMargin = d3.svg.line()
+            .x(d => x(d.x))
+            .y(d => yMargin(d.y))
 
         var confidenceArea = d3.svg.area()
             .x(function(d) {
@@ -79,9 +82,10 @@ d3.drawPP = class {
             })
 
         canvas.append('text')
-            .text(data.attr)
+            .text(conf.captionMapping[data.attr])
             .attr("class", 'probTitle')
-            .attr('x', width/2-30)
+            .attr('x', width / 2 - 30)
+            .attr('y', -5)
 
 
         //append axis
@@ -89,7 +93,7 @@ d3.drawPP = class {
             .scale(y)
             .orient('left')
         canvas.append('g')
-            .attr("class", "y axis")
+            .attr("class", "y axis nonMarginal")
             .attr("transform", d3.translate(0, 0))
             .call(yAxis);
 
@@ -102,19 +106,29 @@ d3.drawPP = class {
             .call(xAxis);
 
         //draw marginal effect
-        // canvas.append('rect')
-        //     .attr({
-        //         width:width,
-        //     })
-        // canvas.selectAll('.probLine')
-        //     .data(data.prob).enter()
-        //     .append('path')
-        //     .datum(d => d.data)
-        //     .attr("class", 'probLine lines')
-        //     .attr("d", line)
-        //     .attr('stroke', (d, i, j) => {
-        //         return lineColor(data[type][i].group);
-        //     })
+        canvas.append('rect')
+            .attr({
+                width: width+conf.plotMargin.left,
+                height: height,
+                class: 'marginal shadowRect'
+            })
+        canvas.selectAll('.marginLine')
+            .data(data.marginY).enter()
+            .append('path')
+            .datum(d => d.data)
+            .attr("class", 'marginLine lines marginal')
+            .attr("d", lineMargin)
+            .attr('stroke', (d, i, j) => {
+                return lineColor(data.marginY[i].group);
+            })
+        var yAxis2 = d3.svg.axis()
+            .scale(yMargin)
+            .orient('right')
+        canvas.append('g')
+            .attr("class", "y axis marginal")
+            .attr("transform", d3.translate(width, 0))
+            .call(yAxis2);
+
 
     }
 

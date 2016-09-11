@@ -32,7 +32,7 @@ Template.matrix.rendered = function() {
     });
 
     var svg = d3.select('#matrixDiv')
-        .style('height', ($('#analysisPanel').height()-35)+'px')
+        .style('height', ($('#analysisPanel').height() - 35) + 'px')
         .select('#matrixView')
     svg.append('g')
         .attr('class', 'rectCanvas')
@@ -182,6 +182,17 @@ Template.matrix.events({
     },
     'click #POSITION' (e) {
         clickAttrButton(e);
+    },
+    'click #showhideME' (e) {
+        var conf_matrix= Template.matrix.configure;
+        conf_matrix.showME=! conf_matrix.showME;
+        if(conf_matrix.showME){
+            d3.selectAll('.marginal').style('visibility', 'visible')
+            d3.selectAll('.nonMarginal').style('visibility', 'hidden')
+        }else{
+            d3.selectAll('.nonMarginal').style('visibility', 'visible')
+            d3.selectAll('.marginal').style('visibility', 'hidden')
+        }
     },
 
 });

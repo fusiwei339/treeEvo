@@ -1,0 +1,16 @@
+.shadowRect {
+    fill: white;
+    opacity: 0.9
+}
+
+.marginal {
+    visibility: hidden;
+}
+
+.probCircleBar {
+    stroke-width: 1px;
+}
+
+.linkingLine, .marginlinkingLine{
+    stroke-dasharray: 5 5;
+}

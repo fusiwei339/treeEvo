@@ -16,8 +16,8 @@ d3.drawMatrix = class {
         var totalWidth = $('#matrixDiv').width();
         var totalHeight = $('#matrixDiv').height();
 
-        var nRows=Math.ceil(data.length/3);
-        svg.attr('height', totalHeight/2*nRows);
+        var nRows = Math.ceil(data.length / 3);
+        svg.attr('height', totalHeight / 2 * nRows);
 
         var rectCanvas = svg.select('#rectCanvas')
         rectCanvas.selectAll('*').remove();
@@ -40,13 +40,19 @@ d3.drawMatrix = class {
             .attr('transform', (d, i) => d3.translate(xScale(i % 3), Math.floor(i / 3) * totalHeight / 2))
             .each(function(d, i) {
                 let canvas = d3.select(this);
-
-                new d3.drawPP(canvas, d)
-                    .width(xScale.rangeBand())
-                    .height(totalHeight/2)
-                    .lineColor(groupColor)
-                    .discrete(d.attr==='POSITION')
-                    .draw();
+                if (d.attr !== 'POSITION') {
+                    new d3.drawPP(canvas, d)
+                        .width(xScale.rangeBand())
+                        .height(totalHeight / 2)
+                        .lineColor(groupColor)
+                        .draw();
+                } else {
+                    new d3.drawDiscretePP(canvas, d)
+                        .width(xScale.rangeBand())
+                        .height(totalHeight / 2)
+                        .lineColor(groupColor)
+                        .draw();
+                }
 
             })
 

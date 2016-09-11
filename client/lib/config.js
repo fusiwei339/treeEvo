@@ -135,4 +135,12 @@ Template.matrix.configure = {
         bottom: 5,
     },
     attrs: ['lastage', 'f_bir_age', 'l_bir_age', 'birthyear'],
+    showME:false,
+    captionMapping:{
+        f_bir_age:'First Birth Age',
+        l_bir_age:'Last Birth Age',
+        lastage:'Last Age',
+        sonCountFix:'Number of Sons',
+        POSITION:'Position'
+    }
 }
