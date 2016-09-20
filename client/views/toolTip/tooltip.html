@@ -1,9 +1,12 @@
-<template name="tooltip">
-    <div id="userWordCloud" class="tooltip hidden">
-        {{#with userObj}}
-        <p class="para"><b>Name: </b>{{username}}</p>
-        <p class="para"><b>Grade: </b>{{grade}}</p>
-        {{/with}}
-        <canvas id="userWordCloudCanvas"></canvas>
+<template name="tooltipSankey">
+    <div id="sankeyDetailsDiv" class="tooltip hidden">
+    	<svg id="sankeyDetails"></svg>
     </div>
 </template>
+
+<template name="tooltipTreemap">
+    <div id="tmDetailsDiv" class="tooltip hidden">
+    	<svg id="tmDetails"></svg>
+    </div>
+</template>
+

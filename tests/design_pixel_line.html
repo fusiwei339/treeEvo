@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+    position: relative;
+    width: 960px;
+}
+
+.point {
+    fill: #999;
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+.point.selected {
+    fill: red;
+    fill-opacity: 1;
+    stroke: brown;
+}
+
+.brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
+button {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+}
+</style>
+
+<body>
+    <script src="./d3.js"></script>
+    <script>
+    var width = 960,
+        height = 500,
+        defaultExtent = [
+            [100, 100],
+            [300, 300]
+        ],
+        data = d3.range(50).map(function() {
+            return Math.random() - .5;
+        });
+
+    for (i = 0; i < 15; i++, data.push(0)) {}
+    data.sort(function() {
+        return .5 - Math.random();
+    })
+    var w = 3;
+
+    var extent = d3.extent(data);
+    var color = d3.scale.linear()
+        .domain([extent[0], 0, extent[1]])
+        .range(['#ca0020', '#f2f2f2', '#0571b0'].reverse())
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var point = svg.selectAll(".point")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "point")
+        .attr("width", w)
+        .attr("height", 80)
+        .attr("x", function(d, i) {
+            return w * i;
+        })
+        .attr("y", 20);
+
+    svg.selectAll(".point2")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "point2")
+        .attr("width", w)
+        .attr("height", 80)
+        .attr("x", function(d, i) {
+            return w * i;
+        })
+        .attr("y", 100)
+        .attr('fill', function(d) {
+            return color(d)
+        })
+
+
+
+    svg.selectAll(".point3")
+        .data(data.sort(function(a, b) {
+            return a - b
+        }))
+        .enter().append("rect")
+        .attr("class", "point3")
+        .attr("width", w)
+        .attr("height", 80)
+        .attr("x", function(d, i) {
+            return w * i;
+        })
+        .attr("y", 200)
+        .attr('fill', function(d) {
+            return color(d)
+        })
+
+    var colors = [-.5, -.25, 0, .25, .5]
+    svg.selectAll(".point4")
+        .data(colors)
+        .enter().append("rect")
+        .attr("class", "point4")
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("x", function(d, i) {
+            return 20 * i;
+        })
+        .attr("y", 300)
+        .attr('fill', function(d) {
+            return color(d)
+        })
+    </script>

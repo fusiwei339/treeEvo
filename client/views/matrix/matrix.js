@@ -13,14 +13,12 @@ Template.matrix.rendered = function() {
     Tracker.autorun(function() {
 
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
-            conf_flow.malePeople = result.data;
+            conf_flow.malePeople_toUse = result.data;
 
-            conf_flow.malePeople_toUse = d3.deepCopyArr(conf_flow.malePeople);
-            dataProcessor_flow.calGlobalData_toUse(false);
+            dataProcessor_flow.calGlobalData_toUse();
 
             HTTP.get(Meteor.absoluteUrl("/patterns.json"), function(err, result) {
                 conf_flow.patterns = result.data;
-                conf_flow.patternsObj = _.groupBy(conf_flow.patterns, p => p.depth);
 
                 HTTP.get(Meteor.absoluteUrl("/sankeyData.json"), function(err, result) {
 
@@ -70,17 +68,11 @@ Template.matrix.rendered = function() {
 
     //draw treemap bars when click a sankey node
     Tracker.autorun(() => {
-        var selectedNodeName = Session.get('selectedNode')
         Session.get('changeInvolvedNodes');
-        if (!selectedNodeName && _.isEmpty(conf_flow.involvedNodes)) return;
+        if (_.isEmpty(conf_flow.involvedNodes)) return;
         if (!conf_flow.sankeyData) return;
 
-        var selectedNode = _.isEmpty(conf_flow.involvedNodes) ?
-            conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName) :
-            conf_flow.involvedNodes;
-
-        conf_flow.sourceCluster = selectedNode[0].cluster;
-        conf_flow.sourceDepth = selectedNode[0].depth;
+        var selectedNode = conf_flow.involvedNodes;
 
         var x = d3.scale.ordinal()
             .domain(_.map(selectedNode, (d, i) => i))
@@ -94,15 +86,20 @@ Template.matrix.rendered = function() {
             .attr('transform', (d, i)=>d3.translate(x(i), 0))
             .each(function(d, i) {
                 var subCanvas = d3.select(this);
+                let padding=conf.treemap.padding;
                 subCanvas.append('rect')
                     .attr('width', x.rangeBand())
+                    .attr('class', 'legendRect')
                     .attr('height', sourceConf.height)
                     .attr('stroke', d3.googleColor(d.name))
-                    .attr('stroke-width', '2px')
+                    .attr('stroke-width', padding*2)
 
-                new d3.drawTreemapBars(subCanvas, d)
-                    .width(x.rangeBand())
-                    .height(sourceConf.height)
+                let treemapG=subCanvas.append('g')
+                    .attr('transform', d3.translate(padding, padding))
+
+                new d3.drawTreemapBars(treemapG, d)
+                    .width(x.rangeBand()-2*padding)
+                    .height(sourceConf.height-2*padding)
                     .draw()
 
             })

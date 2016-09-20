@@ -368,27 +368,16 @@ Template.flow.dataProcessor = function() {
         return edges;
     }
 
-    ret.calGlobalData_toUse = function(assignGeneration) {
+    ret.calGlobalData_toUse = function() {
         var malePeople=conf.malePeople_toUse;
-        
         var malePeopleObj_toUse = {};
-        var dataProcessor_option = Template.option.dataProcessor;
-
-        //malePeopleObj_father_toUse
-        conf.malePeopleObj_father_toUse = _.groupBy(malePeople, function(male) {
-            return male.fatherid;
-        })
 
         //malePeopleObj_toUse
-        _.each(malePeople, function(male) {
+        for(var i=0, len=malePeople.length;i<len;i++){
+            let male=malePeople[i];
             malePeopleObj_toUse[male.personid] = male;
-        });
-        conf.malePeopleObj_toUse = malePeopleObj_toUse;
-
-        //assign geneeration
-        if (assignGeneration) {
-            dataProcessor_option.assignGeneration(conf.malePeople_toUse);
         }
+        conf.malePeopleObj_toUse = malePeopleObj_toUse;
 
     }
 

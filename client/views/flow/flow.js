@@ -21,17 +21,17 @@ Template.flow.rendered = function() {
     //-------------------------initialize data-------------------------
     Deps.autorun(function() {
 
-        var dataProcessor_option = Template.option.dataProcessor;
-        var dataProcessor_flow = Template.flow.dataProcessor;
+        // var dataProcessor_option = Template.option.dataProcessor;
+        // var dataProcessor_flow = Template.flow.dataProcessor;
 
-        HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
-            conf.malePeople = result.data;
+        // HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
+        //     conf.malePeople = result.data;
 
-            conf.malePeople_toUse = d3.deepCopyArr(conf.malePeople);
-            dataProcessor_flow.calGlobalData_toUse(conf.malePeople_toUse, true);
+        //     conf.malePeople_toUse = d3.deepCopyArr(conf.malePeople);
+        //     dataProcessor_flow.calGlobalData_toUse(conf.malePeople_toUse, true);
 
-            Session.set('malePeopleObj_ready', new Date());
-        });
+        //     Session.set('malePeopleObj_ready', new Date());
+        // });
     })
 
     // //prepare sankey diagram data

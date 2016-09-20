@@ -44,24 +44,18 @@ Template.option.rendered = function() {
 
     })
 
-    //multi select sankey nodes
-    Deps.autorun(()=>{
-        Session.get('multipleNodes')
-    })
-
 
     //when press split button
     Deps.autorun(() => {
         Session.get('startSplit')
 
-        var selectedNodeName = Session.get('selectedNode')
-        var sortBy = Session.get('distributionName');
         var conf_flow = Template.flow.configure;
+        var sortBy = Session.get('distributionName');
         var percentArr = conf_flow.percentArr;
-        if (_.isEmpty(percentArr) || !selectedNodeName || !conf_flow.sankeyData) return;
+        if (_.isEmpty(percentArr) || !conf_flow.sankeyData) return;
 
         //generate partitions
-        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)[0];
+        var selectedNode= conf_flow.involvedNodes[conf_flow.involvedNodes.length-1]
         selectedNode.trees.sort((a, b) => {
             if (sortBy === 'population')
                 return a.pattern.length - b.pattern.length;
@@ -171,12 +165,11 @@ Template.option.events({
     },
 
     'click #mergebtn': function() {
-        var selectedNodeName = Session.get('selectedNode')
         var conf_flow = Template.flow.configure;
-        if (!selectedNodeName || !conf_flow.sankeyData) return;
-        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+        if (!conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.involvedNodes[conf_flow.involvedNodes.length-1]
 
-        var sourceDepth = selectedNode[0].depth;
+        var sourceDepth = selectedNode.depth;
         _.each(conf_flow.sankeyData.nodes, node => {
             if (node.depth === sourceDepth) {
                 if (node.cluster === '0')
@@ -192,12 +185,11 @@ Template.option.events({
         Session.set('startSplit', new Date())
     },
     'click #splitContBtn': function() {
-        var selectedNodeName = Session.get('selectedNode')
         var conf_flow = Template.flow.configure;
-        if (!selectedNodeName || !conf_flow.sankeyData) return;
-        var selectedNode = conf_flow.sankeyData.nodes.filter(d => d.name === selectedNodeName)
+        if (!conf_flow.sankeyData) return;
+        var selectedNode = conf_flow.involvedNodes[conf_flow.involvedNodes.length-1]
 
-        var sourceDepth = selectedNode[0].depth;
+        var sourceDepth = selectedNode.depth;
         _.each(conf_flow.sankeyData.nodes, node => {
             if (node.depth === sourceDepth) {
                 if (node.cluster === 'cutoff' || node.cluster === 'continue')

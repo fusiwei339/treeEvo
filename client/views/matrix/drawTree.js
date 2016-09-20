@@ -67,9 +67,6 @@ d3.drawTree = class {
                     class: 'nodeCircle',
                     r: conf.circleR,
                 })
-                .style("fill", function(d) {
-                    return d._children ? "lightsteelblue" : "#fff";
-                });
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()

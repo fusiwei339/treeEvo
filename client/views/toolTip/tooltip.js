@@ -1,12 +1,10 @@
-Template.tooltip.helpers({
+Template.tooltipSankey.rendered = function() {
+    Deps.autorun(function() {
 
-});
+    })
+};
 
-Template.tooltip.events({
-
-});
-
-Template.tooltip.rendered = function() {
+Template.tooltipTreemap.rendered = function() {
     Deps.autorun(function() {
 
     })

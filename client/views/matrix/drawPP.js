@@ -84,7 +84,7 @@ d3.drawPP = class {
         canvas.append('text')
             .text(conf.captionMapping[data.attr])
             .attr("class", 'probTitle')
-            .attr('x', width / 2 - 30)
+            .attr('x', width / 2 - 30-conf.captionMapping[data.attr].length*2 )
             .attr('y', -5)
 
 

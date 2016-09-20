@@ -213,6 +213,35 @@ Template.matrix.dataProcessor = function() {
         return ret;
     }
 
+    function countG(str) {
+        return (str.match(/g/g) || []).length;
+    }
+
+    function getAttrFromSeq(seq) {
+        var map={};
+        _.each(seq, function(node) {
+            var key = countG(node);
+            map[key] ? map[key].push(node) : map[key] = [node];
+        })
+        var depth = d3.max(_.keys(map), function(key) {
+            return +key;
+        })
+        return depth;
+    }
+
+    ret.filterRects = function(rects) {
+        var ret = [];
+        var depth=getAttrFromSeq(rects[0].obj.pattern);
+        for(let i=0, len=rects.length;i<len;i++){
+            let rect=rects[i];
+            let flagh=rect.rect.height>15*depth;
+            let flagw=rect.rect.width>40;
+            if(flagh && flagw)
+                ret.push(rect);
+        }
+        return ret;
+    }
+
     ret.calDistance = function(a, b) {
         var arrA = a.split(',')
         var arrB = b.split(',')

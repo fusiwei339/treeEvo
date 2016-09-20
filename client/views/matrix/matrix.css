@@ -40,23 +40,23 @@
 }
 
 .sRect{
-    stroke:#e2e2e2;
-    stroke-width:0.5;
+    stroke:#333;
+    stroke-width:0.1;
 }
 .overlay {
     background-color: #EEE;
 }
 
 .node circle {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 1.5px;
+    fill: #000;
+    stroke: #000;
+    stroke-width: 0px;
 }
 
 .link {
     fill: none;
-    stroke: steelblue;
-    stroke-width: 1.5px;
+    stroke: #000;
+    stroke-width: .5px;
 }
 
 .matrixCell {
@@ -113,9 +113,6 @@
     overflow-x: hidden;
 }
 
-#structureSvg{
-    border-left: 1px solid #ccc;
-}
 .selected{
     stroke-width:1px;
     stroke:#666;
@@ -128,4 +125,8 @@
 .probTitle{
     stroke: black;
     stroke-width: 0.5px;
+}
+
+.legendRect{
+    fill:none;
 }

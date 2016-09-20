@@ -15,8 +15,8 @@ Template.flow.configure = {
     sankeyEdges: undefined,
     generations: undefined,
     clusters: undefined,
-    attrs: ['f_bir_age', 'l_bir_age', 'lastage', 'sonCountFix', 'POSITION'],
-    involvedNodes:[],
+    attrs: ['f_mar_age', 'f_bir_age', 'l_bir_age', 'lastage', 'sonCountFix', 'POSITION'],
+    involvedNodes: [],
 }
 
 Template.header.configure = {
@@ -35,7 +35,7 @@ Template.option.configure = {
         right: 15,
         bottom: 20,
     },
-    filter: {},
+filter: {},
     clusters: [{ description: 'all', order: 0 }],
     clusterColors: ['#b2df8a', '#a6cee3', '#ffff99', '#fdbf6f', '#cab2d6', '#fb9a99', '#fde0ef'],
     clusterShadeColors: ['#33a02c', '#1f78b4', '#b15928', '#ff7f00', '#6a3d9a', '#e31a1c', '#8e0152'],
@@ -48,19 +48,19 @@ Template.option.configure = {
         margin: 5,
         padding: 2,
     },
-    graidentColorDomain: { 
-        "lean": [-0.8333333333333334, 0, 0.8333333333333334], 
-        "count": [1, 25610], 
-        "population": [2, 328], 
+    graidentColorDomain: {
+        "lean": [-0.8333333333333334, 0, 0.8333333333333334],
+        "count": [1, 25610],
+        "population": [2, 328],
     },
-    graidentColorRange: { 
-        "lean": ['#b35806', '#ffffff', '#542788'], 
-        "count": ['#fff7f3', '#49006a'], 
-        "population": ['#fff7f3', '#49006a'], 
+    graidentColorRange: {
+        "lean": ['#ca0020', '#f2f2f2', '#0571b0'],
+        "count": ['#fff5eb', '#8c2d04'],
+        "population": ['#f7fbff', '#084594'],
     },
-    graidentColorScale: { 
-        "lean": d3.scale.linear(), 
-        "count": d3.scale.log(), 
+    graidentColorScale: {
+        "lean": d3.scale.linear(),
+        "count": d3.scale.log(),
         "population": d3.scale.sqrt(),
     }
 
@@ -135,12 +135,16 @@ Template.matrix.configure = {
         bottom: 5,
     },
     attrs: ['lastage', 'f_bir_age', 'l_bir_age', 'birthyear'],
-    showME:false,
-    captionMapping:{
-        f_bir_age:'First Birth Age',
-        l_bir_age:'Last Birth Age',
-        lastage:'Last Age',
-        sonCountFix:'Number of Sons',
-        POSITION:'Position'
+    showME: false,
+    captionMapping: {
+        f_bir_age: 'Age at First Birth',
+        l_bir_age: 'Age at Last Birth',
+        lastage: 'Last Age',
+        sonCountFix: 'Number of Sons',
+        POSITION: 'Position',
+        f_mar_age: 'Age at First Marriage'
+    },
+    treemap: {
+        padding: 3,
     }
 }

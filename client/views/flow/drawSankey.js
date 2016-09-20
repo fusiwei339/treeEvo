@@ -46,12 +46,15 @@ d3.drawSankey = class {
                     if (foundElem) {
                         flow_conf.involvedNodes.remObjByKey('name', d.name);
                         d3.select(this).select('.backgroundRect')
-                            .attr('stroke', '#ccc')
+                            .attr('stroke', '#000')
+                            .attr('stroke-width', .3)
                     } else {
                         flow_conf.involvedNodes.push(d);
                         d3.select(this).select('.backgroundRect')
                             .attr('stroke', d3.googleColor(d.name))
+                            .attr('stroke-width', 4)
                     }
+                    d3.googleColor.domain(flow_conf.involvedNodes.map(d => d.name))
                     Session.set('changeInvolvedNodes', new Date());
 
                 } else if (d3.event.altKey) {
@@ -81,14 +84,17 @@ d3.drawSankey = class {
                     d3.selectAll(`.${classStr}node`)
                         .selectAll('.slice')
                         .remove();
-                    flow_conf.involvedNodes=[];
+                    flow_conf.involvedNodes = [d];
+                    d3.googleColor.domain([d.name])
 
-                    Session.set('selectedNode', d.name)
-                    var g = d3.select(this);
+                    Session.set('changeInvolvedNodes', new Date());
+
                     d3.selectAll(`.${classStr}node`).select('rect')
-                        .attr('stroke', '#ccc')
-                    d3.select(this).select('rect')
-                        .attr('stroke', '#666')
+                        .attr('stroke', '#000')
+                        .attr('stroke-width', .3)
+                    d3.select(this).select('.backgroundRect')
+                        .attr('stroke', d3.googleColor(d.name))
+                        .attr('stroke-width', 4)
                 }
 
             })
@@ -141,7 +147,8 @@ d3.drawSankey = class {
                         height: d.dx,
                         class: 'backgroundRect',
                         fill: `url(#${d.name}graident)`,
-                        stroke: '#ccc',
+                        stroke: 'black',
+                        'stroke-width': .3,
                     })
 
             })
@@ -174,7 +181,8 @@ d3.drawSankey = class {
             .attr('fill', d => `url(#${d.name}graident)`)
             .attr({
                 class: 'backgroundRect',
-                stroke: '#ccc',
+                stroke: 'black',
+                'stroke-width': .3,
             })
 
 

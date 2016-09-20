@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+    position: relative;
+    width: 960px;
+}
+
+.point {
+    fill: #999;
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+.point.selected {
+    fill: red;
+    fill-opacity: 1;
+    stroke: brown;
+}
+
+.brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
+.area {
+  fill: steelblue;
+}
+
+button {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+}
+</style>
+
+<body>
+    <script src="./d3.js"></script>
+    <script src="./dataArr.js"></script>
+    <script>
+    var width = 960,
+        height = 500;
+
+    var margin = 50;
+
+    console.log(data)
+    var w = 3;
+
+    var extent = d3.extent(data);
+    var color = d3.scale.linear()
+        .domain([extent[0], 0, extent[1]])
+        .range(['#b35806', '#ffffff', '#542788'])
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    function freq(arr) {
+        var a = [],
+            b = [],
+            prev;
+
+        arr.sort();
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] !== prev) {
+                a.push(arr[i]);
+                b.push(1);
+            } else {
+                b[b.length - 1]++;
+            }
+            prev = arr[i];
+        }
+
+        return [a, b];
+    }
+
+
+    var counts = freq(data);
+
+    var x = d3.scale.linear()
+        .domain(d3.extent(counts[0]))
+        .range([margin, width / 2 - margin])
+
+
+    var y = d3.scale.linear()
+        .domain(d3.extent(counts[1]))
+        .range([height, 0])
+
+    var counts2=[]
+    for(var i=0;i<counts[1].length;i++){
+        var temp={x:counts[0][i], y:counts[1][i]};
+        counts2.push(temp);
+    }
+
+    var area = d3.svg.area()
+        .x(function(d) {
+            return x(d.x);
+        })
+        .y0(height)
+        .y1(function(d) {
+            return y(d.y);
+        });
+
+    svg.append("path")
+      .datum(counts2)
+      .attr("class", "area")
+      .attr("d", area);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
