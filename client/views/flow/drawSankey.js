@@ -164,6 +164,7 @@ d3.drawSankey = class {
 
             })
 
+        console.log(this.graph.nodes)
         var nodeTransition = nodeSelection.transition()
             .duration(animationDur)
             .attr("transform", function(d) {

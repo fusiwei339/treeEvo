@@ -218,7 +218,7 @@ Template.matrix.dataProcessor = function() {
     }
 
     function getAttrFromSeq(seq) {
-        var map={};
+        var map = {};
         _.each(seq, function(node) {
             var key = countG(node);
             map[key] ? map[key].push(node) : map[key] = [node];
@@ -231,12 +231,12 @@ Template.matrix.dataProcessor = function() {
 
     ret.filterRects = function(rects) {
         var ret = [];
-        var depth=getAttrFromSeq(rects[0].obj.pattern);
-        for(let i=0, len=rects.length;i<len;i++){
-            let rect=rects[i];
-            let flagh=rect.rect.height>15*depth;
-            let flagw=rect.rect.width>40;
-            if(flagh && flagw)
+        var depth = getAttrFromSeq(rects[0].obj.pattern);
+        for (let i = 0, len = rects.length; i < len; i++) {
+            let rect = rects[i];
+            let flagh = rect.rect.height > 15 * depth;
+            let flagw = rect.rect.width > 40;
+            if (flagh && flagw)
                 ret.push(rect);
         }
         return ret;
@@ -261,11 +261,11 @@ Template.matrix.dataProcessor = function() {
                     total += root.children.length;
                 }
                 _.each(root.children, child => {
-                    getDesCount(child);
+                    walk(child);
                 })
             }
             walk(root);
-            root.nDes = total + 1;
+            root.nDes = total;
         }
 
         function getAllDesCount(root) {
@@ -275,6 +275,7 @@ Template.matrix.dataProcessor = function() {
             })
         }
         getAllDesCount(tree);
+        console.log(JSON.stringify(tree))
 
         var left = 0,
             right = 0;
@@ -283,27 +284,27 @@ Template.matrix.dataProcessor = function() {
             if (!root.children || root.children.length == 0) return;
             else if (root.children.length === 1) {
                 trackDown(root.children[0])
-                return;
             }
 
-            let mid = Math.floor(root.children.length / 2);
+            var mid = Math.floor(root.children.length / 2);
             if (root.children.length % 2 === 0) {
                 _.each(root.children, (child, i) => {
-                    if (i < mid) left += child.nDes;
-                    else right += child.nDes;
+                    if (i < mid) left += (child.nDes + 1);
+                    else right += (child.nDes + 1);
                 })
             } else {
                 _.each(root.children, (child, i) => {
-                    if (i < mid) left += child.nDes;
-                    else if (i > mid) right += child.nDes;
+                    if (i < mid) left += (child.nDes + 1);
+                    else if (i > mid) right += (child.nDes + 1);
                 })
                 trackDown(root.children[mid]);
             }
         }
         trackDown(tree);
         if (left === right) return 0;
-        return (left - right) / (left + right);
+        return (left - right) / (tree.nDes + 1);
     }
+
     ret.calLean = calLean;
 
     ret.generateFakeTree = function(nGen, children, length) {

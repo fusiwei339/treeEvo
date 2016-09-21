@@ -40,8 +40,8 @@
 }
 
 .sRect{
-    stroke:#888;
-    stroke-width:0.1;
+    stroke:#555;
+    stroke-width:0.5;
 }
 .overlay {
     background-color: #EEE;

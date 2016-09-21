@@ -49,7 +49,7 @@ filter: {},
         padding: 2,
     },
     graidentColorDomain: {
-        "lean": [-0.8333333333333334, 0, 0.8333333333333334],
+        "lean": [-1, 0, 1],
         "count": [1, 25610],
         "population": [2, 328],
     },

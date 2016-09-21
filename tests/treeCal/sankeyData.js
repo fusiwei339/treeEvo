@@ -42,7 +42,7 @@ _.each(depth, d => {
         name: 'd' + d + 'c' + 'cutoff',
         show: false,
         idx: 1,
-        totalPeople:db.sankeyNodes.findOne({depth:d, cluster:'0'}).people.length,
+        totalPeople: db.sankeyNodes.findOne({ depth: d, cluster: '0' }).people.length,
     }
     ret.push(node)
 
@@ -77,7 +77,7 @@ _.each(depth, d => {
         name: 'd' + d + 'c' + 'continue',
         show: false,
         idx: 0,
-        totalPeople:db.sankeyNodes.findOne({depth:d, cluster:'0'}).people.length,
+        totalPeople: db.sankeyNodes.findOne({ depth: d, cluster: '0' }).people.length,
     }
     ret.push(node)
 
@@ -172,6 +172,7 @@ function sankeyNodes(patterns) {
             pattern.lean = calLean(seq2tree(pattern.pattern))
             node.trees.push(pattern)
         })
+        
         nodes.push(node)
     })
     return nodes;
@@ -231,11 +232,11 @@ function calLean(tree) {
                 total += root.children.length;
             }
             _.each(root.children, child => {
-                getDesCount(child);
+                walk(child);
             })
         }
         walk(root);
-        root.nDes = total + 1;
+        root.nDes = total;
     }
 
     function getAllDesCount(root) {
@@ -259,22 +260,21 @@ function calLean(tree) {
         var mid = Math.floor(root.children.length / 2);
         if (root.children.length % 2 === 0) {
             _.each(root.children, (child, i) => {
-                if (i < mid) left += child.nDes;
-                else right += child.nDes;
+                if (i < mid) left += (child.nDes);
+                else right += (child.nDes);
             })
         } else {
             _.each(root.children, (child, i) => {
-                if (i < mid) left += child.nDes;
-                else if (i > mid) right += child.nDes;
+                if (i < mid) left += (child.nDes);
+                else if (i > mid) right += (child.nDes);
             })
             trackDown(root.children[mid]);
         }
     }
     trackDown(tree);
     if (left === right) return 0;
-    return (left - right) / (left + right);
+    return (left - right) / (tree.nDes + 1);
 }
-
 
 function seq2tree(seq) {
     var ret = { label: '0', children: [] };

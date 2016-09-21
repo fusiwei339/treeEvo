@@ -20,3 +20,26 @@ _.each(depth, d => {
 db.patternsDepth.drop()
 db.patternsDepth.insert(ret)
 
+
+var min=0, max=0;
+db.getCollection('sankeyNodes').find().forEach(function(doc){
+    var trees=doc.trees;
+    for(var i=0;i<trees.length;i++){
+        var temp=trees[i];
+        if(temp.lean<min) min=temp.lean;
+        if(temp.lean>max) max=temp.lean;
+    }
+})
+print(min)
+print(max)
+
+db.getCollection('sankeyNodes').find({depth:2}).forEach(function(doc){
+    var trees=doc.trees;
+    for(var i=0;i<trees.length;i++){
+        var temp=trees[i];
+        if(temp.lean>1) {
+            print(temp.pattern)
+            break;
+        }
+    }
+})

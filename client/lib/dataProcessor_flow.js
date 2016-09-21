@@ -47,6 +47,7 @@ Template.flow.dataProcessor = function() {
                 return function(node) {
                     node.value1 = node.people.length/node.totalPeople;
                     node.value2 = node.people.length/node.totalPeople;
+                    console.log(node.totalPeople)
                 };
             case 'scaleByDefault':
                 return function(node) {

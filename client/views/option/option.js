@@ -24,7 +24,7 @@ Template.option.rendered = function() {
         var trimedGraph = { nodes, edges }
 
         conf.sankey.svgWidth = $('#structureSvg').width()
-        conf.sankey.svgHeight = $('#structureSvg').height()
+        conf.sankey.svgHeight = $('#structureSvg').height()-100
 
         var scaleMethod = Session.get('scaleBar');
 
@@ -36,6 +36,8 @@ Template.option.rendered = function() {
             .nodes(nodes)
             .links(edges)
             .layout();
+
+        console.log(trimedGraph)
 
         new d3.drawSankey(flowCanvas, trimedGraph)
             .depthLimit(7)
