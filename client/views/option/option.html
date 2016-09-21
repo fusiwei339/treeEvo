@@ -1,6 +1,6 @@
 <template name="option">
     <div id="structureContainer">
-        <div class="title"> &nbsp;  Flow Panel
+        <div class="title"> &nbsp; Flow Panel
             <div style="float:right; margin-right:10px">
                 <label id="runGrouping" class="groupRadio btn btn-default">
                     <i class="fa fa-play fa-fw" title="Run!"></i>
@@ -63,6 +63,7 @@
             </div>
             <div id="structureDiv" class="col-md-12">
                 <svg id="structureSvg"></svg>
+                {{>tooltipSankey}}
             </div>
         </div>
     </div>

@@ -18,13 +18,14 @@ d3.drawSankey = class {
         var classStr = this._clsssStr || '';
         var depthLimit = this._depthLimit || null;
         var dataProcessor = Template.option.dataProcessor;
+        var svg=this.svg;
 
         var flow_conf = Template.flow.configure;
         var conf = Template.option.configure;
         var animationDur = 800;
         var path = d3.sankey().link();
         var sliceOffset = 4;
-        var attr = Session.get('distributionName') || 'lean'
+        var attr = Session.get('distributionName') || 'lean';
 
         var nodeSelection = this.svg.selectAll("." + classStr + "node")
             .data(this.graph.nodes.filter(d => d.depth <= depthLimit), function(d) {
@@ -109,6 +110,8 @@ d3.drawSankey = class {
                 var g = d3.select(this);
                 g.selectAll('.moving').remove();
 
+                d3.select("#sankeyDetailsDiv")
+                    .classed("hidden", true);
             })
             .on('mousemove', function(e) {
                 //show line
@@ -121,6 +124,14 @@ d3.drawSankey = class {
                             .line_to(coord[0] - sliceOffset, e.dx)
                             .end()
                     })
+
+                Session.set('hoveroverPercent', {
+                    name: e.name,
+                    percent: coord[0] / e.dy1,
+                    depth: e.depth,
+                    mouseX: coord[0]+e.y,
+                    sankeyY: e.x,
+                });
 
             })
             .each(function(d, i) {

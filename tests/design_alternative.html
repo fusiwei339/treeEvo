@@ -25,7 +25,13 @@ body {
 }
 
 .area {
-  fill: steelblue;
+    fill: steelblue;
+}
+
+.border {
+    stroke: #666;
+    stroke-width: 1px;
+    fill: white;
 }
 
 button {
@@ -39,87 +45,208 @@ button {
     <script src="./d3.js"></script>
     <script src="./dataArr.js"></script>
     <script>
-    var width = 960,
-        height = 500;
+    var width = 280,
+        height = 50;
 
-    var margin = 50;
+    var margin = 0;
 
     console.log(data)
-    var w = 3;
+    var w = width;
+    var h = height;
+    var padding = 3
 
     var extent = d3.extent(data);
     var color = d3.scale.linear()
         .domain([extent[0], 0, extent[1]])
-        .range(['#b35806', '#ffffff', '#542788'])
+        .range(['#ca0020', '#f2f2f2', '#0571b0'])
 
+
+    var canvas = d3.select("body").append("canvas")
+        .attr('id', 'canvas')
+        .attr("width", w)
+        .attr("height", h)
     var svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+        .attr("width", w)
+        .attr("height", h)
+        .append('g')
+        .attr('transform', `translate(${margin}, ${margin})`)
 
-    function freq(arr) {
-        var a = [],
-            b = [],
-            prev;
 
-        arr.sort();
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] !== prev) {
-                a.push(arr[i]);
-                b.push(1);
-            } else {
-                b[b.length - 1]++;
-            }
-            prev = arr[i];
+    // // drawarea()
+    // drawpixelLine()
+    drawpixel_canvas()
+        drawpixel()
+
+    function drawpixelLine() {
+        data.sort(function(a, b) {
+            return b - a
+        })
+        var size = Math.sqrt(width * height / data.length);
+        var nCol = Math.floor(height / size)
+
+        var smallwidth = width / data.length;
+        svg.append('rect')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('class', 'border')
+
+        svg.selectAll('.pixel').data(data)
+            .enter().append('rect')
+            .attr('class', 'pixel')
+            .attr('y', function(d, i) {
+                return 0;
+            })
+            .attr('x', function(d, i) {
+                return i*smallwidth;
+            })
+            .attr('fill', function(d, i) {
+                return color(d);
+            })
+            .attr({
+                width: smallwidth,
+                height: height,
+            })
+
+    }
+
+    function drawpixel() {
+        data.sort(function(a, b) {
+            return b - a
+        })
+        var size = Math.sqrt(width * height / data.length);
+        var nCol = Math.floor(height / size)
+
+        svg.append('rect')
+            .attr('width', width + padding - size)
+            .attr('height', height)
+            .attr('class', 'border')
+
+        svg.selectAll('.pixel').data(data)
+            .enter().append('rect')
+            .attr('class', 'pixel')
+            .attr('y', function(d, i) {
+                return (i % nCol) * size;
+            })
+            .attr('x', function(d, i) {
+                return Math.floor(i / nCol) * size;
+            })
+            .attr('fill', function(d, i) {
+                return color(d);
+            })
+            .attr({
+                width: size,
+                height: size,
+            })
+
+    }
+
+
+    function drawpixel_canvas() {
+        data.sort(function(a, b) {
+            return b - a
+        })
+        var smallwidth = width / data.length;
+        var size = Math.sqrt(width * height / data.length);
+        var nCol = Math.floor(height / size)
+
+        // svg.append('rect')
+        //     .attr('width', width + padding - size)
+        //     .attr('height', height)
+        //     .attr('class', 'border')
+
+        var context = d3.select('#canvas').node().getContext("2d");
+        context.fillStyle = '#fff';
+        context.rect(0, 0, width, height);
+        context.fill();
+
+        for (var i = 0; i < data.length; i++) {
+            var temp = data[i];
+            context.beginPath();
+            context.fillStyle = color(temp);
+            context.rect(i * smallwidth, 0, smallwidth, height);
+            // context.rect(Math.floor(i / nCol) * size, (i % nCol) * size, size, size);
+            context.fill();
+            context.closePath();
         }
 
-        return [a, b];
+        // svg.selectAll('.pixel').data(data)
+        //     .enter().append('rect')
+        //     .attr('class', 'pixel')
+        //     .attr('y', function(d, i) {
+        //         return (i % nCol) * size;
+        //     })
+        //     .attr('x', function(d, i) {
+        //         return Math.floor(i / nCol) * size;
+        //     })
+        //     .attr('fill', function(d, i) {
+        //         return color(d);
+        //     })
+        //     .attr({
+        //         width: size,
+        //         height: size,
+        //     })
+
     }
 
+    function drawarea() {
+        function freq(arr) {
+            var a = [],
+                b = [],
+                prev;
 
-    var counts = freq(data);
+            arr.sort();
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] !== prev) {
+                    a.push(arr[i]);
+                    b.push(1);
+                } else {
+                    b[b.length - 1]++;
+                }
+                prev = arr[i];
+            }
 
-    var x = d3.scale.linear()
-        .domain(d3.extent(counts[0]))
-        .range([margin, width / 2 - margin])
+            return [a, b];
+        }
+        var counts = freq(data);
 
+        var x = d3.scale.linear()
+            .domain(d3.extent(counts[0]))
+            .range([0, width])
 
-    var y = d3.scale.linear()
-        .domain(d3.extent(counts[1]))
-        .range([height, 0])
+        var y = d3.scale.linear()
+            .domain(d3.extent(counts[1]))
+            .range([height, 0])
 
-    var counts2=[]
-    for(var i=0;i<counts[1].length;i++){
-        var temp={x:counts[0][i], y:counts[1][i]};
-        counts2.push(temp);
-    }
-
-    var area = d3.svg.area()
-        .x(function(d) {
-            return x(d.x);
+        var counts2 = []
+        for (var i = 0; i < counts[1].length; i++) {
+            var temp = {
+                x: counts[0][i],
+                y: counts[1][i]
+            };
+            counts2.push(temp);
+        }
+        counts2.sort(function(a, b) {
+            return a.x - b.x
         })
-        .y0(height)
-        .y1(function(d) {
-            return y(d.y);
-        });
 
-    svg.append("path")
-      .datum(counts2)
-      .attr("class", "area")
-      .attr("d", area);
+        var area = d3.svg.area()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y0(height)
+            .y1(function(d) {
+                return y(d.y);
+            });
+        svg.append('rect')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('y', 0)
+            .attr('class', 'border')
 
+        svg.append("path")
+            .datum(counts2)
+            .attr("class", "area")
+            .attr("d", area);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
     </script>

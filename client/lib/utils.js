@@ -142,8 +142,8 @@ d3.removeSpaces = function(str) {
 }
 
 d3.googleColor= d3.scale.ordinal()
-    .range(['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854'])
-    // .range(['#ff7f0e', '#2ca02c', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+    // .range(['#1f77b4','#fc8d62','#8da0cb','#e78ac3','#a6d854'])
+    .range(['#ff7f0e', '#2ca02c', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
 
 d3.parsePath = function(path) {
     var list = path.pathSegList;
