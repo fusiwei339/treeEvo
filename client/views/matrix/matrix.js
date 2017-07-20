@@ -11,6 +11,14 @@ Template.matrix.rendered = function() {
 
     //initialize data
     Tracker.autorun(function() {
+        $('#sizeSlider').noUiSlider({
+            start: 30,
+            range: {
+                'min': 0,
+                'max': 100,
+            },
+            step: 1,
+        }, true)
 
         HTTP.get(Meteor.absoluteUrl("/malePeople.json"), function(err, result) {
             conf_flow.malePeople_toUse = result.data;
@@ -56,7 +64,7 @@ Template.matrix.rendered = function() {
 
 
     var detailPanel = d3.select('#detailPanel')
-        .style('height', ($('#sourceGroup').height()-35) + 'px')
+        .style('height', ($('#sourceGroup').height() - 35) + 'px')
 
     var treemapCanvas = d3.select('#treemapSvg')
         .attr('height', '100%')
@@ -83,23 +91,23 @@ Template.matrix.rendered = function() {
             .data(selectedNode).enter()
             .append('g')
             .attr('class', 'treemapCanvas')
-            .attr('transform', (d, i)=>d3.translate(x(i), 0))
+            .attr('transform', (d, i) => d3.translate(x(i), 0))
             .each(function(d, i) {
                 var subCanvas = d3.select(this);
-                let padding=conf.treemap.padding;
+                let padding = conf.treemap.padding;
                 subCanvas.append('rect')
                     .attr('width', x.rangeBand())
                     .attr('class', 'legendRect')
                     .attr('height', sourceConf.height)
                     .attr('stroke', d3.googleColor(d.name))
-                    .attr('stroke-width', padding*2)
+                    .attr('stroke-width', padding * 2)
 
-                let treemapG=subCanvas.append('g')
+                let treemapG = subCanvas.append('g')
                     .attr('transform', d3.translate(padding, padding))
 
                 new d3.drawTreemapBars(treemapG, d)
-                    .width(x.rangeBand()-2*padding)
-                    .height(sourceConf.height-2*padding)
+                    .width(x.rangeBand() - 2 * padding)
+                    .height(sourceConf.height - 2 * padding)
                     .draw()
 
             })
@@ -111,7 +119,6 @@ Template.matrix.rendered = function() {
         Session.get('changeAttrs')
         run();
     })
-
 
 }
 

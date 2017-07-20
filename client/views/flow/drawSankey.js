@@ -18,7 +18,7 @@ d3.drawSankey = class {
         var classStr = this._clsssStr || '';
         var depthLimit = this._depthLimit || null;
         var dataProcessor = Template.option.dataProcessor;
-        var svg=this.svg;
+        var svg = this.svg;
 
         var flow_conf = Template.flow.configure;
         var conf = Template.option.configure;
@@ -129,7 +129,7 @@ d3.drawSankey = class {
                     name: e.name,
                     percent: coord[0] / e.dy1,
                     depth: e.depth,
-                    mouseX: coord[0]+e.y,
+                    mouseX: coord[0] + e.y,
                     sankeyY: e.x,
                 });
 
@@ -195,6 +195,8 @@ d3.drawSankey = class {
                 class: 'backgroundRect',
                 stroke: 'black',
                 'stroke-width': .3,
+                rx: 10,
+                ry: 10
             })
 
 
@@ -222,6 +224,60 @@ d3.drawSankey = class {
         linkSelection.transition()
             .duration(animationDur)
             .attr("d", path)
+
+        var formatter = function(d) {
+            // if(d===1) return
+            return d3.format(',.1%')(d)
+        }
+
+        var textdy = 20
+
+        var textSelectionSource = this.svg.selectAll('.sankeyTextSource')
+            .data(this.graph.edges.filter(d => d.target.depth <= depthLimit), function(d) {
+                return d.id = d.source.name + d.target.name + 'textSource';
+            })
+        textSelectionSource.enter().append('text')
+            .attr("class", "sankeyTextSource sankeyText")
+            .attr('x', d => d.source.y + d.sy + d.sourcedy / 2)
+            .attr('y', d => d.source.x + d.source.dx)
+            .attr('text-anchor', 'middle')
+            .attr('dy', textdy)
+            .text(d => formatter(d.sourcePart))
+        textSelectionSource.exit()
+            .transition()
+            .duration(animationDur / 2)
+            .remove()
+        textSelectionSource.transition()
+            .duration(animationDur)
+            .attr('x', d => d.source.y + d.sy + d.sourcedy / 2)
+            .attr('y', d => d.source.x + d.source.dx)
+            .attr('dy', textdy)
+            .text(d => formatter(d.sourcePart))
+
+
+        var textdyTarget = -10
+        var textSelectionTarget = this.svg.selectAll('.sankeyTextTarget')
+            .data(this.graph.edges.filter(d => d.target.depth <= depthLimit), function(d) {
+                return d.id = d.source.name + d.target.name + 'textTarget';
+            })
+        textSelectionTarget.enter().append('text')
+            .attr("class", "sankeyTextTarget sankeyText")
+            .attr('x', d => d.target.y + d.ty + d.targetdy / 2)
+            .attr('y', d => d.target.x)
+            .attr('text-anchor', 'middle')
+            .attr('dy', textdyTarget)
+            .text(d => formatter(d.targetPart))
+        textSelectionTarget.exit()
+            .transition()
+            .duration(animationDur / 2)
+            .remove()
+        textSelectionTarget.transition()
+            .duration(animationDur)
+            .attr('x', d => d.target.y + d.ty + d.targetdy / 2)
+            .attr('y', d => d.target.x)
+            .attr('dy', textdyTarget)
+            .text(d => formatter(d.targetPart))
+
 
     }
 }

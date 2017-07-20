@@ -35,7 +35,7 @@ Template.option.configure = {
         right: 15,
         bottom: 20,
     },
-filter: {},
+    filter: {},
     clusters: [{ description: 'all', order: 0 }],
     clusterColors: ['#b2df8a', '#a6cee3', '#ffff99', '#fdbf6f', '#cab2d6', '#fb9a99', '#fde0ef'],
     clusterShadeColors: ['#33a02c', '#1f78b4', '#b15928', '#ff7f00', '#6a3d9a', '#e31a1c', '#8e0152'],
@@ -54,12 +54,12 @@ filter: {},
         "population": [2, 328],
     },
     graidentColorRange: {
-        "lean": ['#ca0020', '#f2f2f2', '#0571b0'],
+        "lean": ['#e17366', '#ffffff', '#739fbd'],
         "count": ['#fff5eb', '#8c2d04'],
         "population": ['#f7fbff', '#084594'],
     },
     graidentColorScale: {
-        "lean": d3.scale.linear(),
+        "lean": d3.scale.linear().interpolate(d3.interpolateLab),
         "count": d3.scale.log(),
         "population": d3.scale.sqrt(),
     }
@@ -139,7 +139,7 @@ Template.matrix.configure = {
     captionMapping: {
         f_bir_age: 'Age at First Birth',
         l_bir_age: 'Age at Last Birth',
-        lastage: 'Last Age',
+        lastage: 'Life Span',
         sonCountFix: 'Number of Sons',
         POSITION: 'Position',
         f_mar_age: 'Age at First Marriage'

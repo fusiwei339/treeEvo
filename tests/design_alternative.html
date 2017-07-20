@@ -58,24 +58,23 @@ button {
     var extent = d3.extent(data);
     var color = d3.scale.linear()
         .domain([extent[0], 0, extent[1]])
-        .range(['#ca0020', '#f2f2f2', '#0571b0'])
+        .range(['#e17366', '#ffffff', '#739fbd'])
 
-
-    var canvas = d3.select("body").append("canvas")
-        .attr('id', 'canvas')
-        .attr("width", w)
-        .attr("height", h)
     var svg = d3.select("body").append("svg")
         .attr("width", w)
         .attr("height", h)
         .append('g')
         .attr('transform', `translate(${margin}, ${margin})`)
 
+    var canvas = d3.select("body").append("canvas")
+        .attr('id', 'canvas')
+        .attr("width", w)
+        .attr("height", h)
 
-    // // drawarea()
+    // drawarea()
     // drawpixelLine()
+    drawpixel()
     drawpixel_canvas()
-        drawpixel()
 
     function drawpixelLine() {
         data.sort(function(a, b) {
@@ -85,19 +84,21 @@ button {
         var nCol = Math.floor(height / size)
 
         var smallwidth = width / data.length;
-        svg.append('rect')
+        var g = svg.append('g')
+            .attr('class', 'pixelLinesG')
+        g.append('rect')
             .attr('width', width)
             .attr('height', height)
             .attr('class', 'border')
 
-        svg.selectAll('.pixel').data(data)
+        g.selectAll('.pixel').data(data)
             .enter().append('rect')
             .attr('class', 'pixel')
             .attr('y', function(d, i) {
                 return 0;
             })
             .attr('x', function(d, i) {
-                return i*smallwidth;
+                return i * smallwidth;
             })
             .attr('fill', function(d, i) {
                 return color(d);
@@ -116,12 +117,14 @@ button {
         var size = Math.sqrt(width * height / data.length);
         var nCol = Math.floor(height / size)
 
-        svg.append('rect')
+        var g = svg.append('g')
+            .attr('class', 'pixelG')
+        g.append('rect')
             .attr('width', width + padding - size)
             .attr('height', height)
             .attr('class', 'border')
 
-        svg.selectAll('.pixel').data(data)
+        g.selectAll('.pixel').data(data)
             .enter().append('rect')
             .attr('class', 'pixel')
             .attr('y', function(d, i) {
@@ -149,11 +152,6 @@ button {
         var size = Math.sqrt(width * height / data.length);
         var nCol = Math.floor(height / size)
 
-        // svg.append('rect')
-        //     .attr('width', width + padding - size)
-        //     .attr('height', height)
-        //     .attr('class', 'border')
-
         var context = d3.select('#canvas').node().getContext("2d");
         context.fillStyle = '#fff';
         context.rect(0, 0, width, height);
@@ -162,10 +160,15 @@ button {
         for (var i = 0; i < data.length; i++) {
             var temp = data[i];
             context.beginPath();
+
             context.fillStyle = color(temp);
-            context.rect(i * smallwidth, 0, smallwidth, height);
-            // context.rect(Math.floor(i / nCol) * size, (i % nCol) * size, size, size);
-            context.fill();
+            context.rect(Math.floor(i / nCol) * size, (i % nCol) * size, size, size);
+            context.fill()
+
+            // context.fillStyle = color(temp);
+            // context.rect(i * smallwidth, 0, smallwidth, height);
+            // context.fill();
+
             context.closePath();
         }
 
@@ -237,13 +240,17 @@ button {
             .y1(function(d) {
                 return y(d.y);
             });
-        svg.append('rect')
+
+        var g = svg.append('g')
+            .attr('class', 'areaG')
+
+        g.append('rect')
             .attr('width', width)
             .attr('height', height)
             .attr('y', 0)
             .attr('class', 'border')
 
-        svg.append("path")
+        g.append("path")
             .datum(counts2)
             .attr("class", "area")
             .attr("d", area);

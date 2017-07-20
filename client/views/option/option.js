@@ -15,7 +15,7 @@ Template.option.rendered = function() {
         Session.get('malePeopleObj_ready')
         if (!flowConf.sankeyData) return;
 
-        $('#structureSvg').css('height', 900)
+        $('#structureSvg').css('height', 1200)
 
         var graph = flowConf.sankeyData;
         var nodes = graph.nodes.filter(d => d.show).sort((a, b) => a.depth - b.depth)
@@ -154,6 +154,15 @@ Template.option.events({
             console.log(peoples)
             Meteor.call('regression', attrs)
         })
+    },
+
+    'click #showSankeyText': function() {
+        var flag=d3.select('.sankeyText').style('display')
+        if(flag==='none'){
+            d3.selectAll('.sankeyText').style('display', null)
+        } else {
+            d3.selectAll('.sankeyText').style('display', 'none')
+        }
     },
 
     'click #sortByInc': function() {

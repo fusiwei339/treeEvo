@@ -2,8 +2,14 @@
     <div id="matrixPanel">
         <div id="groupPanel">
             <div id="sourceGroup" class="col-md-12">
-                <div class="title">&nbsp; Detail Panel
-<!--                     <div style="float:right; margin-right:10px">
+                <div class="title">
+                    <span class="titleSpan">DETAIL PANEL</span>
+                    <span style="float: right; margin-top: 8px; margin-right: 10px; font-size: 75%">More Trees</span>
+                    <div style="float: right; margin-top: 13px; width: 200px; padding-left: 8px; padding-right: 8px">
+                        <div id="sizeSlider" type="text" class="slider"></div>
+                    </div>
+                    <span style="float: right; margin-top: 8px; font-size: 75%">Fewer Trees</span>
+                    <!--                     <div style="float:right; margin-right:10px">
                         <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Color By:</span>
                         <div class="btn-group" data-toggle="buttons">
                             <label id="colorByInc" class="groupRadio btn btn-default disabled">
@@ -27,8 +33,9 @@
             </div>
         </div>
         <div id="analysisPanel">
-            <div class="title"> &nbsp;  Analysis Panel
-<!--                 <div style="float:right">
+            <div class="title">
+                <span class="titleSpan">ANALYSIS PANEL</span>
+                <!--                 <div style="float:right">
                     <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Select Attributes:</span>
                     <div class="btn-group" data-toggle="buttons">
                         <label id="f_mar_age" class="aggrRadio btn btn-default active">
@@ -57,9 +64,14 @@
                         </label>
                     </div>
                 </div> -->
-                <div style="float:right; margin-right: 10px;">
+                <div style="float:right; margin-right: 10px; margin-top:5px">
+                    <label id="showhideME" class="groupRadio btn btn-default btn-xs">
+                        <span>MLM Log</span>
+                    </label>
+                </div>
+                <div style="float:right; margin-right: 10px; margin-top:5px">
                     <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Marginal Effects:</span>
-                    <label id="showhideME" class="groupRadio btn btn-default">
+                    <label id="showhideME" class="groupRadio btn btn-default btn-xs">
                         <span>Hide / Show</span>
                     </label>
                 </div>

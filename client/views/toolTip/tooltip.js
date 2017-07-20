@@ -59,8 +59,8 @@ Template.tooltipSankey.rendered = function() {
     })
 };
 
-// Template.tooltipTreemap.rendered = function() {
-//     Deps.autorun(function() {
-
-//     })
-// };
+Template.tooltipStat.rendered = function() {
+    Deps.autorun(function() {
+        var hoveredX=Session.get('')
+    })
+};

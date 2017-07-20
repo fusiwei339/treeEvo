@@ -44,11 +44,13 @@ d3.sankey = function() {
     };
 
     sankey.layout = function() {
-        computeNodeLinks();
+        if(!_.isEmpty(links))
+            computeNodeLinks();
         computeNodeValues();
         computeNodeBreadths();
         computeNodeDepths();
-        computeLinkDepths();
+        if(!_.isEmpty(links))
+            computeLinkDepths();
         return sankey;
     };
 

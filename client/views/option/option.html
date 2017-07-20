@@ -1,52 +1,68 @@
 <template name="option">
     <div id="structureContainer">
-        <div class="title"> &nbsp; Flow Panel
-            <div style="float:right; margin-right:10px">
-                <label id="runGrouping" class="groupRadio btn btn-default">
+        <div class="title">
+            <span class="titleSpan">FLOW PANEL</span>
+            <div style="float:right; margin-right:10px; margin-top: 6px">
+                <label id="runGrouping" class="groupRadio btn btn-default btn-xs">
                     <i class="fa fa-play fa-fw" title="Run!"></i>
                     <span>Regression</span>
                 </label>
             </div>
-            <div style="float:right; margin-right:10px">
-                <label id="clear_moving" class="groupRadio btn btn-default">
+            <div style="float:right; margin-right:10px; margin-top: 6px">
+                <label id="clear_moving" class="groupRadio btn btn-default btn-xs">
                     <i class="fa fa-refresh fa-fw" title="Run!"></i>
                     <span>Reset All</span>
                 </label>
             </div>
-            <div style="float:right; margin-right:10px">
+            <div style="float:right; margin-right:10px; margin-top: 6px">
+                <label id="showSankeyText" class="groupRadio btn btn-default btn-xs">
+                    <i class="fa fa-font fa-fw" title="Run!"></i>
+                    <span>Hide / Show Text</span>
+                </label>
+            </div>
+            <div style="float:right; margin-right:10px; margin-top: 6px">
                 <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Scale:</span>
                 <div class="btn-group" data-toggle="buttons">
-                    <label id="scaleByUni" class="aggrRadio btn btn-default">
+                    <label id="scaleByUni" class="aggrRadio btn btn-default btn-xs">
                         <input type="radio" value="1" />
                         <i class="fa fa-bars fa-fw" title="Number of posts"></i>
                         <span>Percentage</span>
                     </label>
-                    <label id="scaleByDefault" class="aggrRadio btn btn-default active">
+                    <label id="scaleByDefault" class="aggrRadio btn btn-default btn-xs active">
                         <input type="radio" value="1" />
                         <i class="fa fa-hashtag fa-fw" title="Default"></i>
                         <span>Absolute</span>
                     </label>
                 </div>
             </div>
-            <div style="float:right; margin-right:10px">
-                <label id="scaleByUni" class="aggrRadio btn btn-default" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <div style="float:right; margin-right:10px; margin-top: 6px">
+                <label class="aggrRadio btn btn-default btn-xs" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <i class="fa fa-cog fa-fw" title="More Options"></i>
                     <span>More Options</span>
                 </label>
             </div>
-            <div class="collapse col-md-12" id="collapseExample" style="height:40px; background-color:#eee" aria-expanded="false">
+<!--             <div style="float:right; margin-right:10px; margin-top: 6px" class="dropdown">
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Choose Dataset...
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="right:auto">
+                    <li id="nch"><a href="#">LN</a></li>
+                </ul>
+            </div> -->
+            <div class="collapse col-md-12" id="collapseExample" style="height:40px;" aria-expanded="false">
                 <div style="float:left; margin-right:10px; margin-top:5px">
                     <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Sort By:</span>
                     <div class="btn-group" data-toggle="buttons">
-                        <label id="sortByInc" class="groupRadio btn btn-default active">
+                        <label id="sortByInc" class="groupRadio btn btn-default btn-xs active">
                             <input type="radio" value="1" />
                             <span>Inclination</span>
                         </label>
-                        <label id="sortByFreq" class="groupRadio btn btn-default">
+                        <label id="sortByFreq" class="groupRadio btn btn-default btn-xs">
                             <input type="radio" value="1" />
                             <span>Frequency</span>
                         </label>
-                        <label id="sortByPop" class="groupRadio btn btn-default">
+                        <label id="sortByPop" class="groupRadio btn btn-default btn-xs">
                             <input type="radio" value="1" />
                             <span>Population</span>
                         </label>
@@ -55,16 +71,16 @@
                 <div style="float:left; margin-right:10px; margin-top:5px">
                     <span class="label matrixIcon" style="color: #333;margin-top: 8px;margin-left: 0px;margin-right: 0px;">Split / Merge:</span>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default" id="mergebtn">Merge</button>
-                        <button type="button" class="btn btn-default" id="splitAttrBtn">Split by Attribute</button>
-                        <button type="button" class="btn btn-default" id="splitContBtn">Split by Continuity</button>
+                        <button type="button" class="btn btn-default btn-xs" id="mergebtn">Merge</button>
+                        <button type="button" class="btn btn-default btn-xs" id="splitAttrBtn">Split by Attribute</button>
+                        <button type="button" class="btn btn-default btn-xs" id="splitContBtn">Split by Continuity</button>
                     </div>
                 </div>
             </div>
-            <div id="structureDiv" class="col-md-12">
-                <svg id="structureSvg"></svg>
-                {{>tooltipSankey}}
-            </div>
+        </div>
+        <div id="structureDiv" class="col-md-12">
+            <svg id="structureSvg"></svg>
+            {{>tooltipSankey}}
         </div>
     </div>
 </template>

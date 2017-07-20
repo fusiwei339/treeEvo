@@ -24,7 +24,6 @@
 .title {
     width: 100%;
     height: 35px;
-    background-color: #eee;
     font-weight: bold;
 }
 
@@ -40,7 +39,7 @@
 }
 
 .sRect{
-    stroke:#555;
+    stroke:#eee;
     stroke-width:0.5;
 }
 .overlay {
